@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -46,6 +46,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [tempPasswordDismissed, setTempPasswordDismissed] = useState(false);
+  const mustChangePassword = !!currentUser?.mustChangePassword;
+
+  // A temporary password has to be replaced before the account can do anything else, so open the form straight away.
+  useEffect(() => {
+    if (mustChangePassword) setSettingsOpen(true);
+  }, [mustChangePassword]);
 
   const isGold = isGoldenMember(currentUser);
   const displayName = currentUser ? currentUser.name : (locale === 'ar' ? 'زائر' : 'Invité');
@@ -264,11 +271,29 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
         </div>
       </header>
 
+      {mustChangePassword && !tempPasswordDismissed && (
+        <div role="status" className="mx-auto my-2 flex w-[calc(100%-2rem)] max-w-7xl flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-bold text-slate-900 dark:border-amber-400/40 dark:bg-amber-400/10 dark:text-white" data-testid="temp-password-banner">
+          <span>
+            {locale === 'ar'
+              ? 'تستعمل كلمة مرور مؤقتة وضعها الفريق. اختر كلمة مرورك الخاصة الآن.'
+              : 'Vous utilisez un mot de passe temporaire défini par l\'équipe. Choisissez le vôtre maintenant.'}
+          </span>
+          <span className="flex gap-2">
+            <button type="button" onClick={() => setSettingsOpen(true)} className="min-h-11 rounded-xl bg-gold-500 px-4 font-black text-navy-950 hover:bg-gold-400">
+              {locale === 'ar' ? 'تغيير كلمة المرور' : 'Changer le mot de passe'}
+            </button>
+            <button type="button" onClick={() => setTempPasswordDismissed(true)} className="min-h-11 rounded-xl border border-slate-300 px-4 hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/10">
+              {locale === 'ar' ? 'لاحقاً' : 'Plus tard'}
+            </button>
+          </span>
+        </div>
+      )}
+
       {/* Upgrade Modal */}
       <UpgradeModal isOpen={upgradeModalOpen} onClose={() => setUpgradeModalOpen(false)} />
 
       {/* Settings Modal (for viewing and editing entire profile) */}
-      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} defaultTab="profile" />
+      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} defaultTab={mustChangePassword ? 'security' : 'profile'} />
     </>
   );
 };

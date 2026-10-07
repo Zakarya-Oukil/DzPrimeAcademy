@@ -41,7 +41,7 @@ interface SettingsModalProps {
 export type SettingsTab = 'profile' | 'preferences' | 'system' | 'security';
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, defaultTab = 'profile' }) => {
-  const { currentUser, signOut, updateProfile } = useAuthStore();
+  const { currentUser, signOut, updateProfile, setCurrentUser } = useAuthStore();
   const { t, locale, setLocale } = useTranslation();
   const { theme, setTheme } = useTheme();
   const isAdmin = isStaff(currentUser?.role);
@@ -210,8 +210,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
     setPasswordSuccess('');
     setPasswordError('');
 
-    if (newPassword.length < 6) {
-      setPasswordError(locale === 'ar' ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' : 'Le mot de passe doit contenir au moins 6 caractères');
+    if (newPassword.length < 8 || /^\d+$/.test(newPassword)) {
+      setPasswordError(locale === 'ar' ? 'كلمة المرور يجب أن تكون 8 أحرف على الأقل ولا تتكون من أرقام فقط' : 'Le mot de passe doit contenir au moins 8 caractères, pas uniquement des chiffres');
       setPasswordSaving(false);
       return;
     }
@@ -234,6 +234,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
         setPasswordError(data.error || (locale === 'ar' ? 'فشل تغيير كلمة المرور' : 'Échec du changement'));
       } else {
         setPasswordSuccess(locale === 'ar' ? 'تم تغيير كلمة المرور بنجاح! 🔒' : 'Mot de passe mis à jour avec succès ! 🔒');
+        if (currentUser?.mustChangePassword) setCurrentUser({ ...currentUser, mustChangePassword: false });
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
@@ -709,7 +710,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
                             <input
                               type={showNewPassword ? 'text' : 'password'}
                               required
-                              placeholder="•••••••• (6+ أحرف)"
+                              placeholder="•••••••• (8+ أحرف)"
                               value={newPassword}
                               onChange={(e) => setNewPassword(e.target.value)}
                               className="w-full px-3 py-2 pr-10 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 font-mono text-xs focus:outline-none focus:border-lime-400"

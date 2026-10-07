@@ -3,6 +3,7 @@ import { generateCardId } from '@/lib/cardId';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { hashPassword, requirePermission } from '@/lib/auth';
+import { passwordProblem } from '@/lib/passwords';
 import { isSuperAdmin, isAssignableAdminRole, canAssignAdminRole } from '@/lib/rbac';
 import { Role } from '@/types';
 
@@ -74,9 +75,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (String(password).trim().length < 6) {
+    if (passwordProblem(String(password).trim())) {
       return NextResponse.json(
-        { error: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' },
+        { error: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل ولا تتكون من أرقام فقط' },
         { status: 400 }
       );
     }
@@ -133,6 +134,7 @@ export async function POST(request: NextRequest) {
         jobTitle: jobTitle ? String(jobTitle).trim() : null,
         bio: bio ? String(bio).trim() : null,
         passwordHash,
+        mustChangePassword: true,
         wilayaCode: parsedWilayaCode,
         wilayaName: wilayaName || 'Alger',
         institutionName: 'DZ Prime Academy HQ',

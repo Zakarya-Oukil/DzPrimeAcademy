@@ -309,7 +309,7 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
                     <div className="relative">
                       <input
                         type={showPassword ? 'text' : 'password'}
-                        placeholder={locale === 'ar' ? 'اترك فارغاً لتوليد كلمة مرور عشوائية أو اكتب كلمة مخصصة (6 أحرف+)' : 'Mot de passe (min 6 car.)'}
+                        placeholder={locale === 'ar' ? 'اترك فارغاً لتوليد كلمة مرور عشوائية أو اكتب كلمة مخصصة (8 أحرف+)' : 'Mot de passe (min 8 car.)'}
                         value={form.password}
                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                         className="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono placeholder-gray-500 focus:outline-none focus:border-lime-400"

@@ -3,6 +3,7 @@ import { generateCardId } from '@/lib/cardId';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { hashPassword, requirePermission } from '@/lib/auth';
+import { generateTempPassword, passwordProblem } from '@/lib/passwords';
 import { hasAnyPermission } from '@/lib/rbac';
 
 // Staff only. HR and finance see the full record; catalog managers (who only need a
@@ -61,10 +62,6 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(result);
 }
 
-function generateTempPassword(): string {
-  return `Prof${Math.floor(1000 + Math.random() * 9000)}!`;
-}
-
 export async function POST(request: NextRequest) {
   const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
@@ -86,7 +83,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'هذا البريد الإلكتروني مسجل مسبقاً في المنصة' }, { status: 409 });
     }
 
-    const clearPassword = (password && String(password).trim().length >= 6)
+    if (password && passwordProblem(String(password).trim())) {
+
+      return NextResponse.json({ error: passwordProblem(String(password).trim()) }, { status: 400 });
+
+    }
+
+    const clearPassword = (password && !passwordProblem(String(password).trim()))
       ? String(password).trim()
       : generateTempPassword();
 
@@ -100,6 +103,7 @@ export async function POST(request: NextRequest) {
         phone: phone ? String(phone).trim() : null,
         role: 'TEACHER',
         passwordHash,
+        mustChangePassword: true,
         wilayaCode: parsedWilayaCode,
         wilayaName: wilayaName || null,
         institutionName: university || 'Université Algérienne',
@@ -120,7 +124,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const { passwordHash: _omit, ...safeUser } = user;
+    const { passwordHash: _omit, tokenVersion: _tv, ...safeUser } = user;
     return NextResponse.json({ ...profile, user: safeUser, tempPassword: clearPassword }, { status: 201 });
   } catch (error: any) {
     console.error('Error creating teacher:', error);

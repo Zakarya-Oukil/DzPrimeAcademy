@@ -265,8 +265,8 @@ export default function AmbassadorDashboardPage() {
     setPasswordSuccess('');
     setPasswordError('');
 
-    if (newPassword.length < 6) {
-      setPasswordError(locale === 'ar' ? 'كلمة المرور يجب أن تتكون من 6 أحرف على الأقل' : 'Le mot de passe doit contenir au moins 6 caractères');
+    if (newPassword.length < 8 || /^\d+$/.test(newPassword)) {
+      setPasswordError(locale === 'ar' ? 'كلمة المرور يجب أن تتكون من 8 أحرف على الأقل ولا تتكون من أرقام فقط' : 'Le mot de passe doit contenir au moins 8 caractères, pas uniquement des chiffres');
       setPasswordSaving(false);
       return;
     }

@@ -8,7 +8,6 @@ import { Footer } from './Footer';
 import { FloatingBotWidget } from '@/components/bot/FloatingBotWidget';
 import { AuthGate, AccessDenied, AuthLoadingSpinner } from './AuthGate';
 import { AuthModal } from '@/components/auth/AuthModal';
-import { GoogleAuthCallback } from '@/components/auth/GoogleAuthCallback';
 import { AuthModalProvider } from '@/lib/authModalContext';
 import { SessionReminderBanner } from '@/components/dashboard/SessionReminderBanner';
 import { useTranslation } from '@/lib/i18n/useTranslation';
@@ -81,7 +80,6 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
   if (isGuestLanding) {
     return (
       <div className="flex min-h-screen w-full flex-col bg-[#F4F6FA] dark:bg-[#040817] text-slate-900 dark:text-white transition-colors" data-testid="guest-landing-shell">
-        <GoogleAuthCallback />
         <Navbar onToggleSidebar={() => setIsMobileSidebarOpen(true)} onOpenAuth={(tab) => setAuthModal({ open: true, tab })} />
         <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
           <main className="flex-1 w-full">{children}</main>
@@ -98,7 +96,6 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
   return (
     <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
       <div className="flex min-h-screen w-full bg-[#F4F6FA] dark:bg-[#040817] text-slate-900 dark:text-white transition-colors" data-testid="app-dashboard-shell">
-        <GoogleAuthCallback />
 
         {currentUser && !isNoSidebarPage && (
           <AppSidebar

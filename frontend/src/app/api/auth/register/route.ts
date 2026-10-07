@@ -2,37 +2,61 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateCardId } from '@/lib/cardId';
 import crypto from 'crypto';
 import { prisma } from '@/lib/db';
-import { hashPassword, signToken, setAuthCookie } from '@/lib/auth';
+import { hashPassword } from '@/lib/auth';
+import { passwordProblem } from '@/lib/passwords';
 import { sendActivationEmail } from '@/lib/email';
+import { clientIp, rateLimit } from '@/lib/rateLimit';
+
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PHONE = /^[0-9+()\s-]{6,30}$/;
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const { name, email, password, phone, wilayaCode, wilayaName, locale = 'ar' } = body;
+  if (!rateLimit(`register:${clientIp(request)}`, 10, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: 'محاولات تسجيل كثيرة من هذا الجهاز، حاول لاحقاً' }, { status: 429 });
+  }
 
-  if (!name || !email || !password) {
+  const body = (await request.json().catch(() => null)) ?? {};
+  const { name, email, password, phone, wilayaCode, wilayaName } = body;
+  const locale = ['ar', 'fr', 'en'].includes(body.locale) ? (body.locale as string) : 'ar';
+
+  if (typeof name !== 'string' || typeof email !== 'string' || typeof password !== 'string' || !name.trim() || !email || !password) {
     return NextResponse.json({ error: 'الاسم والبريد الإلكتروني وكلمة المرور مطلوبة' }, { status: 400 });
   }
-  if (password.length < 6) {
-    return NextResponse.json({ error: 'كلمة المرور يجب أن تكون 6 خانات على الأقل' }, { status: 400 });
+  const cleanName = name.trim();
+  if (cleanName.length < 2 || cleanName.length > 100) {
+    return NextResponse.json({ error: 'الاسم يجب أن يكون بين 2 و100 حرف' }, { status: 400 });
   }
+  const normalizedEmail = email.toLowerCase().trim();
+  if (normalizedEmail.length > 254 || !EMAIL.test(normalizedEmail)) {
+    return NextResponse.json({ error: 'البريد الإلكتروني غير صالح' }, { status: 400 });
+  }
+  const problem = passwordProblem(password);
+  if (problem) return NextResponse.json({ error: problem }, { status: 400 });
+  if (phone !== undefined && phone !== null && phone !== '' && !(typeof phone === 'string' && PHONE.test(phone))) {
+    return NextResponse.json({ error: 'رقم الهاتف غير صالح' }, { status: 400 });
+  }
+  const wilaya = wilayaCode === undefined || wilayaCode === null || wilayaCode === '' ? null : Number(wilayaCode);
+  if (wilaya !== null && (!Number.isInteger(wilaya) || wilaya < 1 || wilaya > 58)) {
+    return NextResponse.json({ error: 'رمز الولاية غير صالح' }, { status: 400 });
+  }
+  const cleanWilayaName = typeof wilayaName === 'string' ? wilayaName.trim().slice(0, 80) || null : null;
 
-  const normalizedEmail = String(email).toLowerCase().trim();
   const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (existing) {
     return NextResponse.json({ error: 'هذا البريد الإلكتروني مسجل بالفعل' }, { status: 409 });
   }
 
   const passwordHash = await hashPassword(password);
-  const studentCardId = generateCardId('STU', wilayaCode || 16);
+  const studentCardId = generateCardId('STU', wilaya || 16);
 
   const user = await prisma.user.create({
     data: {
-      name,
+      name: cleanName,
       email: normalizedEmail,
       passwordHash,
-      phone: phone || null,
-      wilayaCode: wilayaCode || null,
-      wilayaName: wilayaName || null,
+      phone: phone ? String(phone).trim() : null,
+      wilayaCode: wilaya,
+      wilayaName: cleanWilayaName,
       role: 'STUDENT_FREE',
       studentCardId,
       isVerified: false,
@@ -101,4 +125,3 @@ export async function POST(request: NextRequest) {
     { status: 201 }
   );
 }
-

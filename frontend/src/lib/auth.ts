@@ -21,32 +21,30 @@ export async function verifyPassword(plain: string, hashed: string): Promise<boo
   return bcrypt.compare(plain, hashed);
 }
 
-export function signToken(userId: string): string {
-  return jwt.sign({ sub: userId }, getJwtSecret(), { expiresIn: '7d' });
+// tv = the user's tokenVersion when the token was issued. Logging out or changing the password bumps the stored
+// version, which makes every older token invalid (they used to stay valid until expiry, 7 days).
+export function signToken(userId: string, tokenVersion = 0): string {
+  return jwt.sign({ sub: userId, tv: tokenVersion }, getJwtSecret(), { expiresIn: '7d' });
 }
 
-export function verifyJwt(token: string): { sub: string } | null {
+export function verifyJwt(token: string): { sub: string; tv?: number } | null {
   try {
-    return jwt.verify(token, getJwtSecret()) as { sub: string };
+    return jwt.verify(token, getJwtSecret()) as { sub: string; tv?: number };
   } catch (e) {
     return null;
   }
+}
+
+// Ends every login of this user (all devices) and returns the new version for a fresh token.
+export async function bumpTokenVersion(userId: string): Promise<number> {
+  const u = await prisma.user.update({ where: { id: userId }, data: { tokenVersion: { increment: 1 } }, select: { tokenVersion: true } });
+  return u.tokenVersion;
 }
 
 const isProd = process.env.NODE_ENV === 'production';
 
 export function setAuthCookie(response: NextResponse, token: string) {
   response.cookies.set(TOKEN_COOKIE, token, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: 'lax',
-    path: '/',
-    maxAge: TOKEN_MAX_AGE_SECONDS,
-  });
-}
-
-export function setSessionCookie(response: NextResponse, sessionToken: string) {
-  response.cookies.set(SESSION_COOKIE, sessionToken, {
     httpOnly: true,
     secure: isProd,
     sameSite: 'lax',
@@ -88,53 +86,32 @@ const SAFE_USER_SELECT = {
   academicYear: true,
   studentCardId: true,
   isVerified: true,
+  mustChangePassword: true,
   createdAt: true,
   updatedAt: true,
 };
 
+// A token is only good if its version still matches the user's current tokenVersion.
+async function userFromToken(token: string) {
+  const payload = verifyJwt(token);
+  if (!payload?.sub) return null;
+  const row = await prisma.user.findUnique({ where: { id: payload.sub }, select: { ...SAFE_USER_SELECT, tokenVersion: true } });
+  if (!row || (payload.tv ?? 0) !== row.tokenVersion) return null;
+  const { tokenVersion: _tv, ...user } = row;
+  const isStaff = user.role === 'ADMIN' || user.role === 'OWNER';
+  if (!user.isVerified && !isStaff) return null;
+  return user;
+}
+
 export async function getUserFromRequest(request: NextRequest) {
-  // 1. Check Bearer token in Authorization header
   const authHeader = request.headers.get('authorization');
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    const bearerToken = authHeader.substring(7).trim();
-    const payload = verifyJwt(bearerToken);
-    if (payload?.sub) {
-      const user = await prisma.user.findUnique({ where: { id: payload.sub }, select: SAFE_USER_SELECT });
-      if (user) {
-        const isStaff = user.role === 'ADMIN' || user.role === 'OWNER';
-        if (!user.isVerified && !isStaff) return null;
-        return user;
-      }
-    }
+    const user = await userFromToken(authHeader.substring(7).trim());
+    if (user) return user;
   }
 
-  // 2. Check jwt cookie
   const jwtToken = request.cookies.get(TOKEN_COOKIE)?.value;
-  if (jwtToken) {
-    const payload = verifyJwt(jwtToken);
-    if (payload?.sub) {
-      const user = await prisma.user.findUnique({ where: { id: payload.sub }, select: SAFE_USER_SELECT });
-      if (user) {
-        const isStaff = user.role === 'ADMIN' || user.role === 'OWNER';
-        if (!user.isVerified && !isStaff) return null;
-        return user;
-      }
-    }
-  }
-
-  // 3. Check session cookie
-  const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
-  if (sessionToken) {
-    const session = await prisma.session.findUnique({ where: { sessionToken } });
-    if (session && session.expiresAt > new Date()) {
-      const user = await prisma.user.findUnique({ where: { id: session.userId }, select: SAFE_USER_SELECT });
-      if (user) {
-        const isStaff = user.role === 'ADMIN' || user.role === 'OWNER';
-        if (!user.isVerified && !isStaff) return null;
-        return user;
-      }
-    }
-  }
+  if (jwtToken) return userFromToken(jwtToken);
 
   return null;
 }
@@ -179,8 +156,20 @@ export async function requireAuth(
   if (!user) {
     return { error: NextResponse.json({ error: 'يجب تسجيل الدخول' }, { status: 401 }) };
   }
+  // An account still on a password someone else chose (staff-created or the seeded owner) can do nothing but
+  // change it, see who it is, and sign out. Every route that authenticates through here enforces this.
+  if (user.mustChangePassword && !MUST_CHANGE_ALLOWED.includes(new URL(request.url).pathname)) {
+    return {
+      error: NextResponse.json(
+        { error: 'يجب تغيير كلمة المرور المؤقتة قبل المتابعة', code: 'MUST_CHANGE_PASSWORD' },
+        { status: 403 }
+      ),
+    };
+  }
   return { user };
 }
+
+const MUST_CHANGE_ALLOWED = ['/api/account/change-password', '/api/auth/me', '/api/auth/logout'];
 
 export async function requireRole(
   request: NextRequest,

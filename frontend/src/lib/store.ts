@@ -36,12 +36,6 @@ function setUser(user: User | null) {
 }
 
 async function checkAuth(): Promise<void> {
-  if (typeof window !== 'undefined' && window.location.hash.includes('session_id=')) {
-    // Defer to GoogleAuthCallback, which will populate the store itself.
-    authChecked = true;
-    notify();
-    return;
-  }
   try {
     const res = await fetch('/api/auth/me', { credentials: 'include' });
     if (res.ok) {

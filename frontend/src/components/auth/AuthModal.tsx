@@ -82,7 +82,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
       const res = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, locale }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -155,8 +155,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
     e.preventDefault();
     setErrorMsg('');
     setLoginNotice('');
-    if (password.length < 6) {
-      setErrorMsg(locale === 'ar' ? 'كلمة المرور يجب أن تكون 6 خانات على الأقل' : 'Le mot de passe doit contenir au moins 6 caractères');
+    if (password.length < 8 || /^\d+$/.test(password)) {
+      setErrorMsg(locale === 'ar' ? 'كلمة المرور يجب أن تكون 8 خانات على الأقل ولا تتكون من أرقام فقط' : 'Le mot de passe doit contenir au moins 8 caractères, pas uniquement des chiffres');
       return;
     }
     setLoading(true);

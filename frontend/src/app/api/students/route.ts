@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { canManageUser } from '@/lib/rbac';
 import { hashPassword, requirePermission } from '@/lib/auth';
+import { generateTempPassword, passwordProblem } from '@/lib/passwords';
 
 export async function GET(request: NextRequest) {
   const authResult = await requirePermission(request, 'users.manage');
@@ -34,10 +35,6 @@ export async function GET(request: NextRequest) {
     },
   });
   return NextResponse.json(users);
-}
-
-function generateTempPassword(): string {
-  return `Stu${Math.floor(1000 + Math.random() * 9000)}!`;
 }
 
 export async function POST(request: NextRequest) {
@@ -71,7 +68,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'هذا البريد الإلكتروني مسجل مسبقاً' }, { status: 409 });
     }
 
-    const clearPassword = password && String(password).trim().length >= 6
+    if (password && passwordProblem(String(password).trim())) {
+
+      return NextResponse.json({ error: passwordProblem(String(password).trim()) }, { status: 400 });
+
+    }
+
+    const clearPassword = password && !passwordProblem(String(password).trim())
       ? String(password).trim()
       : generateTempPassword();
 
@@ -84,6 +87,7 @@ export async function POST(request: NextRequest) {
         email: normalizedEmail,
         name: String(name).trim(),
         passwordHash,
+        mustChangePassword: true,
         role: role === 'STUDENT_PAID' ? 'STUDENT_PAID' : 'STUDENT_FREE',
         phone: phone ? String(phone).trim() : null,
         wilayaCode: parsedWilaya,

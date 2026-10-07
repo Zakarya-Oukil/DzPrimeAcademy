@@ -173,8 +173,8 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
     setPasswordSuccess('');
     setPasswordError('');
 
-    if (newPassword.length < 6) {
-      setPasswordError(locale === 'ar' ? 'كلمة المرور يجب أن تتكون من 6 أحرف على الأقل' : 'Le mot de passe doit contenir au moins 6 caractères');
+    if (newPassword.length < 8 || /^\d+$/.test(newPassword)) {
+      setPasswordError(locale === 'ar' ? 'كلمة المرور يجب أن تتكون من 8 أحرف على الأقل ولا تتكون من أرقام فقط' : 'Le mot de passe doit contenir au moins 8 caractères, pas uniquement des chiffres');
       setPasswordSaving(false);
       return;
     }
@@ -603,7 +603,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
                 <input
                   type={showNewPassword ? 'text' : 'password'}
                   required
-                  placeholder="•••••••• (6+ أحرف)"
+                  placeholder="•••••••• (8+ أحرف)"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-white/5 border border-white/10 font-mono text-white focus:outline-none focus:border-lime-400"

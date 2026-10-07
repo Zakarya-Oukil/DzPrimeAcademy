@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { requireAuth, verifyPassword, hashPassword } from '@/lib/auth';
+import { requireAuth, verifyPassword, hashPassword, signToken, setAuthCookie } from '@/lib/auth';
+import { passwordProblem } from '@/lib/passwords';
 
 export async function POST(request: NextRequest) {
   const authResult = await requireAuth(request);
@@ -12,11 +13,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { currentPassword, newPassword, confirmPassword } = body;
 
-    if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
-      return NextResponse.json(
-        { error: 'يجب أن تتكون كلمة المرور الجديدة من 6 أحرف أو أرقام على الأقل' },
-        { status: 400 }
-      );
+    const problem = passwordProblem(newPassword);
+    if (problem) {
+      return NextResponse.json({ error: problem }, { status: 400 });
     }
 
     if (confirmPassword !== undefined && newPassword !== confirmPassword) {
@@ -55,20 +54,21 @@ export async function POST(request: NextRequest) {
 
     const newHash = await hashPassword(newPassword);
 
-    await prisma.user.update({
+    // Every other login (and any stolen token) ends; this browser gets a fresh token so the user stays signed in.
+    const updated = await prisma.user.update({
       where: { id: dbUser.id },
-      data: { passwordHash: newHash },
+      data: { passwordHash: newHash, tokenVersion: { increment: 1 }, mustChangePassword: false },
+      select: { tokenVersion: true },
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'تم تحديث كلمة المرور بنجاح',
     });
+    setAuthCookie(response, signToken(dbUser.id, updated.tokenVersion));
+    return response;
   } catch (error: any) {
     console.error('Change password error:', error);
-    return NextResponse.json(
-      { error: error?.message || 'حدث خطأ أثناء تغيير كلمة المرور' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'حدث خطأ أثناء تغيير كلمة المرور' }, { status: 500 });
   }
 }

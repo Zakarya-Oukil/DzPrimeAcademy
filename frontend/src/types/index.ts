@@ -49,6 +49,7 @@ export interface User {
   academicYear?: string;
   studentCardId?: string;
   isVerified?: boolean;
+  mustChangePassword?: boolean;
   createdAt: string;
 }
 

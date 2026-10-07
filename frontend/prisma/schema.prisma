@@ -74,37 +74,41 @@ enum SessionPlatform {
 }
 
 model User {
-  id              String     @id @default(cuid())
-  email           String     @unique
-  name            String
-  avatar          String?
-  role            Role       @default(STUDENT_FREE)
-  jobTitle        String?
-  adminRole       String?
-  bio             String?
-  facebook        String?
-  instagram       String?
-  linkedin        String?
-  telegram        String?
-  youtube         String?
-  whatsapp        String?
-  website         String?
-  twitter         String?
-  github          String?
-  phone           String?
-  wilayaCode      Int?
-  wilayaName      String?
-  institutionId   String?
-  institutionName String?
-  track           TrackType?
-  specialty       String?
-  academicYear    String?
-  studentCardId   String?    @unique
-  isVerified      Boolean    @default(false)
-  passwordHash    String?
-  demoIndex       Int?       @unique
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  id                 String     @id @default(cuid())
+  email              String     @unique
+  name               String
+  avatar             String?
+  role               Role       @default(STUDENT_FREE)
+  jobTitle           String?
+  adminRole          String?
+  bio                String?
+  facebook           String?
+  instagram          String?
+  linkedin           String?
+  telegram           String?
+  youtube            String?
+  whatsapp           String?
+  website            String?
+  twitter            String?
+  github             String?
+  phone              String?
+  wilayaCode         Int?
+  wilayaName         String?
+  institutionId      String?
+  institutionName    String?
+  track              TrackType?
+  specialty          String?
+  academicYear       String?
+  studentCardId      String?    @unique
+  isVerified         Boolean    @default(false)
+  passwordHash       String?
+  // Bumped on logout and on every password change or reset: login tokens carry the version they were issued
+  // with, so older tokens stop working.
+  tokenVersion       Int        @default(0)
+  mustChangePassword Boolean    @default(false)
+  demoIndex          Int?       @unique
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
 
   teacherProfile       TeacherProfile?
   ambassadorProfile    AmbassadorProfile?
