@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { getUserFromRequest } from '@/lib/auth';
+import { normalizeCardId } from '@/lib/cardId';
+import { hasAnyPermission } from '@/lib/rbac';
 
 export async function GET(
   request: NextRequest,
@@ -16,14 +18,11 @@ export async function GET(
 
   const requester = await getUserFromRequest(request);
 
-  // Find user by ID or studentCardId (case-insensitive)
+  // Exact lookup only: by internal id, or by a well-formed card ID. Raw text is never used
+  // as a pattern, so "%" / "_" cannot enumerate users.
+  const cardId = normalizeCardId(id);
   const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { id },
-        { studentCardId: { equals: id, mode: 'insensitive' } },
-      ],
-    },
+    where: cardId ? { OR: [{ id }, { studentCardId: cardId }] } : { id },
     select: {
       id: true,
       name: true,
@@ -59,17 +58,14 @@ export async function GET(
     return NextResponse.json({ error: 'المستخدم غير موجود' }, { status: 404 });
   }
 
-  // Privacy Protection: Only the profile/card owner or staff can see private contact details (email, phone) for students
-  const isOwner = !!requester && (requester.id === user.id || (!!requester.studentCardId && requester.studentCardId === user.studentCardId));
-  const isAdmin = !!requester && (requester.role === 'ADMIN' || requester.role === 'OWNER');
-  const canViewSensitiveInfo = isOwner || isAdmin;
-
+  // Private contact details (email, phone) are visible only to the profile owner
+  // and to staff who manage users. Everyone else gets the public profile.
+  const isOwner = !!requester && requester.id === user.id;
+  const canViewSensitiveInfo = isOwner || hasAnyPermission(requester, 'users.manage');
   const isStudent = user.role === 'STUDENT_FREE' || user.role === 'STUDENT_PAID';
-  const sanitizedUser = {
-    ...user,
-    email: canViewSensitiveInfo || !isStudent ? user.email : undefined,
-    phone: canViewSensitiveInfo || !isStudent ? user.phone : undefined,
-  };
+
+  const { email, phone, ...publicFields } = user;
+  const sanitizedUser = canViewSensitiveInfo ? user : publicFields;
 
   let teacherProfile = null;
   let courses: any[] = [];
@@ -79,29 +75,23 @@ export async function GET(
   let enrollments: any[] = [];
 
   if (user.role === 'TEACHER') {
+    // Public fields only: never the CCP account, payout data or hourly rate.
     teacherProfile = await prisma.teacherProfile.findUnique({
       where: { userId: user.id },
+      select: { university: true, specialty: true, hoursTaught: true, studentsCount: true },
     });
 
     courses = await prisma.course.findMany({
-      where: {
-        OR: [
-          { teacherId: user.id },
-          { teacherName: user.name },
-        ],
-      },
+      where: { teacherId: user.id },
       orderBy: { createdAt: 'desc' },
     });
 
     sessions = await prisma.liveSession.findMany({
-      where: {
-        OR: [
-          { teacherId: user.id },
-          { teacherName: user.name },
-        ],
-      },
+      where: { teacherId: user.id },
       orderBy: { scheduledAt: 'desc' },
     });
+    // Join links are for registered students and staff only.
+    if (!canViewSensitiveInfo) sessions = sessions.map(({ meetUrl, ...rest }) => rest);
 
     bundles = await prisma.bundle.findMany({
       where: { isActive: true },
@@ -109,10 +99,21 @@ export async function GET(
       orderBy: { sortOrder: 'asc' },
     });
   } else if (user.role === 'AMBASSADOR') {
+    // Public fields only; commission and payout data stay private.
     ambassadorProfile = await prisma.ambassadorProfile.findUnique({
       where: { userId: user.id },
+      select: {
+        wilayaNameAr: true,
+        wilayaNameFr: true,
+        institutionNameAr: true,
+        institutionNameFr: true,
+        specialtyName: true,
+        promoCode: true,
+        ratingAverage: true,
+        ratingsCount: true,
+      },
     });
-  } else if (user.role === 'STUDENT_FREE' || user.role === 'STUDENT_PAID') {
+  } else if (isStudent && canViewSensitiveInfo) {
     enrollments = await prisma.enrollment.findMany({
       where: { studentId: user.id },
       take: 6,

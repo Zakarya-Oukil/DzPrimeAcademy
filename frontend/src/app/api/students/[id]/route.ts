@@ -16,11 +16,15 @@ export async function DELETE(
 
   const student = await prisma.user.findUnique({
     where: { id },
-    select: { id: true, role: true, name: true },
+    select: { id: true, role: true, adminRole: true, name: true },
   });
 
   if (!student) {
     return NextResponse.json({ error: 'الطالب غير موجود' }, { status: 404 });
+  }
+
+  if (student.role !== 'STUDENT_FREE' && student.role !== 'STUDENT_PAID') {
+    return NextResponse.json({ error: 'هذا الحساب ليس حساب طالب' }, { status: 400 });
   }
 
   const allowed = canManageUser(actor, student);

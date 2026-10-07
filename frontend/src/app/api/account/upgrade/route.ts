@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateCardId } from '@/lib/cardId';
 import { prisma } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
 
@@ -11,14 +12,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'هذا الحساب ليس طالباً مجانياً أو يملك عضوية نشطة مسبقاً' }, { status: 400 });
   }
 
-  const body = await request.json().catch(() => ({}));
-  const code = body.code ? String(body.code).trim().toUpperCase() : '';
-
-  // Valid promotional/activation voucher codes
-  const validVouchers = ['DZPRIME2026', 'GOLD2026', 'VIP-PRIME-2026', 'VIP2026'];
-  const isVoucherMatch = validVouchers.includes(code);
-
-  // Check if there is an approved VIP operation for this user
+  // VIP is granted only through an admin-approved payment operation (no codes).
   const approvedOp = await prisma.pendingOperation.findFirst({
     where: {
       userId: currentUser.id,
@@ -27,12 +21,10 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  if (!isVoucherMatch && !approvedOp) {
+  if (!approvedOp) {
     return NextResponse.json(
       {
-        error: code
-          ? 'كود التفعيل غير صالح. يرجى التأكد من الرمز أو إتمام الدفع والتفعيل عبر واتساب وتيليغرام.'
-          : 'يرجى إدخال كود تفعيل صالح أو التواصل مع الإدارة عبر واتساب أو تيليغرام لتفعيل العضوية الذهبية.',
+        error: 'لا توجد عملية ترقية معتمدة بعد. أتمم الدفع والتفعيل عبر واتساب أو تيليغرام وسيقوم فريق الإدارة بتفعيل العضوية الذهبية.',
       },
       { status: 400 }
     );
@@ -40,7 +32,7 @@ export async function POST(request: NextRequest) {
 
   const cardId =
     currentUser.studentCardId ||
-    `DZ-STU-${currentUser.wilayaCode || 16}-${Math.floor(1000 + Math.random() * 9000)}`;
+    generateCardId('STU', currentUser.wilayaCode || 16);
 
   const user = await prisma.user.update({
     where: { id: currentUser.id },

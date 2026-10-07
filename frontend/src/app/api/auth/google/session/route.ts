@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateCardId } from '@/lib/cardId';
 import { prisma } from '@/lib/db';
 import { setSessionCookie } from '@/lib/auth';
 
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
   let user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
   if (!user) {
-    const studentCardId = `DZ-STU-16-${Math.floor(1000 + Math.random() * 9000)}`;
+    const studentCardId = generateCardId('STU', 16);
     user = await prisma.user.create({
       data: {
         email: normalizedEmail,

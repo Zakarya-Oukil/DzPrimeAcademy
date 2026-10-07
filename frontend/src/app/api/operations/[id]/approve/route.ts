@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateCardId } from '@/lib/cardId';
 import { prisma } from '@/lib/db';
-import { requireAdmin } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authResult = await requireAdmin(request);
+  const authResult = await requirePermission(request, 'operations.manage');
   if ('error' in authResult) return authResult.error;
 
   const { id } = await params;
@@ -43,8 +44,9 @@ export async function POST(
   // 2. Golden VIP Upgrade Approval
   if (operation.type === 'VIP_MEMBERSHIP_UPGRADE' && operation.userId) {
     const user = await prisma.user.findUnique({ where: { id: operation.userId } });
-    if (user) {
-      const cardId = user.studentCardId || `DZ-STU-${user.wilayaCode || 16}-${Math.floor(1000 + Math.random() * 9000)}`;
+    // Only a free student can be upgraded; never rewrite a staff/teacher/ambassador role.
+    if (user && user.role === 'STUDENT_FREE') {
+      const cardId = user.studentCardId || generateCardId('STU', user.wilayaCode || 16);
       await prisma.user.update({
         where: { id: user.id },
         data: { role: 'STUDENT_PAID', isVerified: true, studentCardId: cardId },

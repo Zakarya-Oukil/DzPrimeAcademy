@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
-import { requireCommercialOrAdmin } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 
 export interface PromotionItem {
   id: string;
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Otherwise, return full promotions list for Admin / Commercial management
-  const authResult = await requireCommercialOrAdmin(request);
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
   // Retrieve ambassador promo codes for comprehensive overview
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const authResult = await requireCommercialOrAdmin(request);
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
   const body = await request.json();
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const authResult = await requireCommercialOrAdmin(request);
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
   const body = await request.json();
@@ -190,7 +190,7 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const authResult = await requireCommercialOrAdmin(request);
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
   const { searchParams } = new URL(request.url);

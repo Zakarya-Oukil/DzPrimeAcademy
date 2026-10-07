@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Crown, Check, Sparkles, X, ShieldCheck, Loader2, MessageCircle, Send } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { Crown, Check, Sparkles, X } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 import { useAuthModal } from '@/lib/authModalContext';
@@ -16,12 +15,8 @@ interface UpgradeModalProps {
 
 export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose }) => {
   const { t, locale } = useTranslation();
-  const { currentUser, upgradeToGolden } = useAuthStore();
+  const { currentUser } = useAuthStore();
   const { openAuth } = useAuthModal();
-  const [activationCode, setActivationCode] = useState('');
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [vipPrice, setVipPrice] = useState(10000);
 
@@ -41,38 +36,6 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose }) =
       return;
     }
     setContactModalOpen(true);
-  };
-
-  const handleActivateWithCode = async () => {
-    if (!currentUser) {
-      onClose();
-      openAuth('login');
-      return;
-    }
-    if (!activationCode.trim()) {
-      handleOpenContactPayment();
-      return;
-    }
-
-    setLoading(true);
-    setErrorMsg('');
-    const res = await upgradeToGolden(activationCode.trim());
-    setLoading(false);
-    if (res?.success) {
-      setIsSuccess(true);
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#D4AF37', '#F5D061', '#38BDF8', '#FFFFFF'],
-      });
-      setTimeout(() => {
-        setIsSuccess(false);
-        onClose();
-      }, 2000);
-    } else {
-      setErrorMsg(res?.error || (locale === 'ar' ? 'فشل تفعيل العضوية بهذا الكود' : 'Échec de la mise à niveau'));
-    }
   };
 
   if (!isOpen) return null;
@@ -151,34 +114,6 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose }) =
               <Sparkles className="w-4 h-4" />
               <span>{locale === 'ar' ? 'الدفع والتفعيل الفوري (واتساب / تيليغرام)' : 'Payer & Activer (WhatsApp / Telegram)'}</span>
             </button>
-
-            {/* Optional Activation Code */}
-            <div className="pt-2 border-t border-slate-200 dark:border-white/10 space-y-2">
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  placeholder={locale === 'ar' ? 'أو أدخل كود التفعيل إن وجد (DZPRIME2026)' : 'Ou code promo / activation'}
-                  value={activationCode}
-                  onChange={(e) => setActivationCode(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-300 dark:border-gold-500/40 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 font-mono text-center"
-                />
-                {activationCode && (
-                  <button
-                    onClick={handleActivateWithCode}
-                    disabled={loading}
-                    className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-white/10 hover:bg-gold-500 text-slate-900 dark:text-white hover:text-navy-950 font-bold text-xs"
-                  >
-                    {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : (locale === 'ar' ? 'تطبيق' : 'Valider')}
-                  </button>
-                )}
-              </div>
-
-              {errorMsg && (
-                <p className="text-xs text-rose-500 font-bold text-center font-arabic bg-rose-500/10 py-2 px-3 rounded-xl border border-rose-500/20">
-                  {errorMsg}
-                </p>
-              )}
-            </div>
           </div>
 
           <p className="text-[10px] text-slate-400 dark:text-gray-500 text-center mt-3 font-arabic">

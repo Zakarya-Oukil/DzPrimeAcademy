@@ -428,6 +428,7 @@ export default function PublicProfilePage({
                 </a>
               )}
 
+              {user.email && (
               <a
                 href={`mailto:${user.email}`}
                 className="px-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-gray-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-all"
@@ -435,6 +436,7 @@ export default function PublicProfilePage({
                 <Mail className="w-3.5 h-3.5 text-gold-400" />
                 <span>{user.email}</span>
               </a>
+              )}
             </div>
           </div>
         </div>

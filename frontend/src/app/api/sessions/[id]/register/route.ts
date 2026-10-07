@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: 'الحصة غير موجودة' }, { status: 404 });
   }
 
-  const isTeacherOfSession = user.role === 'TEACHER' && (session.teacherId === user.id || session.teacherName === user.name);
+  const isTeacherOfSession = user.role === 'TEACHER' && session.teacherId === user.id;
   const isStaff = user.role === 'ADMIN' || user.role === 'OWNER';
 
   if (isTeacherOfSession || isStaff) {

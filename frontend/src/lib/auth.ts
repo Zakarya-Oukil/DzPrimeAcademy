@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from './db';
+import { hasAnyPermission, isSuperAdmin, Permission } from './rbac';
 
 const TOKEN_COOKIE = 'dz_token';
 const SESSION_COOKIE = 'dz_session_token';
@@ -171,8 +172,6 @@ export async function clearFailedAttempts(identifier: string): Promise<void> {
   await prisma.loginAttempt.deleteMany({ where: { identifier } });
 }
 
-const ADMIN_ROLES = ['OWNER', 'ADMIN', 'MODERATOR'];
-
 export async function requireAuth(
   request: NextRequest
 ): Promise<{ user: NonNullable<SafeUser> } | { error: NextResponse }> {
@@ -195,30 +194,16 @@ export async function requireRole(
   return authResult;
 }
 
-export async function requireAdmin(request: NextRequest) {
-  return requireRole(request, ADMIN_ROLES);
-}
-
-export async function requireCommercialOrAdmin(
-  request: NextRequest
+export async function requirePermission(
+  request: NextRequest,
+  permission: Permission | Permission[]
 ): Promise<{ user: NonNullable<SafeUser> } | { error: NextResponse }> {
   const authResult = await requireAuth(request);
   if ('error' in authResult) return authResult;
-  const { user } = authResult;
-  const isSuper = user.role === 'OWNER' || user.adminRole === 'SUPER_ADMIN';
-  const isGenAdmin = user.adminRole === 'GENERAL_ADMIN';
-  const isCommercial = user.adminRole === 'COMMERCIAL';
-  const isGeneralAdmin = user.role === 'ADMIN' && (!user.adminRole || user.adminRole === 'COMMERCIAL' || user.adminRole === 'GENERAL_ADMIN');
-
-  if (isSuper || isGenAdmin || isCommercial || isGeneralAdmin) {
-    return { user };
+  if (!hasAnyPermission(authResult.user, permission)) {
+    return { error: NextResponse.json({ error: 'لا تملك صلاحية الوصول لهذا الإجراء' }, { status: 403 }) };
   }
-  return {
-    error: NextResponse.json(
-      { error: 'إدارة الدورات، العروض والترويج محصورة حصرياً بالإدارة والمصلحة التجارية (Chargée Commerciale / Admin Général)' },
-      { status: 403 }
-    ),
-  };
+  return authResult;
 }
 
 export async function requireOwnerOnly(
@@ -227,7 +212,7 @@ export async function requireOwnerOnly(
   const authResult = await requireAuth(request);
   if ('error' in authResult) return authResult;
   const { user } = authResult;
-  if (user.role === 'OWNER' || user.adminRole === 'SUPER_ADMIN') {
+  if (isSuperAdmin(user)) {
     return { user };
   }
   return {

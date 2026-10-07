@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { getUserFromRequest, requireAdmin } from '@/lib/auth';
+import { getUserFromRequest, requirePermission } from '@/lib/auth';
 import { OperationType, OperationChannel, OperationStatus } from '@prisma/client';
 
 // POST: Record an operation / contact action by a student or user
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
 
 // GET: Admin fetch all operations with filtering & summary stats
 export async function GET(request: NextRequest) {
-  const authResult = await requireAdmin(request);
+  const authResult = await requirePermission(request, 'operations.manage');
   if ('error' in authResult) return authResult.error;
 
   const { searchParams } = new URL(request.url);

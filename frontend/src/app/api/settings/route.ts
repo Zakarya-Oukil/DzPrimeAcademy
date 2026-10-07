@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
-import { requireAdmin } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 
 export async function GET() {
   await ensureSeeded();
@@ -14,7 +14,7 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
-  const authResult = await requireAdmin(request);
+  const authResult = await requirePermission(request, 'settings.manage');
   if ('error' in authResult) return authResult.error;
 
   const body = await request.json();

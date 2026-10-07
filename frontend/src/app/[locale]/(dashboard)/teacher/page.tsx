@@ -156,8 +156,8 @@ export default function TeacherStudioPage() {
     }
   }, [currentUser]);
 
-  const myCourses = courses.filter((c) => c.teacherName === currentUser?.name || c.teacherId === currentUser?.id);
-  const mySessions = sessions.filter((s) => s.teacherName === currentUser?.name || s.teacherId === currentUser?.id);
+  const myCourses = courses.filter((c) => c.teacherId === currentUser?.id);
+  const mySessions = sessions.filter((s) => s.teacherId === currentUser?.id);
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

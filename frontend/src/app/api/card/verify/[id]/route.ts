@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { ensureSeeded } from '@/lib/seed';
+import { normalizeCardId } from '@/lib/cardId';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  await ensureSeeded();
   const { id } = await params;
 
-  const matchedUser = await prisma.user.findFirst({
-    where: { studentCardId: { equals: id, mode: 'insensitive' } },
-  });
+  // Exact match on a well-formed card ID only. Raw text is never used as a pattern,
+  // so "%" or "_" cannot turn this into a wildcard search of the user base.
+  const cardId = normalizeCardId(id);
+  const matchedUser = cardId
+    ? await prisma.user.findUnique({ where: { studentCardId: cardId } })
+    : null;
 
   if (!matchedUser) {
     return NextResponse.json(

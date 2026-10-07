@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requireRole } from '@/lib/auth';
+import { hasAnyPermission } from '@/lib/rbac';
 
 export async function GET(request: NextRequest) {
   const authResult = await requireRole(request, ['TEACHER', 'OWNER', 'ADMIN', 'MODERATOR']);
@@ -8,7 +9,8 @@ export async function GET(request: NextRequest) {
   const { user } = authResult;
 
   const { searchParams } = new URL(request.url);
-  const teacherId = user.role === 'TEACHER' ? user.id : searchParams.get('teacherId') || user.id;
+  const requestedTeacher = searchParams.get('teacherId');
+  const teacherId = requestedTeacher && hasAnyPermission(user, 'users.manage') ? requestedTeacher : user.id;
 
   const sessions = await prisma.liveSession.findMany({
     where: { teacherId },

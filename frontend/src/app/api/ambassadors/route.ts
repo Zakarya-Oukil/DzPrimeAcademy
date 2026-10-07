@@ -1,16 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateCardId } from '@/lib/cardId';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
-import { hashPassword, requireAdmin } from '@/lib/auth';
+import { hashPassword, requirePermission } from '@/lib/auth';
+import { hasAnyPermission } from '@/lib/rbac';
 
-export async function GET() {
+// Staff only: the list carries commission and promo data. Ambassadors' public
+// face is /api/profile/[id].
+export async function GET(request: NextRequest) {
+  const authResult = await requirePermission(request, ['users.manage', 'catalog.manage']);
+  if ('error' in authResult) return authResult.error;
+  const isHR = hasAnyPermission(authResult.user, 'users.manage');
+
   await ensureSeeded();
   const ambassadors = await prisma.ambassadorProfile.findMany({
     orderBy: { createdAt: 'asc' },
   });
 
   const userIds = ambassadors.map((a) => a.userId);
-  const users = await prisma.user.findMany({ where: { id: { in: userIds } } });
+  const users = await prisma.user.findMany({
+    where: { id: { in: userIds } },
+    select: {
+      id: true,
+      name: true,
+      avatar: true,
+      role: true,
+      email: isHR,
+      phone: isHR,
+      wilayaCode: true,
+      wilayaName: true,
+      institutionName: true,
+      specialty: true,
+      studentCardId: true,
+      isVerified: true,
+      createdAt: true,
+    },
+  });
   const usersMap = new Map(users.map((u) => [u.id, u]));
 
   const ambassadorIds = ambassadors.map((a) => a.id);
@@ -20,11 +45,15 @@ export async function GET() {
     ratingsMap.set(r.ambassadorId, [...(ratingsMap.get(r.ambassadorId) || []), r]);
   }
 
-  const result = ambassadors.map((a) => ({
-    ...a,
-    user: usersMap.get(a.userId) ? { ...usersMap.get(a.userId), passwordHash: undefined } : null,
-    ratings: ratingsMap.get(a.id) || [],
-  }));
+  const result = ambassadors.map((a) => {
+    const { commissionDzd, referralsCount, phone, ...pub } = a;
+    return {
+      ...pub,
+      ...(isHR ? { commissionDzd, referralsCount, phone } : {}),
+      user: usersMap.get(a.userId) ?? null,
+      ratings: ratingsMap.get(a.id) || [],
+    };
+  });
 
   return NextResponse.json(result);
 }
@@ -34,7 +63,7 @@ function generateTempPassword(): string {
 }
 
 export async function POST(request: NextRequest) {
-  const authResult = await requireAdmin(request);
+  const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
   await ensureSeeded();
@@ -86,7 +115,7 @@ export async function POST(request: NextRequest) {
         wilayaName: wilayaNameAr || wilayaNameFr || 'Alger',
         institutionName: institutionNameAr || institutionNameFr || 'Université',
         specialty: specialtyName || null,
-        studentCardId: `DZ-AMB-${parsedWilayaCode}-${Math.floor(1000 + Math.random() * 9000)}`,
+        studentCardId: generateCardId('AMB', parsedWilayaCode),
         isVerified: true,
       },
     });
@@ -123,7 +152,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const authResult = await requireAdmin(request);
+  const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
   try {
@@ -133,7 +162,7 @@ export async function PUT(request: NextRequest) {
     const profile = await prisma.ambassadorProfile.update({
       where: { id },
       data: {
-        isVerified: isVerified !== undefined ? isVerified : undefined,
+        isVerified: isVerified !== undefined ? Boolean(isVerified) : undefined,
         upcomingSessionsCount: upcomingSessionsCount !== undefined ? Number(upcomingSessionsCount) : undefined,
         telegramHandle: telegramHandle !== undefined ? telegramHandle : undefined,
         bioAr: bioAr !== undefined ? bioAr : undefined,

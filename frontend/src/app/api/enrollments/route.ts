@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { requireRole } from '@/lib/auth';
+import { hasAnyPermission } from '@/lib/rbac';
 
 const STUDENT_ROLES = ['STUDENT_FREE', 'STUDENT_PAID'];
 
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
   await ensureSeeded();
   const { searchParams } = new URL(request.url);
   const requestedId = searchParams.get('studentId');
-  const studentId = STUDENT_ROLES.includes(user.role) ? user.id : requestedId || user.id;
+  const studentId = requestedId && hasAnyPermission(user, 'users.manage') ? requestedId : user.id;
 
   const enrollments = await prisma.enrollment.findMany({
     where: { studentId },

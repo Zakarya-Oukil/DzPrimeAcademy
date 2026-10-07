@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateCardId } from '@/lib/cardId';
 import crypto from 'crypto';
 import { prisma } from '@/lib/db';
 import { hashPassword, signToken, setAuthCookie } from '@/lib/auth';
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
   }
 
   const passwordHash = await hashPassword(password);
-  const studentCardId = `DZ-STU-${wilayaCode || 16}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const studentCardId = generateCardId('STU', wilayaCode || 16);
 
   const user = await prisma.user.create({
     data: {

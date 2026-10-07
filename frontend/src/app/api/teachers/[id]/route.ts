@@ -1,37 +1,57 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { requireAdmin } from '@/lib/auth';
-import { canManageUser } from '@/lib/rbac';
+import { requirePermission } from '@/lib/auth';
+import { canManageUser, hasAnyPermission } from '@/lib/rbac';
 
+// Pay-related fields (CCP, rate) need HR or finance; the rest is HR only.
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await requireAdmin(request);
+  const authResult = await requirePermission(request, ['users.manage', 'finance.manage']);
   if ('error' in authResult) return authResult.error;
 
   const { id } = await params;
-  const body = await request.json();
+  const body = await request.json().catch(() => null);
+  if (!body || typeof body !== 'object') {
+    return NextResponse.json({ error: 'بيانات غير صالحة' }, { status: 400 });
+  }
+
+  const isHR = hasAnyPermission(authResult.user, 'users.manage');
+  const optionalInt = (v: unknown) => (v === undefined ? undefined : Number.isInteger(Number(v)) && Number(v) >= 0 ? Number(v) : null);
+  const hourlyRateDzd = optionalInt(body.hourlyRateDzd);
+  const hoursTaught = optionalInt(body.hoursTaught);
+  const studentsCount = optionalInt(body.studentsCount);
+  if (hourlyRateDzd === null || hoursTaught === null || studentsCount === null) {
+    return NextResponse.json({ error: 'قيمة رقمية غير صالحة' }, { status: 400 });
+  }
+
+  const existing = await prisma.teacherProfile.findUnique({ where: { id } });
+  if (!existing) {
+    return NextResponse.json({ error: 'الأستاذ غير موجود' }, { status: 404 });
+  }
 
   const profile = await prisma.teacherProfile.update({
     where: { id },
     data: {
-      university: body.university,
-      specialty: body.specialty,
-      hourlyRateDzd: body.hourlyRateDzd,
-      hoursTaught: body.hoursTaught,
-      studentsCount: body.studentsCount,
+      // HR-only fields
+      university: isHR ? body.university : undefined,
+      specialty: isHR ? body.specialty : undefined,
+      hoursTaught: isHR ? hoursTaught : undefined,
+      studentsCount: isHR ? studentsCount : undefined,
+      // pay fields: HR or finance
+      hourlyRateDzd,
       ccpAccount: body.ccpAccount,
       ccpCle: body.ccpCle,
     },
   });
 
-  if (body.isVerified !== undefined) {
-    await prisma.user.update({ where: { id: profile.userId }, data: { isVerified: body.isVerified } });
+  if (isHR && body.isVerified !== undefined) {
+    await prisma.user.update({ where: { id: profile.userId }, data: { isVerified: Boolean(body.isVerified) } });
   }
 
   return NextResponse.json(profile);
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await requireAdmin(request);
+  const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
   const actor = authResult.user;

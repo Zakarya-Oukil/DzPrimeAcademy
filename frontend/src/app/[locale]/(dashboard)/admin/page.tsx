@@ -20,6 +20,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
+import { hasAnyPermission, Permission } from '@/lib/rbac';
 import { FinancialOverviewTab } from '@/components/admin/FinancialOverviewTab';
 import { FacultyPayrollTab } from '@/components/admin/FacultyPayrollTab';
 import { StudentsTab } from '@/components/admin/StudentsTab';
@@ -57,7 +58,9 @@ export default function AdminCommandCenterPage() {
   const [pendingOpsCount, setPendingOpsCount] = useState(0);
 
   // Poll for pending operations count every 15s
+  const canSeeOperations = hasAnyPermission(currentUser, 'operations.manage');
   useEffect(() => {
+    if (!canSeeOperations) return;
     const fetchCount = () => {
       fetch('/api/operations/count')
         .then((r) => r.json())
@@ -71,7 +74,7 @@ export default function AdminCommandCenterPage() {
     fetchCount();
     const timer = setInterval(fetchCount, 15000);
     return () => clearInterval(timer);
-  }, []);
+  }, [canSeeOperations]);
 
   useEffect(() => {
     const applyHash = () => {
@@ -101,27 +104,33 @@ export default function AdminCommandCenterPage() {
     return () => window.removeEventListener('hashchange', applyHash);
   }, []);
 
-  const tabs: { id: AdminTab; icon: any; labelAr: string; labelFr: string; badge?: string }[] = [
+  const allTabs: { id: AdminTab; icon: any; labelAr: string; labelFr: string; badge?: string; perm?: Permission | Permission[] }[] = [
     {
       id: 'operations',
       icon: ClipboardCheck,
       labelAr: 'طلبات التفعيل والمدفوعات',
       labelFr: 'Opérations & Paiements',
       badge: pendingOpsCount > 0 ? String(pendingOpsCount) : undefined,
+      perm: 'operations.manage',
     },
-    { id: 'financial', icon: Landmark, labelAr: 'المركز المالي', labelFr: 'Centre Financier' },
-    { id: 'staff', icon: Users, labelAr: 'فريق الإدارة والتوظيف (HR)', labelFr: 'Personnel & RH' },
-    { id: 'teachers', icon: GraduationCap, labelAr: 'الأساتذة والمستحقات', labelFr: 'Enseignants & Paie' },
-    { id: 'students', icon: Users, labelAr: 'الطلبة والبطاقات', labelFr: 'Étudiants & Cartes' },
-    { id: 'sessions', icon: Video, labelAr: 'الحصص الوطنية المباشرة', labelFr: 'Sessions Live Nationales' },
-    { id: 'ambassadors', icon: Award, labelAr: 'شبكة 58 ولاية', labelFr: 'Réseau Ambassadeurs' },
-    { id: 'courses', icon: Layers, labelAr: 'الدورات والمقررات (Dawarat)', labelFr: 'Dawarat & Modules' },
-    { id: 'bundles', icon: Package, labelAr: 'العروض والتخفيضات (Offers & Promos)', labelFr: 'Offres & Promos' },
+    { id: 'financial', icon: Landmark, labelAr: 'المركز المالي', labelFr: 'Centre Financier', perm: 'finance.manage' },
+    { id: 'staff', icon: Users, labelAr: 'فريق الإدارة والتوظيف (HR)', labelFr: 'Personnel & RH', perm: 'staff.manage' },
+    { id: 'teachers', icon: GraduationCap, labelAr: 'الأساتذة والمستحقات', labelFr: 'Enseignants & Paie', perm: ['users.manage', 'finance.manage'] },
+    { id: 'students', icon: Users, labelAr: 'الطلبة والبطاقات', labelFr: 'Étudiants & Cartes', perm: 'users.manage' },
+    { id: 'sessions', icon: Video, labelAr: 'الحصص الوطنية المباشرة', labelFr: 'Sessions Live Nationales', perm: 'catalog.manage' },
+    { id: 'ambassadors', icon: Award, labelAr: 'شبكة 58 ولاية', labelFr: 'Réseau Ambassadeurs', perm: ['users.manage', 'catalog.manage'] },
+    { id: 'courses', icon: Layers, labelAr: 'الدورات والمقررات (Dawarat)', labelFr: 'Dawarat & Modules', perm: 'catalog.manage' },
+    { id: 'bundles', icon: Package, labelAr: 'العروض والتخفيضات (Offers & Promos)', labelFr: 'Offres & Promos', perm: 'catalog.manage' },
     { id: 'card', icon: CreditCard, labelAr: 'بطاقة الإدارة', labelFr: 'Carte Administration' },
-    { id: 'landing', icon: Globe, labelAr: 'إدارة الواجهة الرئيسية (Landing Page)', labelFr: 'Gestion Landing Page' },
-    { id: 'footer', icon: Share2, labelAr: 'إدارة تذييل الموقع (Footer)', labelFr: 'Gestion Pied de Page' },
-    { id: 'settings', icon: Sliders, labelAr: 'إعدادات النظام', labelFr: 'Paramètres Système' },
+    { id: 'landing', icon: Globe, labelAr: 'إدارة الواجهة الرئيسية (Landing Page)', labelFr: 'Gestion Landing Page', perm: 'settings.manage' },
+    { id: 'footer', icon: Share2, labelAr: 'إدارة تذييل الموقع (Footer)', labelFr: 'Gestion Pied de Page', perm: 'settings.manage' },
+    { id: 'settings', icon: Sliders, labelAr: 'إعدادات النظام', labelFr: 'Paramètres Système', perm: 'settings.manage' },
   ];
+
+  // Show only the tabs this staff role may use (the API enforces the same rules).
+  const tabs = allTabs.filter((t) => !t.perm || hasAnyPermission(currentUser, t.perm));
+  // A tab hidden for this role (stale #hash, default tab) falls back to the first allowed one.
+  const shownTab: AdminTab = tabs.some((t) => t.id === activeTab) ? activeTab : (tabs[0]?.id ?? 'card');
 
   const handleTabClick = (id: AdminTab) => {
     setActiveTab(id);
@@ -184,7 +193,7 @@ export default function AdminCommandCenterPage() {
           </div>
 
           <div className="flex items-center gap-3 self-start sm:self-auto">
-            {/* Notification Bell Button */}
+            {canSeeOperations && (
             <button
               onClick={() => handleTabClick('operations')}
               data-testid="admin-notif-bell-btn"
@@ -198,6 +207,7 @@ export default function AdminCommandCenterPage() {
                 </span>
               )}
             </button>
+            )}
 
             <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-white/[0.04] border border-white/10 text-xs text-gray-300 font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -213,7 +223,7 @@ export default function AdminCommandCenterPage() {
         >
           {tabs.map((tItem) => {
             const Icon = tItem.icon;
-            const active = activeTab === tItem.id;
+            const active = shownTab === tItem.id;
             return (
               <button
                 key={tItem.id}
@@ -253,25 +263,25 @@ export default function AdminCommandCenterPage() {
         {/* Dynamic Tab Body */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeTab}
+            key={shownTab}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.18 }}
           >
-            {activeTab === 'operations' && <AdminOperationsTab locale={locale} />}
-            {activeTab === 'financial' && <FinancialOverviewTab locale={locale} payrollLiability={payrollLiability} />}
-            {activeTab === 'staff' && <StaffTab locale={locale} />}
-            {activeTab === 'teachers' && <FacultyPayrollTab locale={locale} onLiabilityChange={setPayrollLiability} />}
-            {activeTab === 'students' && <StudentsTab locale={locale} />}
-            {activeTab === 'sessions' && <SessionsTab locale={locale} />}
-            {activeTab === 'ambassadors' && <AmbassadorsTab locale={locale} />}
-            {activeTab === 'courses' && <CoursesTab locale={locale} />}
-            {activeTab === 'bundles' && <BundlesTab locale={locale} />}
-            {activeTab === 'card' && <AdminCardTab locale={locale} />}
-            {activeTab === 'landing' && <LandingManagementTab locale={locale} />}
-            {activeTab === 'footer' && <FooterManagementTab locale={locale} />}
-            {activeTab === 'settings' && <AdminSettingsTab locale={locale} />}
+            {shownTab === 'operations' && <AdminOperationsTab locale={locale} />}
+            {shownTab === 'financial' && <FinancialOverviewTab locale={locale} payrollLiability={payrollLiability} />}
+            {shownTab === 'staff' && <StaffTab locale={locale} />}
+            {shownTab === 'teachers' && <FacultyPayrollTab locale={locale} onLiabilityChange={setPayrollLiability} />}
+            {shownTab === 'students' && <StudentsTab locale={locale} />}
+            {shownTab === 'sessions' && <SessionsTab locale={locale} />}
+            {shownTab === 'ambassadors' && <AmbassadorsTab locale={locale} />}
+            {shownTab === 'courses' && <CoursesTab locale={locale} />}
+            {shownTab === 'bundles' && <BundlesTab locale={locale} />}
+            {shownTab === 'card' && <AdminCardTab locale={locale} />}
+            {shownTab === 'landing' && <LandingManagementTab locale={locale} />}
+            {shownTab === 'footer' && <FooterManagementTab locale={locale} />}
+            {shownTab === 'settings' && <AdminSettingsTab locale={locale} />}
           </motion.div>
         </AnimatePresence>
       </div>

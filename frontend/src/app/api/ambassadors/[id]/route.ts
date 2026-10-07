@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { requireAdmin } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 import { canManageUser } from '@/lib/rbac';
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await requireAdmin(request);
+  const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
   const actor = authResult.user;
