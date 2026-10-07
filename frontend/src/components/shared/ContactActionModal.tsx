@@ -35,6 +35,7 @@ export interface ContactModalOperation {
   title?: string;
   details?: string;
   amountDzd?: number;
+  promoCode?: string;
   targetId?: string;
   user?: {
     name?: string;
@@ -141,7 +142,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
           targetId: operation.targetId,
           title: operation.title,
           details: operation.details,
-          amountDzd: operation.amountDzd || 0,
+          promoCode: operation.promoCode,
           userName: operation.user?.name,
           userEmail: operation.user?.email,
           userPhone: operation.user?.phone,

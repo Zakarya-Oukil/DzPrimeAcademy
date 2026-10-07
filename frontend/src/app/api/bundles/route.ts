@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   });
 
   if (includeInactive) {
-    const counts = await prisma.bundlePurchase.groupBy({ by: ['bundleId'], _count: { id: true } });
+    const counts = await prisma.bundlePurchase.groupBy({ by: ['bundleId'], where: { paymentStatus: 'APPROVED_BY_ADMIN' }, _count: { id: true } });
     const countMap = new Map(counts.map((c) => [c.bundleId, c._count.id]));
     return NextResponse.json(bundles.map((b) => ({ ...b, purchasesCount: countMap.get(b.id) || 0 })));
   }
@@ -27,7 +27,10 @@ export async function POST(request: NextRequest) {
   if ('error' in authResult) return authResult.error;
 
   await ensureSeeded();
-  const body = await request.json();
+  const body = (await request.json().catch(() => null)) ?? {};
+  if (!body.titleAr || ![body.originalPriceDzd, body.currentPriceDzd].every((n) => Number.isInteger(n) && n >= 0)) {
+    return NextResponse.json({ error: 'العنوان والأسعار (أعداد صحيحة غير سالبة) مطلوبة' }, { status: 400 });
+  }
 
   const bundle = await prisma.bundle.create({
     data: {

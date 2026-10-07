@@ -14,9 +14,15 @@ export async function POST(request: NextRequest) {
   if ('error' in authResult) return authResult.error;
 
   await ensureSeeded();
-  const body = await request.json();
+  const body = (await request.json().catch(() => null)) ?? {};
+  if (!body.titleAr || (body.priceDzd !== undefined && !(Number.isInteger(body.priceDzd) && body.priceDzd >= 0))) {
+    return NextResponse.json({ error: 'العنوان مطلوب والسعر عدد صحيح غير سالب' }, { status: 400 });
+  }
 
   let teacherId: string | null = body.teacherId || null;
+  if (teacherId && !(await prisma.user.findFirst({ where: { id: teacherId, role: 'TEACHER' }, select: { id: true } }))) {
+    return NextResponse.json({ error: 'الأستاذ غير موجود' }, { status: 400 });
+  }
   const teacherName = body.teacherName || 'أستاذ معتمد DZ Prime';
   if (!teacherId && teacherName) {
     const matchedTeacher = await prisma.user.findFirst({ where: { name: teacherName, role: 'TEACHER' } });

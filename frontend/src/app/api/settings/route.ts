@@ -17,7 +17,13 @@ export async function PUT(request: NextRequest) {
   const authResult = await requirePermission(request, 'settings.manage');
   if ('error' in authResult) return authResult.error;
 
-  const body = await request.json();
+  const body = (await request.json().catch(() => null)) ?? {};
+  const rate = body.ambassadorCommissionRate;
+  const vip = body.vipPriceDzd;
+  if ((rate !== undefined && !(Number.isInteger(Number(rate)) && Number(rate) >= 0 && Number(rate) <= 100)) ||
+      (vip !== undefined && !(Number.isInteger(Number(vip)) && Number(vip) >= 0))) {
+    return NextResponse.json({ error: 'نسبة العمولة بين 0 و100 وسعر VIP عدد صحيح غير سالب' }, { status: 400 });
+  }
 
   const settings = await prisma.platformSettings.upsert({
     where: { id: 'singleton' },

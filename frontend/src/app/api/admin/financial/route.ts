@@ -2,175 +2,139 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requirePermission } from '@/lib/auth';
 
+// Every figure here is computed from rows in the database. Nothing is estimated, floored or seeded.
+// Revenue = approved operations only: a bundle purchase or VIP subscription row is a consequence of an
+// approved operation, so adding it again would count the same money twice.
+
+const date = (d: Date) => d.toLocaleDateString('fr-DZ', { day: 'numeric', month: 'short', year: 'numeric' });
+
 export async function GET(request: NextRequest) {
   const authResult = await requirePermission(request, 'finance.manage');
   if ('error' in authResult) return authResult.error;
 
   try {
-    // 1. Fetch live financial records
+    const now = new Date();
+    // UTC throughout: Postgres buckets the stored UTC timestamps, so the JS boundaries must be UTC too.
+    const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const seriesStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1));
+
     const [
-      approvedOps,
-      pendingOps,
-      bundlePurchases,
-      activeSubscriptions,
-      teachers,
-      pendingPayouts,
-      settings,
+      revenueAgg,
+      monthAgg,
+      byType,
+      pendingAgg,
+      approvedCount,
+      paidOutAgg,
+      pendingPayoutAgg,
+      unpaidShares,
+      commissionAgg,
+      monthCommissionAgg,
+      incomeRows,
+      payoutRows,
+      recentApproved,
+      recentPending,
+      recentPayouts,
     ] = await Promise.all([
-      prisma.pendingOperation.findMany({
-        where: { status: 'APPROVED', amountDzd: { gt: 0 } },
-        orderBy: { updatedAt: 'desc' },
-        take: 50,
-      }),
-      prisma.pendingOperation.findMany({
-        where: { status: 'PENDING', amountDzd: { gt: 0 } },
-        orderBy: { createdAt: 'desc' },
-        take: 20,
-      }),
-      prisma.bundlePurchase.findMany({
-        orderBy: { createdAt: 'desc' },
-        take: 30,
-      }),
-      prisma.subscription.findMany({
-        where: { status: 'ACTIVE' },
-      }),
-      prisma.teacherProfile.findMany({
-        select: { hourlyRateDzd: true, hoursTaught: true, monthlyShareDzd: true },
-      }),
-      prisma.facultyPayout.findMany({
-        where: { status: 'PENDING' },
-      }),
-      prisma.platformSettings.findUnique({
-        where: { id: 'singleton' },
-      }),
+      prisma.pendingOperation.aggregate({ where: { status: 'APPROVED', amountDzd: { gt: 0 } }, _sum: { amountDzd: true } }),
+      prisma.pendingOperation.aggregate({ where: { status: 'APPROVED', amountDzd: { gt: 0 }, approvedAt: { gte: monthStart } }, _sum: { amountDzd: true } }),
+      prisma.pendingOperation.groupBy({ by: ['type'], where: { status: 'APPROVED', amountDzd: { gt: 0 } }, _sum: { amountDzd: true } }),
+      prisma.pendingOperation.aggregate({ where: { status: 'PENDING', amountDzd: { gt: 0 } }, _sum: { amountDzd: true }, _count: true }),
+      prisma.pendingOperation.count({ where: { status: 'APPROVED', amountDzd: { gt: 0 } } }),
+      prisma.facultyPayout.aggregate({ where: { status: 'PAID' }, _sum: { amountDzd: true } }),
+      prisma.facultyPayout.aggregate({ where: { status: 'PENDING' }, _sum: { amountDzd: true } }),
+      prisma.teacherProfile.aggregate({ where: { payoutStatus: { not: 'PAID' } }, _sum: { monthlyShareDzd: true } }),
+      prisma.commissionEntry.aggregate({ _sum: { amountDzd: true } }),
+      prisma.commissionEntry.aggregate({ where: { createdAt: { gte: monthStart } }, _sum: { amountDzd: true } }),
+      prisma.$queryRaw<{ m: string; v: bigint }[]>`
+        SELECT to_char(date_trunc('month', "approvedAt"), 'YYYY-MM') AS m, COALESCE(SUM("amountDzd"), 0) AS v
+        FROM "PendingOperation"
+        WHERE "status" = 'APPROVED' AND "amountDzd" > 0 AND "approvedAt" >= ${seriesStart}
+        GROUP BY 1`,
+      prisma.$queryRaw<{ m: string; v: bigint }[]>`
+        SELECT to_char(date_trunc('month', "approvedAt"), 'YYYY-MM') AS m, COALESCE(SUM("amountDzd"), 0) AS v
+        FROM "FacultyPayout"
+        WHERE "status" = 'PAID' AND "approvedAt" >= ${seriesStart}
+        GROUP BY 1`,
+      prisma.pendingOperation.findMany({ where: { status: 'APPROVED', amountDzd: { gt: 0 } }, orderBy: { approvedAt: { sort: 'desc', nulls: 'last' } }, take: 25 }),
+      prisma.pendingOperation.findMany({ where: { status: 'PENDING', amountDzd: { gt: 0 } }, orderBy: { createdAt: 'desc' }, take: 10 }),
+      prisma.facultyPayout.findMany({ where: { status: 'PAID' }, orderBy: { approvedAt: { sort: 'desc', nulls: 'last' } }, take: 10, include: { teacherProfile: { include: { user: { select: { name: true } } } } } }),
     ]);
 
-    const vipPrice = settings?.vipPriceDzd || 10000;
+    const totalRevenue = revenueAgg._sum.amountDzd || 0;
+    const totalPaidOut = paidOutAgg._sum.amountDzd || 0;
+    const monthlyIncome = monthAgg._sum.amountDzd || 0;
+    const payrollLiability = (pendingPayoutAgg._sum.amountDzd || 0) + (unpaidShares._sum.monthlyShareDzd || 0);
 
-    // 2. Sum real revenue numbers
-    const approvedOpsTotal = approvedOps.reduce((sum, op) => sum + (op.amountDzd || 0), 0);
-    const bundlePurchasesTotal = bundlePurchases.reduce((sum, b) => sum + (b.amountDzd || 0), 0);
-    const subscriptionsTotal = activeSubscriptions.length * vipPrice; // VIP card subscription value
+    const incomeByMonth = new Map(incomeRows.map((r) => [r.m, Number(r.v)]));
+    const payoutByMonth = new Map(payoutRows.map((r) => [r.m, Number(r.v)]));
+    const monthly = Array.from({ length: 6 }, (_, i) => {
+      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5 + i, 1));
+      const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+      return { month: key, income: incomeByMonth.get(key) || 0, payouts: payoutByMonth.get(key) || 0 };
+    });
 
-    // Base capital + verified transactions
-    const realVerifiedRevenue = approvedOpsTotal + bundlePurchasesTotal + subscriptionsTotal;
-    const baseCapital = 8450000;
-    const totalBalance = baseCapital + realVerifiedRevenue;
-    const monthlyIncome = Math.max(5420000, realVerifiedRevenue);
-
-    // Calculate teacher payroll liability
-    const pendingPayoutsTotal = pendingPayouts.reduce((sum, p) => sum + (p.amountDzd || 0), 0);
-    const teacherSharesTotal = teachers.reduce((sum, t) => sum + (t.monthlyShareDzd || 0), 0);
-    const payrollLiability = Math.max(1791000, pendingPayoutsTotal + teacherSharesTotal);
-    const netMargin = Math.max(0, monthlyIncome - payrollLiability);
-
-    // 3. Construct Live Transaction Stream
-    const liveTransactions: any[] = [];
-
-    // Add approved operations
-    for (const op of approvedOps) {
-      liveTransactions.push({
-        id: `op-${op.id}`,
-        nameAr: `${op.title} (${op.userName})`,
-        nameFr: `${op.title} (${op.userName})`,
-        category: op.type,
-        method: op.channel ? `${op.channel} • BaridiMob/CCP` : 'BaridiMob / Algérie Poste',
-        amount: op.amountDzd,
-        date: new Date(op.updatedAt || op.createdAt).toLocaleDateString('fr-DZ', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        }),
-        timestamp: new Date(op.updatedAt || op.createdAt).getTime(),
-        status: 'COMPLETE',
-      });
-    }
-
-    // Add pending operations (waiting verification)
-    for (const op of pendingOps) {
-      liveTransactions.push({
+    const transactions = [
+      ...recentApproved.map((op) => {
+        const when = op.approvedAt || op.updatedAt;
+        return {
+          id: `op-${op.id}`,
+          nameAr: `${op.title} (${op.userName})`,
+          nameFr: `${op.title} (${op.userName})`,
+          category: op.type,
+          method: op.channel || '',
+          amount: op.amountDzd,
+          date: date(when),
+          timestamp: when.getTime(),
+          status: 'COMPLETE',
+        };
+      }),
+      ...recentPending.map((op) => ({
         id: `pend-${op.id}`,
         nameAr: `طلب معلق: ${op.title} (${op.userName})`,
         nameFr: `En attente: ${op.title} (${op.userName})`,
         category: op.type,
-        method: op.channel ? `${op.channel}` : 'BaridiMob / CCP',
+        method: op.channel || '',
         amount: op.amountDzd,
-        date: new Date(op.createdAt).toLocaleDateString('fr-DZ', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        }),
-        timestamp: new Date(op.createdAt).getTime(),
+        date: date(op.createdAt),
+        timestamp: op.createdAt.getTime(),
         status: 'PENDING',
-      });
-    }
-
-    // Add bundle purchases
-    for (const bp of bundlePurchases) {
-      liveTransactions.push({
-        id: `bp-${bp.id}`,
-        nameAr: `شراء باقة: ${bp.bundleTitleAr} (${bp.userName})`,
-        nameFr: `Pack: ${bp.bundleTitleAr} (${bp.userName})`,
-        category: 'BUNDLE_SUB',
-        method: 'BaridiMob / Edahabia',
-        amount: bp.amountDzd,
-        date: new Date(bp.createdAt).toLocaleDateString('fr-DZ', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        }),
-        timestamp: new Date(bp.createdAt).getTime(),
-        status: 'COMPLETE',
-      });
-    }
-
-    // Baseline historical transactions if empty
-    if (liveTransactions.length < 5) {
-      liveTransactions.push(
-        {
-          id: 'base-tx-1',
-          nameAr: 'صرف مستحقات أستاذ: د. يوسف منصوري',
-          nameFr: 'Virement Enseignant: Dr. Youssef Mansouri',
+      })),
+      ...recentPayouts.map((p) => {
+        const when = p.approvedAt || p.createdAt;
+        const name = p.teacherProfile.user.name;
+        return {
+          id: `payout-${p.id}`,
+          nameAr: `صرف مستحقات أستاذ: ${name}`,
+          nameFr: `Virement enseignant: ${name}`,
           category: 'TEACHER_PAYOUT',
-          method: 'CCP / Algérie Poste',
-          amount: -120000,
-          date: '28 Fév 2026',
-          timestamp: 1772236800000,
+          method: 'CCP',
+          amount: -p.amountDzd,
+          date: date(when),
+          timestamp: when.getTime(),
           status: 'COMPLETE',
-        },
-        {
-          id: 'base-tx-2',
-          nameAr: 'تفعيل بطاقة جامعية رقمية (VIP Gold)',
-          nameFr: 'Activation Carte Digitale (VIP Gold)',
-          category: 'CARD_PURCHASE',
-          method: 'Edahabia / CIB',
-          amount: 3500,
-          date: '28 Fév 2026',
-          timestamp: 1772236800000,
-          status: 'COMPLETE',
-        }
-      );
-    }
-
-    // Sort transactions by timestamp descending
-    liveTransactions.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        };
+      }),
+    ]
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 25);
 
     return NextResponse.json({
       success: true,
-      totalBalance,
+      totalBalance: totalRevenue - totalPaidOut,
       monthlyIncome,
-      realVerifiedRevenue,
+      realVerifiedRevenue: totalRevenue,
+      revenueByType: Object.fromEntries(byType.map((r) => [r.type, r._sum.amountDzd || 0])),
       payrollLiability,
-      netMargin,
-      approvedOpsCount: approvedOps.length,
-      pendingOpsCount: pendingOps.length,
-      transactions: liveTransactions.slice(0, 25),
+      ambassadorCommissions: commissionAgg._sum.amountDzd || 0,
+      netMargin: monthlyIncome - payrollLiability - (monthCommissionAgg._sum.amountDzd || 0),
+      pendingAmountDzd: pendingAgg._sum.amountDzd || 0,
+      approvedOpsCount: approvedCount,
+      pendingOpsCount: pendingAgg._count,
+      monthly,
+      transactions,
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error('Error fetching financial overview:', err);
-    return NextResponse.json(
-      { error: err?.message || 'فشل تحميل بيانات المركز المالي' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'فشل تحميل بيانات المركز المالي' }, { status: 500 });
   }
 }

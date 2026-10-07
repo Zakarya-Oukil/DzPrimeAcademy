@@ -8,7 +8,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
   const { id } = await params;
 
-  const body = await request.json();
+  const body = (await request.json().catch(() => null)) ?? {};
+  if (body.priceDzd !== undefined && !(Number.isInteger(body.priceDzd) && body.priceDzd >= 0)) {
+    return NextResponse.json({ error: 'السعر يجب أن يكون عدداً صحيحاً غير سالب' }, { status: 400 });
+  }
   const course = await prisma.course.update({
     where: { id },
     data: {

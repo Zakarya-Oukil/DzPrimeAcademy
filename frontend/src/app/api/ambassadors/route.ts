@@ -157,7 +157,20 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { id, isVerified, upcomingSessionsCount, telegramHandle, bioAr, promoCode, specialtyName } = body;
+    const { id, isVerified, upcomingSessionsCount, telegramHandle, bioAr, specialtyName } = body;
+
+    // Same normal form resolvePromo looks up, and unique across ambassador codes and platform campaigns.
+    let promoCode: string | undefined = undefined;
+    if (body.promoCode !== undefined) {
+      promoCode = String(body.promoCode).trim().toUpperCase();
+      if (!/^[A-Z0-9_-]{3,30}$/.test(promoCode)) {
+        return NextResponse.json({ error: 'رمز الإحالة: 3 إلى 30 حرفاً (A-Z، 0-9، - أو _)' }, { status: 400 });
+      }
+      const clash =
+        (await prisma.promotion.findUnique({ where: { code: promoCode } })) ||
+        (await prisma.ambassadorProfile.findFirst({ where: { promoCode, NOT: { id } } }));
+      if (clash) return NextResponse.json({ error: 'هذا الرمز مستخدم مسبقاً' }, { status: 400 });
+    }
 
     const profile = await prisma.ambassadorProfile.update({
       where: { id },

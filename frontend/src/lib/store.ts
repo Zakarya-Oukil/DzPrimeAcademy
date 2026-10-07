@@ -144,25 +144,6 @@ export function useAuthStore() {
     }
   }, []);
 
-  const upgradeToGolden = useCallback(async (code?: string): Promise<{ success: boolean; user?: any; error?: string }> => {
-    try {
-      const res = await fetch('/api/account/upgrade', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ code: code || undefined }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.user) {
-        setUser(data.user);
-        return { success: true, user: data.user };
-      }
-      return { success: false, error: data.error || 'فشل الترقية' };
-    } catch (e: any) {
-      return { success: false, error: e?.message || 'خطأ في الاتصال' };
-    }
-  }, []);
-
   const updateProfile = useCallback(async (payload: Record<string, unknown>) => {
     try {
       const res = await fetch('/api/account', {
@@ -189,7 +170,6 @@ export function useAuthStore() {
     login,
     register,
     signOut,
-    upgradeToGolden,
     updateProfile,
     setCurrentUser: setUser,
   };

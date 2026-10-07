@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
 
@@ -108,8 +109,9 @@ export async function PUT(request: NextRequest) {
         phone: body.phone || user.phone || null,
         telegramHandle: body.telegramHandle ? String(body.telegramHandle).replace('@', '') : null,
         bioAr: body.bioAr || null,
-        promoCode: `WIL${user.wilayaCode || 16}-AMB${Math.floor(100 + Math.random() * 900)}`,
-        isVerified: true,
+        promoCode: `WIL${user.wilayaCode || 16}-AMB${randomBytes(3).toString('hex').toUpperCase()}`,
+        // Staff verify ambassadors; until then the code does not give discounts or commission.
+        isVerified: false,
       },
     });
   }

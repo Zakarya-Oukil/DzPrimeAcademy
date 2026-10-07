@@ -30,6 +30,12 @@ export async function POST(request: NextRequest) {
   }
 
   let teacherId = body.teacherId || null;
+  if (teacherId && !(await prisma.user.findFirst({ where: { id: teacherId, role: 'TEACHER' }, select: { id: true } }))) {
+    return NextResponse.json({ error: 'الأستاذ غير موجود' }, { status: 400 });
+  }
+  if (body.courseId && !(await prisma.course.findUnique({ where: { id: body.courseId }, select: { id: true } }))) {
+    return NextResponse.json({ error: 'المقرر غير موجود' }, { status: 400 });
+  }
   const teacherName = body.teacherName || 'أستاذ معتمد DZ Prime';
   if (!teacherId && teacherName) {
     const matchedTeacher = await prisma.user.findFirst({ where: { name: teacherName, role: 'TEACHER' } });

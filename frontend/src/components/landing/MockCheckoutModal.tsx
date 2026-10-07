@@ -46,7 +46,7 @@ export const MockCheckoutModal: React.FC<MockCheckoutModalProps> = ({ bundle, on
     setIsValidatingPromo(true);
 
     try {
-      const res = await fetch(`/api/promotions?validate=${encodeURIComponent(promoCodeInput.trim())}`);
+      const res = await fetch(`/api/promotions?validate=${encodeURIComponent(promoCodeInput.trim())}&track=${encodeURIComponent(bundle.track)}`);
       const data = await res.json();
       if (res.ok && data.valid) {
         setAppliedPromo(data);
@@ -204,6 +204,7 @@ export const MockCheckoutModal: React.FC<MockCheckoutModalProps> = ({ bundle, on
             type: 'BUNDLE_PURCHASE',
             title,
             amountDzd: effectivePrice,
+            promoCode: appliedPromo?.code,
             details: `ID: ${bundle.id}${appliedPromo ? ` (Promo: ${appliedPromo.code} -${appliedPromo.discountPercent}%)` : ''}`,
             targetId: bundle.id,
             user: currentUser ? {

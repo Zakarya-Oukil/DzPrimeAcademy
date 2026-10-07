@@ -29,10 +29,15 @@ export async function POST(request: NextRequest) {
   if ('error' in authResult) return authResult.error;
   const { user } = authResult;
 
-  const body = await request.json();
-  const course = await prisma.course.findUnique({ where: { id: body.courseId } });
+  const body = await request.json().catch(() => ({}));
+  const course = typeof body.courseId === 'string' ? await prisma.course.findUnique({ where: { id: body.courseId } }) : null;
   if (!course) {
     return NextResponse.json({ error: 'المقرر غير موجود' }, { status: 404 });
+  }
+
+  // Priced courses are sold through an operation (POST /api/operations, COURSE_ENROLLMENT) that staff approve.
+  if (course.priceDzd > 0) {
+    return NextResponse.json({ error: 'هذا المقرر مدفوع: أرسل طلب التسجيل ليتم تأكيد الدفع' }, { status: 402 });
   }
 
   const existing = await prisma.enrollment.findFirst({ where: { studentId: user.id, courseId: course.id } });
@@ -40,8 +45,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(existing, { status: 200 });
   }
 
-  const enrollment = await prisma.enrollment.create({
-    data: {
+  // Unique (studentId, courseId): a concurrent double click gets the existing row instead of a duplicate.
+  const enrollment = await prisma.enrollment.upsert({
+    where: { studentId_courseId: { studentId: user.id, courseId: course.id } },
+    update: {},
+    create: {
       studentId: user.id,
       courseId: course.id,
       courseTitle: course.titleFr || course.titleAr,
