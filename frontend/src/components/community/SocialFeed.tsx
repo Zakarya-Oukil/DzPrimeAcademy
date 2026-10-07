@@ -114,7 +114,8 @@ export default function SocialFeed({
         return {
           ...p,
           likedBy: newLikedBy,
-          likesCount: newLikedBy.length
+          // likedBy only holds the viewer, so adjust the shared total by one instead of recounting it
+          likesCount: Math.max(0, (p.likesCount || 0) + (isLiked ? -1 : 1))
         };
       })
     );
@@ -184,7 +185,7 @@ export default function SocialFeed({
     const newIsPrivate = !post.isPrivate;
     try {
       const res = await fetch(`/api/posts/${post.id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isPrivate: newIsPrivate })
       });
@@ -409,6 +410,7 @@ export default function SocialFeed({
                       {post.authorAvatar ? (
                         <Image
                           src={post.authorAvatar}
+                          unoptimized
                           alt={post.authorName}
                           fill
                           className="object-cover"
@@ -620,6 +622,7 @@ export default function SocialFeed({
                           {currentUser.avatar ? (
                             <Image
                               src={currentUser.avatar}
+                              unoptimized
                               alt={currentUser.name}
                               fill
                               className="object-cover"
@@ -688,6 +691,7 @@ export default function SocialFeed({
                                 {comment.authorAvatar ? (
                                   <Image
                                     src={comment.authorAvatar}
+                                    unoptimized
                                     alt={comment.authorName}
                                     fill
                                     className="object-cover"

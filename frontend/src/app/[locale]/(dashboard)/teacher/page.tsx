@@ -45,6 +45,7 @@ import { formatDZD } from '@/lib/format';
 import { TeacherRosterPanel } from '@/components/dashboard/TeacherRosterPanel';
 import { MembershipCard } from '@/components/card/MembershipCard';
 import SocialFeed from '@/components/community/SocialFeed';
+import { TeacherCoursesPanel, TeacherSessionsPanel } from '@/components/teacher/TeacherCatalogPanels';
 import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
 
 type TeacherTab = 'studio' | 'courses' | 'sessions' | 'roster' | 'drive' | 'profile' | 'community';
@@ -586,139 +587,10 @@ export default function TeacherStudioPage() {
       )}
 
       {/* ================= 3. COURSES TAB ================= */}
-      {tab === 'courses' && (
-        <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-amber-200/60 dark:border-gray-800 gap-3">
-            <div>
-              <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-gold-500" />
-                <span>{locale === 'ar' ? 'مقرراتي ومقاييسي التعليمية المسندة' : 'Mes Modules & Cours Assignés'}</span>
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
-                {locale === 'ar'
-                  ? 'المقررات الأكاديمية المسندة لتدريسها من قبل الإدارة المركزية والمصلحة التجارية'
-                  : 'Modules académiques officiels assignés par la Direction Commerciale'}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-gold-500/10 border border-gold-500/30 text-gold-700 dark:text-gold-300 text-xs font-bold w-fit">
-              <ShieldCheck className="w-4 h-4 text-gold-500 shrink-0" />
-              <span>{locale === 'ar' ? 'إدارة ونشر الدورات والمقررات محصورة بالإدارة المركزية والمصلحة التجارية' : 'Gestion centralisée par la Direction Commerciale'}</span>
-            </div>
-          </div>
-
-          {myCourses.length === 0 ? (
-            <div className="p-8 text-center rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 text-slate-500 dark:text-gray-400 space-y-2">
-              <BookOpen className="w-8 h-8 text-gold-500/50 mx-auto" />
-              <p className="text-xs font-bold">
-                {locale === 'ar'
-                  ? 'لا توجد مقررات مسندة لحسابك حالياً. تقوم المصلحة التجارية (Chargée Commerciale) أو الإدارة بإسناد المقررات وحزم الامتحانات.'
-                  : 'Aucun module assigné pour le moment. La Direction Commerciale gère l\'assignation des cours.'}
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {myCourses.map((c) => (
-                <div
-                  key={c.id}
-                  className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-5 space-y-3 shadow-sm flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-0.5 rounded-full bg-gold-500/20 text-gold-700 dark:text-gold-400 text-[10px] font-bold">
-                        {c.category}
-                      </span>
-                      <span className="text-xs font-mono font-black text-slate-900 dark:text-white">
-                        {formatDZD(c.priceDzd)}
-                      </span>
-                    </div>
-                    <h4 className="text-sm font-black text-slate-900 dark:text-white mt-2">
-                      {locale === 'ar' ? c.titleAr : c.titleFr}
-                    </h4>
-                    <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
-                      {c.lessonsCount} {locale === 'ar' ? 'درس تفاعلي مع المطبوعات والامتحانات' : 'Leçons interactives'}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-gray-800">
-                    <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>{locale === 'ar' ? 'مقرر نشط معتمد' : 'Module Agréé'}</span>
-                    </span>
-                    <span className="text-[10px] text-gold-600 dark:text-gold-400 font-bold">
-                      {locale === 'ar' ? 'المصلحة التجارية' : 'Direction Commerciale'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {tab === 'courses' && currentUser && <TeacherCoursesPanel locale={locale} userId={currentUser.id} />}
 
       {/* ================= 4. SESSIONS TAB ================= */}
-      {tab === 'sessions' && (
-        <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-amber-200/60 dark:border-gray-800 gap-3">
-            <div>
-              <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Video className="w-5 h-5 text-gold-500" />
-                <span>{locale === 'ar' ? 'جدول الحصص المباشرة والماستركلاس' : 'Sessions en Direct & Masterclasses'}</span>
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
-                {locale === 'ar'
-                  ? 'مواعيد البث المباشر المعتمدة والمجدولة لك من قبل الإدارة'
-                  : 'Calendrier des séances en direct planifiées par l\'Administration'}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-gold-500/10 border border-gold-500/30 text-gold-700 dark:text-gold-300 text-xs font-bold w-fit">
-              <ShieldCheck className="w-4 h-4 text-gold-500 shrink-0" />
-              <span>{locale === 'ar' ? 'جدولة وتثبيت الحصص الوطنية تتم حصرياً عبر الإدارة والمصلحة التجارية' : 'Planification assurée par la Direction Commerciale'}</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {mySessions.map((ses) => (
-              <div
-                key={ses.id}
-                className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-5 space-y-3 shadow-sm flex flex-col justify-between"
-              >
-                <div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-gold-500/20 text-gold-700 dark:text-gold-400 text-[10px] font-bold">
-                    {ses.platform}
-                  </span>
-                  <h4 className="text-sm font-black text-slate-900 dark:text-white mt-2">{ses.title}</h4>
-                  <div className="text-xs text-slate-500 dark:text-gray-400 mt-2 space-y-1 font-mono">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-gold-500" />
-                      <span>{new Date(ses.scheduledAt).toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-gold-500" />
-                      <span>{ses.durationMinutes} min</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 dark:border-gray-800">
-                  {ses.meetUrl ? (
-                    <a
-                      href={ses.meetUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2"
-                    >
-                      <Video className="w-4 h-4" />
-                      <span>{locale === 'ar' ? 'دخول غرفة البث' : 'Rejoindre le Live'}</span>
-                    </a>
-                  ) : (
-                    <span className="text-xs text-slate-400 block text-center">Google Meet Link Pending</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {tab === 'sessions' && currentUser && <TeacherSessionsPanel locale={locale} userId={currentUser.id} />}
 
       {/* ================= 5. ROSTER TAB ================= */}
       {tab === 'roster' && <TeacherRosterPanel locale={locale} />}

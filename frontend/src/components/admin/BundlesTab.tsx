@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { ImageUploader } from '@/components/shared/ImageUploader';
 import {
   Package,
   Plus,
@@ -36,6 +37,7 @@ const emptyForm = {
   originalPriceDzd: 6000,
   currentPriceDzd: 4500,
   colorTheme: 'gold',
+  imageUrl: null as string | null,
   isActive: true,
   sortOrder: 0,
 };
@@ -114,6 +116,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
       originalPriceDzd: b.originalPriceDzd,
       currentPriceDzd: b.currentPriceDzd,
       colorTheme: b.colorTheme,
+      imageUrl: b.imageUrl ?? null,
       isActive: b.isActive,
       sortOrder: b.sortOrder,
     });
@@ -348,6 +351,16 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
                   <span className="font-mono text-sm">-{discountPercent}%</span>
                 </div>
               )}
+            </div>
+
+            <div className="sm:col-span-3 max-w-md">
+              <ImageUploader
+                kind="bundle"
+                locale={locale}
+                label={locale === 'ar' ? 'صورة العرض' : 'Image de l\'offre'}
+                value={form.imageUrl}
+                onChange={(url) => setForm({ ...form, imageUrl: url })}
+              />
             </div>
 
             <div className="sm:col-span-3 flex justify-end pt-2">

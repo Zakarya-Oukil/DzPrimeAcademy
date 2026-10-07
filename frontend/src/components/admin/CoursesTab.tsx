@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Trash2, Layers, BookOpen, Pencil, CheckCircle2, ShieldCheck, X } from 'lucide-react';
 import { usePlatformStore, PlatformCourse } from '@/lib/platformStore';
 import { formatDZD } from '@/lib/format';
+import { ImageUploader } from '@/components/shared/ImageUploader';
 
 interface CoursesTabProps {
   locale: string;
@@ -26,6 +27,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
     lessonsCount: 10,
     isLive: true,
     colorTheme: 'lime',
+    imageUrl: null as string | null,
   });
 
   const [moduleForm, setModuleForm] = useState({
@@ -82,6 +84,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
         lessonsCount: 10,
         isLive: true,
         colorTheme: 'lime',
+    imageUrl: null as string | null,
       });
       setShowCourseForm(false);
     }
@@ -98,6 +101,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
       lessonsCount: c.lessonsCount,
       isLive: c.isLive,
       colorTheme: c.colorTheme || 'lime',
+      imageUrl: c.imageUrl ?? null,
     });
     setShowCourseForm(true);
   };
@@ -157,6 +161,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               lessonsCount: 10,
               isLive: true,
               colorTheme: 'lime',
+    imageUrl: null as string | null,
             });
             setShowCourseForm(!showCourseForm);
           }}
@@ -250,6 +255,16 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               onChange={(e) => setCourseForm({ ...courseForm, lessonsCount: Number(e.target.value) })}
               className="px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white font-mono placeholder-gray-500 focus:outline-none focus:border-gold-400"
             />
+
+            <div className="sm:col-span-3 max-w-md">
+              <ImageUploader
+                kind="course"
+                locale={locale}
+                label={locale === 'ar' ? 'صورة المقرر' : 'Image du cours'}
+                value={courseForm.imageUrl}
+                onChange={(url) => setCourseForm({ ...courseForm, imageUrl: url })}
+              />
+            </div>
 
             <div className="sm:col-span-3 flex items-center justify-between pt-2">
               <div className="flex items-center gap-2">

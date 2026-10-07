@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
-import { requirePermission } from '@/lib/auth';
+import { requireCatalogActor } from '@/lib/ownership';
+import { isHttpsUrl } from '@/lib/safeUrl';
 
 export async function GET() {
   await ensureSeeded();
@@ -18,26 +19,32 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const authResult = await requirePermission(request, 'catalog.manage');
-  if ('error' in authResult) return authResult.error;
+  const actor = await requireCatalogActor(request);
+  if ('error' in actor) return actor.error;
+  const { user, isStaff } = actor;
 
   await ensureSeeded();
-  const body = await request.json();
+  const body = (await request.json().catch(() => null)) ?? {};
+  if (!body.title) return NextResponse.json({ error: 'عنوان الحصة مطلوب' }, { status: 400 });
+  if (body.meetUrl && !isHttpsUrl(body.meetUrl)) return NextResponse.json({ error: 'رابط الحصة يجب أن يبدأ بـ https://' }, { status: 400 });
 
   const scheduledDate = new Date(body.scheduledAt);
   if (isNaN(scheduledDate.getTime()) || scheduledDate < new Date()) {
     return NextResponse.json({ error: 'لا يمكن جدولة حصة في تاريخ ماضٍ' }, { status: 400 });
   }
 
-  let teacherId = body.teacherId || null;
-  if (teacherId && !(await prisma.user.findFirst({ where: { id: teacherId, role: 'TEACHER' }, select: { id: true } }))) {
+  // A teacher can only schedule sessions for themselves (teacherId from the login, never from the request).
+  let teacherId = isStaff ? body.teacherId || null : user.id;
+  if (isStaff && teacherId && !(await prisma.user.findFirst({ where: { id: teacherId, role: 'TEACHER' }, select: { id: true } }))) {
     return NextResponse.json({ error: 'الأستاذ غير موجود' }, { status: 400 });
   }
-  if (body.courseId && !(await prisma.course.findUnique({ where: { id: body.courseId }, select: { id: true } }))) {
-    return NextResponse.json({ error: 'المقرر غير موجود' }, { status: 400 });
+  if (body.courseId) {
+    const course = await prisma.course.findUnique({ where: { id: body.courseId }, select: { id: true, teacherId: true } });
+    if (!course) return NextResponse.json({ error: 'المقرر غير موجود' }, { status: 400 });
+    if (!isStaff && course.teacherId !== user.id) return NextResponse.json({ error: 'يمكنك جدولة حصص لمقرراتك فقط' }, { status: 403 });
   }
-  const teacherName = body.teacherName || 'أستاذ معتمد DZ Prime';
-  if (!teacherId && teacherName) {
+  const teacherName = isStaff ? body.teacherName || 'أستاذ معتمد DZ Prime' : user.name;
+  if (isStaff && !teacherId && teacherName) {
     const matchedTeacher = await prisma.user.findFirst({ where: { name: teacherName, role: 'TEACHER' } });
     if (matchedTeacher) teacherId = matchedTeacher.id;
   }

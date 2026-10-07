@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requirePermission } from '@/lib/auth';
+import { parseImageField } from '@/lib/safeUrl';
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requirePermission(request, 'catalog.manage');
@@ -12,9 +13,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: 'الأسعار يجب أن تكون أعداداً صحيحة غير سالبة' }, { status: 400 });
   }
 
+  const image = parseImageField(body.imageUrl, 'bundle');
+  if ('error' in image) return NextResponse.json({ error: image.error }, { status: 400 });
+
   const bundle = await prisma.bundle.update({
     where: { id },
     data: {
+      imageUrl: image.value,
       titleAr: body.titleAr,
       titleFr: body.titleFr ?? null,
       descriptionAr: body.descriptionAr,

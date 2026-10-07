@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { requirePermission } from '@/lib/auth';
+import { parseImageField } from '@/lib/safeUrl';
 
 export async function GET(request: NextRequest) {
   await ensureSeeded();
@@ -32,8 +33,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'العنوان والأسعار (أعداد صحيحة غير سالبة) مطلوبة' }, { status: 400 });
   }
 
+  const image = parseImageField(body.imageUrl, 'bundle');
+  if ('error' in image) return NextResponse.json({ error: image.error }, { status: 400 });
+
   const bundle = await prisma.bundle.create({
     data: {
+      imageUrl: image.value ?? null,
       titleAr: body.titleAr,
       titleFr: body.titleFr || null,
       descriptionAr: body.descriptionAr,

@@ -465,9 +465,9 @@ export const CourseTopicExplorer: React.FC = () => {
         </div>
         <div className="space-y-1">
           <div className="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400 font-mono">
-            {dynamicConfig?.stats?.mode === 'AUTO' && realStats
+            {dynamicConfig?.stats?.mode === 'AUTO' && realStats?.satisfactionRate
               ? `${realStats.satisfactionRate}%`
-              : dynamicConfig?.stats?.satisfactionValue || '99.8%'}
+              : dynamicConfig?.stats?.satisfactionValue || '-'}
           </div>
           <div className="text-xs text-slate-600 dark:text-gray-400 font-semibold">
             {locale === 'ar'

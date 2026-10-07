@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { requirePermission } from '@/lib/auth';
+import { stripUnsafeUrls } from '@/lib/safeUrl';
 
 export async function GET() {
   await ensureSeeded();
@@ -14,9 +15,9 @@ export async function GET() {
   });
 
   // 2. Compute live database metrics
-  let realExamsCount = 12450;
-  let realStudentsCount = 52300;
-  let realWilayasCount = 58;
+  let realExamsCount = 0;
+  let realStudentsCount = 0;
+  let realWilayasCount = 0;
 
   try {
     const [examCount, studentCount, distinctWilayas] = await Promise.all([
@@ -30,19 +31,20 @@ export async function GET() {
       }),
     ]);
 
-    // Use DB counts if greater than seed, otherwise combine with base operational metrics
-    realExamsCount = Math.max(12000 + examCount, examCount);
-    realStudentsCount = Math.max(50000 + studentCount, studentCount);
-    realWilayasCount = Math.max(58, distinctWilayas.length);
+    // Real counts only: nothing is added to them and no floor is applied.
+    realExamsCount = examCount;
+    realStudentsCount = studentCount;
+    realWilayasCount = distinctWilayas.filter((w) => w.wilayaCode != null).length;
   } catch (e) {
     console.error('Error fetching real DB counts for landing page:', e);
   }
 
+  // satisfactionRate was a hard-coded "99.8%": there is no survey behind it, so it is not reported.
   const realStats = {
-    examsCount: `${realExamsCount.toLocaleString('en-US')}+`,
-    studentsCount: `${realStudentsCount.toLocaleString('en-US')}+`,
-    wilayasCount: `${realWilayasCount}`,
-    satisfactionRate: '99.8%',
+    examsCount: String(realExamsCount),
+    studentsCount: String(realStudentsCount),
+    wilayasCount: String(realWilayasCount),
+    satisfactionRate: null as string | null,
   };
 
   return NextResponse.json({
@@ -58,7 +60,22 @@ export async function PUT(request: NextRequest) {
   const authResult = await requirePermission(request, 'settings.manage');
   if ('error' in authResult) return authResult.error;
 
-  const body = await request.json();
+  const raw = await request.text();
+  // Landing images are uploaded to storage and referenced by URL. Inline data (base64) is what made saves exceed
+  // the host's 4.5MB body limit and made the public page 7MB, so it is refused here.
+  if (raw.length > 200_000) {
+    return NextResponse.json({ error: 'إعدادات الصفحة كبيرة جداً. ارفع الصور عبر زر الرفع بدلاً من إدراجها مباشرة' }, { status: 413 });
+  }
+  let body: Record<string, any>;
+  try {
+    body = JSON.parse(raw) ?? {};
+  } catch {
+    return NextResponse.json({ error: 'بيانات غير صالحة' }, { status: 400 });
+  }
+  // Older saves hold inline base64 images; the editor sends them back untouched, so refusing would lock the admin
+  // out of every save. They are dropped (the editor shows which ones need re-uploading) and the count is returned.
+  const cleaned = stripUnsafeUrls(body);
+  body = cleaned.value;
 
   const settings = await prisma.platformSettings.upsert({
     where: { id: 'singleton' },
@@ -80,5 +97,6 @@ export async function PUT(request: NextRequest) {
   return NextResponse.json({
     success: true,
     settings,
+    removedInlineImages: cleaned.removed,
   });
 }

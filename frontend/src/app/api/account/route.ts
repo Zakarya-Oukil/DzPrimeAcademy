@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
+import { isHttpsUrl } from '@/lib/safeUrl';
 
 export async function GET(request: NextRequest) {
   const currentUser = await getUserFromRequest(request);
@@ -33,6 +34,10 @@ export async function PUT(request: NextRequest) {
   }
 
   const body = await request.json();
+  // The avatar is shown in the feed and on cards: https only (no data:, javascript: or plain http).
+  if (body.avatar && !isHttpsUrl(String(body.avatar).trim(), 500)) {
+    return NextResponse.json({ error: 'رابط الصورة الشخصية يجب أن يبدأ بـ https://' }, { status: 400 });
+  }
 
   const user = await prisma.user.update({
     where: { id: currentUser.id },

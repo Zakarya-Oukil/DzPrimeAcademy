@@ -8,6 +8,7 @@ export interface PlatformCourse {
   titleFr?: string | null;
   titleEn?: string | null;
   description?: string | null;
+  imageUrl?: string | null;
   teacherId?: string | null;
   teacherName: string;
   category: 'BAC' | 'UNIVERSITY_LMD' | 'MEDICAL';

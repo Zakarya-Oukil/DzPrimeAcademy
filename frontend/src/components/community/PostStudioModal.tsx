@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { ImageUploader } from '@/components/shared/ImageUploader';
 import {
   Video,
   Image as ImageIcon,
@@ -227,15 +228,9 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
             <div>
               <label className="block text-gray-300 font-bold mb-1.5 flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-sky-400" />
-                <span>{locale === 'ar' ? 'رابط صورة توضيحية' : 'URL Image'}</span>
+                <span>{locale === 'ar' ? 'صورة توضيحية' : 'Image'}</span>
               </label>
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://images.unsplash.com/..."
-                className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-gold-400"
-              />
+              <ImageUploader kind="post" locale={locale} value={imageUrl || null} onChange={(url) => setImageUrl(url || '')} />
             </div>
 
             <div>

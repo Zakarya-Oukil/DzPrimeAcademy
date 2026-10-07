@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { ImageUploader } from '@/components/shared/ImageUploader';
+import React,{ useState, useEffect, useRef } from 'react';
 import {
   Globe,
   Save,
@@ -117,8 +118,15 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
       const data = await res.json();
       if (res.ok) {
-        setSaveSuccess(isAr ? 'تم حفظ وتحديث الواجهة الرئيسية للمنصة بنجاح ✓' : 'Page d\'accueil mise à jour avec succès ✓');
-        setTimeout(() => setSaveSuccess(''), 4000);
+        const removed = Number(data.removedInlineImages) || 0;
+        setSaveSuccess(
+          removed > 0
+            ? isAr
+              ? `تم الحفظ، لكن ${removed} صورة قديمة مضمنة في الإعدادات حُذفت. ارفعها من جديد بزر الرفع.`
+              : `Enregistré, mais ${removed} ancienne(s) image(s) intégrée(s) ont été retirée(s). Téléversez-les à nouveau.`
+            : isAr ? 'تم حفظ وتحديث الواجهة الرئيسية للمنصة بنجاح ✓' : 'Page d\'accueil mise à jour avec succès ✓'
+        );
+        setTimeout(() => setSaveSuccess(''), removed > 0 ? 12000 : 4000);
       } else {
         setSaveError(data.error || (isAr ? 'فشل حفظ الإعدادات' : 'Erreur de sauvegarde'));
       }
@@ -135,28 +143,6 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
       setConfig(DEFAULT_LANDING_CONFIG);
       setAmbassadorTelegram('MrK_ADMIN00');
     }
-  };
-
-  // Handle local file upload
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 2 * 1024 * 1024) {
-      alert(isAr ? 'حجم الصورة كبير جداً (الأقصى 2 ميغابايت)' : 'Image trop volumineuse (max 2MB)');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result && editingCourse) {
-        setEditingCourse({
-          ...editingCourse,
-          thumbnailUrl: reader.result as string,
-        });
-      }
-    };
-    reader.readAsDataURL(file);
   };
 
   // Save course item (Add or Edit)
@@ -507,7 +493,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                 <span className="text-xs font-black text-purple-400">4. {isAr ? 'نسبة رضا الطلبة' : 'Satisfaction'}</span>
                 {config.stats.mode === 'AUTO' && (
                   <span className="text-[10px] text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full font-mono">
-                    Live: {realStats.satisfactionRate}
+                    Live: {realStats.satisfactionRate ?? '-'}
                   </span>
                 )}
               </div>
@@ -515,7 +501,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'الرقم المعروض' : 'Valeur'}</label>
                 <input
                   disabled={config.stats.mode === 'AUTO'}
-                  value={config.stats.mode === 'AUTO' ? realStats.satisfactionRate : config.stats.satisfactionValue}
+                  value={config.stats.mode === 'AUTO' ? realStats.satisfactionRate ?? '' : config.stats.satisfactionValue}
                   onChange={(e) =>
                     setConfig({ ...config, stats: { ...config.stats, satisfactionValue: e.target.value } })
                   }
@@ -1031,23 +1017,12 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                     />
                   </div>
                 ) : (
-                  <div>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-full py-3 rounded-xl border-2 border-dashed border-gold-500/40 hover:border-gold-400 bg-gold-500/5 hover:bg-gold-500/10 text-gold-300 text-xs font-bold flex items-center justify-center gap-2 transition-all"
-                    >
-                      <Upload className="w-4 h-4" />
-                      <span>{isAr ? 'اختر صورة من جهاز الكمبيوتر أو الهاتف (Max 2MB)' : 'Choisir une image depuis l\'appareil'}</span>
-                    </button>
-                  </div>
+                  <ImageUploader
+                    kind="landing"
+                    locale={isAr ? 'ar' : 'fr'}
+                    value={editingCourse.thumbnailUrl || null}
+                    onChange={(url) => setEditingCourse({ ...editingCourse, thumbnailUrl: url || '' })}
+                  />
                 )}
 
                 {/* Preview */}

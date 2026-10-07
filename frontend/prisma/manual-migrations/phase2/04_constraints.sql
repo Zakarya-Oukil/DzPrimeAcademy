@@ -4,6 +4,7 @@
 -- If VALIDATE fails, rows were created between steps 3 and 4: run 03 again, then re-run this file.
 -- Undo with 04_rollback.sql.
 BEGIN;
+SET LOCAL lock_timeout = '5s';  -- if a long query holds "User", fail fast instead of queueing every login behind this
 
 CREATE UNIQUE INDEX IF NOT EXISTS "Enrollment_studentId_courseId_key" ON "Enrollment"("studentId", "courseId");
 
