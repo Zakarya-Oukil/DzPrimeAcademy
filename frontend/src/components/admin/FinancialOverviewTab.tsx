@@ -5,62 +5,82 @@ import {
   TrendingUp,
   Wallet,
   Landmark,
-  PiggyBank,
   Eye,
   EyeOff,
   ArrowUpRight,
   ArrowDownLeft,
-  DollarSign,
-  CreditCard,
-  Send,
-  Plus,
-  Search,
-  CheckCircle2,
-  Clock,
-  Award,
-  BookOpen,
-  Sliders,
-  Sparkles,
+  Scale,
   RefreshCw,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { AnimatedCounter } from '@/components/dashboard/AnimatedCounter';
 import { formatDZD } from '@/lib/format';
 
 interface FinancialOverviewTabProps {
   locale: string;
-  payrollLiability: number;
+  /** Kept for the parent's call site; every figure shown here comes from /api/admin/financial. */
+  payrollLiability?: number;
 }
 
-export const FinancialOverviewTab: React.FC<FinancialOverviewTabProps> = ({ locale, payrollLiability }) => {
-  const [showBalance, setShowBalance] = useState(true);
-  const [chartPeriod, setChartPeriod] = useState<'MONTH' | 'ANNUAL'>('MONTH');
-  const [activeTooltipMonth, setActiveTooltipMonth] = useState<string | null>('Mar');
-  const [loading, setLoading] = useState(true);
+interface Financials {
+  totalBalance: number;
+  monthlyIncome: number;
+  realVerifiedRevenue: number;
+  revenueByType: Record<string, number>;
+  payrollLiability: number;
+  ambassadorCommissions: number;
+  netMargin: number;
+  pendingAmountDzd: number;
+  approvedOpsCount: number;
+  pendingOpsCount: number;
+  monthly: { month: string; income: number; payouts: number }[];
+  transactions: {
+    id: string;
+    nameAr: string;
+    nameFr: string;
+    method: string;
+    date: string;
+    amount: number;
+    status: string;
+  }[];
+}
 
-  const [totalBalance, setTotalBalance] = useState(8450000);
-  const [monthlyIncome, setMonthlyIncome] = useState(5420000);
-  const [livePayrollLiability, setLivePayrollLiability] = useState(payrollLiability || 1791000);
-  const [netMargin, setNetMargin] = useState(3629000);
-  const [transactions, setTransactions] = useState<any[]>([]);
+const REVENUE_KINDS = [
+  { type: 'VIP_MEMBERSHIP_UPGRADE', ar: 'العضوية الذهبية', en: 'Gold membership', bar: 'bg-gold-400', stroke: 'text-gold-400' },
+  { type: 'BUNDLE_PURCHASE', ar: 'الباقات', en: 'Bundles', bar: 'bg-emerald-400', stroke: 'text-emerald-400' },
+  { type: 'COURSE_ENROLLMENT', ar: 'المقررات', en: 'Courses', bar: 'bg-sky-400', stroke: 'text-sky-400' },
+] as const;
+
+const STATUS_STYLE: Record<string, string> = {
+  COMPLETE: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+  PENDING: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+};
+
+const Skeleton = ({ className = '' }: { className?: string }) => (
+  <div className={`animate-pulse rounded-lg bg-white/10 ${className}`} aria-hidden="true" />
+);
+
+export const FinancialOverviewTab: React.FC<FinancialOverviewTabProps> = ({ locale }) => {
+  const ar = locale === 'ar';
+  const t = (arText: string, enText: string) => (ar ? arText : enText);
+
+  const [showBalance, setShowBalance] = useState(true);
+  const [activeMonth, setActiveMonth] = useState<string | null>(null);
+  const [data, setData] = useState<Financials | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
 
   const loadFinancials = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/financial');
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success) {
-          setTotalBalance(data.totalBalance);
-          setMonthlyIncome(data.monthlyIncome);
-          setLivePayrollLiability(data.payrollLiability);
-          setNetMargin(data.netMargin);
-          if (Array.isArray(data.transactions)) {
-            setTransactions(data.transactions);
-          }
-        }
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success) {
+        setData(json);
+        setFailed(false);
+      } else {
+        setFailed(true);
       }
     } catch (e) {
       console.error('Failed to load live financials:', e);
+      setFailed(true);
     } finally {
       setLoading(false);
     }
@@ -72,404 +92,287 @@ export const FinancialOverviewTab: React.FC<FinancialOverviewTabProps> = ({ loca
     return () => clearInterval(interval);
   }, [loadFinancials]);
 
+  const monthLabel = (key: string) =>
+    new Date(`${key}-01T00:00:00Z`).toLocaleDateString(ar ? 'ar-DZ' : 'fr-DZ', { month: 'short', timeZone: 'UTC' });
+
+  const money = (n: number | undefined) => (showBalance ? formatDZD(n ?? 0) : '•••••••• DZD');
+  const monthly = data?.monthly ?? [];
+  const chartMax = Math.max(1, ...monthly.flatMap((m) => [m.income, m.payouts]));
+  const hasChartData = monthly.some((m) => m.income > 0 || m.payouts > 0);
+  const hoverMonth = monthly.find((m) => m.month === activeMonth) ?? monthly[monthly.length - 1];
+
+  const kinds = REVENUE_KINDS.map((k) => ({ ...k, amount: data?.revenueByType?.[k.type] ?? 0 }));
+  const otherRevenue = Math.max(0, (data?.realVerifiedRevenue ?? 0) - kinds.reduce((s, k) => s + k.amount, 0));
+  const revenueTotal = data?.realVerifiedRevenue ?? 0;
+  const mix = [...kinds, { type: 'OTHER', ar: 'أخرى', en: 'Other', bar: 'bg-slate-400', stroke: 'text-slate-400', amount: otherRevenue }];
+  let offset = 0;
+
+  const card = 'rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl flex flex-col justify-between';
+
   return (
     <div className="space-y-6 font-arabic" data-testid="financial-overview-tab">
-      {/* ================= 1. TOP FINANCIAL BENTO ROW (Moneed & Finova Style) ================= */}
+      {failed && (
+        <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+          <span>
+            {t('تعذر تحميل البيانات المالية. لا تُعرض أي أرقام تقديرية.', 'Financial data could not be loaded. No estimated numbers are shown.')}
+          </span>
+          <button onClick={loadFinancials} className="min-h-11 rounded-xl bg-white/10 px-4 font-bold text-white hover:bg-white/15">
+            {t('إعادة المحاولة', 'Try again')}
+          </button>
+        </div>
+      )}
+
+      {/* Top row: balance, month income, payroll */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Card 1: My Balance with Sparkline & Actions (Moneed Style) */}
-        <div className="lg:col-span-5 rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-5 shadow-xl flex flex-col justify-between">
+        <div className={`lg:col-span-5 ${card}`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-gold-500/20 text-gold-400 flex items-center justify-center">
                 <Wallet className="w-4 h-4" />
               </div>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                {locale === 'ar' ? 'الرصيد المالي الكلي' : 'Total Platform Balance'}
-              </span>
+              <span className="text-xs font-bold text-slate-400">{t('الرصيد المالي الكلي', 'Platform balance')}</span>
             </div>
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors"
+              aria-label={showBalance ? t('إخفاء الأرقام', 'Hide amounts') : t('إظهار الأرقام', 'Show amounts')}
+              aria-pressed={!showBalance}
+              className="h-11 w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg transition-colors"
             >
               {showBalance ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
             </button>
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-baseline justify-between gap-4">
-              <h2 className="text-3xl sm:text-4xl font-black text-white font-mono tracking-tight">
-                {showBalance ? formatDZD(totalBalance) : '•••••••• DZD'}
-              </h2>
-              {/* Mini Sparkline Bar Graphic */}
-              <div className="flex items-end gap-1 h-8 shrink-0">
-                {[30, 50, 45, 75, 60, 90, 100].map((h, i) => (
-                  <div
-                    key={i}
-                    style={{ height: `${h}%` }}
-                    className={`w-2 rounded-t-sm ${i >= 5 ? 'bg-gold-400' : 'bg-slate-700'}`}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="text-xs text-emerald-400 font-bold flex items-center gap-1">
-              <span>+12.5%</span>
-              <span className="text-slate-400 font-normal">
-                {locale === 'ar' ? 'نمو الرصيد هذا الشهر مقارنة بالسابق' : 'Balance increase, Good progress'}
-              </span>
-            </div>
-          </div>
-
-          {/* Quick Action Buttons Bar */}
-          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
-            <button className="py-2 px-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 text-xs font-black transition-all flex items-center justify-center gap-1 shadow-sm">
-              <Plus className="w-3.5 h-3.5" />
-              <span>{locale === 'ar' ? 'إيداع' : 'Add Funds'}</span>
-            </button>
-            <button className="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition-all flex items-center justify-center gap-1">
-              <Send className="w-3.5 h-3.5 text-gold-400" />
-              <span>{locale === 'ar' ? 'صرف CCP' : 'Payout'}</span>
-            </button>
-            <button className="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition-all flex items-center justify-center gap-1">
-              <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{locale === 'ar' ? 'تقرير' : 'Report'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Card 2: Income & Inflow (Moneed Style) */}
-        <div className="lg:col-span-3 rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                <TrendingUp className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-bold text-slate-400 uppercase">
-                {locale === 'ar' ? 'إيرادات الشهر' : 'Income'}
-              </span>
-            </div>
-            <span className="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
-              +18.4%
-            </span>
-          </div>
-
-          <div>
-            <h3 className="text-2xl sm:text-3xl font-black text-white font-mono">
-              {formatDZD(monthlyIncome)}
-            </h3>
-            <p className="text-xs text-slate-400 mt-1">
-              {locale === 'ar' ? 'زيادة الإيرادات بنسبة 9.1% عن الشهر السابق.' : 'Income increased by 9.1% from last month.'}
+            {loading ? (
+              <Skeleton className="h-10 w-3/4" />
+            ) : (
+              <h2 className="text-3xl sm:text-4xl font-black text-white font-mono tracking-tight">{money(data?.totalBalance)}</h2>
+            )}
+            <p className="text-xs text-slate-400">
+              {t('الإيرادات المؤكدة ناقص مستحقات الأساتذة المدفوعة.', 'Approved revenue minus teacher payouts already paid.')}
             </p>
           </div>
 
-          <div className="flex items-center justify-between text-xs pt-2 border-t border-white/10 font-mono">
+          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/10 text-xs font-mono">
             <div>
-              <span className="text-[10px] text-slate-500 block uppercase">Sub</span>
-              <span className="text-white font-bold">3,800,000 DZD</span>
+              <span className="text-slate-500 block">{t('عمليات مؤكدة', 'Approved payments')}</span>
+              <span className="text-white font-bold">{data?.approvedOpsCount ?? 0}</span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-500 block uppercase">Cards</span>
-              <span className="text-gold-400 font-bold">1,620,000 DZD</span>
+              <span className="text-slate-500 block">{t('بانتظار الموافقة', 'Waiting for approval')}</span>
+              <span className="text-amber-300 font-bold">
+                {data?.pendingOpsCount ?? 0} {t('عملية', 'payments')} · {money(data?.pendingAmountDzd)}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Card 3: Expenses & Payroll Liability (Moneed Style) */}
-        <div className="lg:col-span-4 rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
-                <Landmark className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-bold text-slate-400 uppercase">
-                {locale === 'ar' ? 'مستحقات الأساتذة المعلقة' : 'Expense & Payroll'}
-              </span>
+        <div className={`lg:col-span-3 ${card}`}>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
             </div>
-            <span className="text-[10px] text-rose-400 font-mono font-bold bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/30">
-              Pending
-            </span>
+            <span className="text-xs font-bold text-slate-400">{t('إيرادات هذا الشهر', 'Income this month')}</span>
           </div>
 
           <div>
-            <h3 className="text-2xl sm:text-3xl font-black text-rose-400 font-mono">
-              {formatDZD(payrollLiability)}
-            </h3>
-            <p className="text-xs text-slate-400 mt-1">
-              {locale === 'ar' ? 'جاهز للتحويل عبر بريد الجزائر (CCP).' : 'Ready for CCP payout batch.'}
-            </p>
+            {loading ? (
+              <Skeleton className="h-8 w-2/3" />
+            ) : (
+              <h3 className="text-2xl sm:text-3xl font-black text-white font-mono">{money(data?.monthlyIncome)}</h3>
+            )}
+            <p className="text-xs text-slate-400 mt-1">{t('من العمليات المؤكدة هذا الشهر فقط.', 'Counts payments approved this month only.')}</p>
           </div>
 
-          {/* Expense Ratio Bar */}
-          <div className="space-y-1.5 pt-2 border-t border-white/10">
-            <div className="w-full h-2.5 rounded-full bg-white/10 flex overflow-hidden p-0.5">
-              <div className="bg-gold-500 h-full rounded-full w-[50%]" title="Faculty" />
-              <div className="bg-emerald-400 h-full rounded-full w-[30%] ml-1" title="Ambassadors" />
-              <div className="bg-slate-600 h-full rounded-full w-[20%] ml-1" title="Ops" />
-            </div>
-            <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gold-500" /> Faculty (50%)</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> Amb (30%)</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-600" /> Ops (20%)</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ================= 2. MIDDLE MATRIX: CASHFLOW CHART + SPENDING DONUT + GOALS GAUGE ================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Cashflow Chart (Moneed & Finova Style) */}
-        <div className="lg:col-span-6 rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-black text-white">
-                {locale === 'ar' ? 'مخطط التدفقات النقدية (Cashflow Chart)' : 'Cashflow Chart'}
-              </h3>
-              <span className="text-xs text-slate-400 font-mono">INCOME VS. PAYOUT LIABILITY</span>
-            </div>
-
-            <div className="flex items-center p-1 rounded-xl bg-black/40 border border-white/10 text-xs font-mono">
-              <button
-                onClick={() => setChartPeriod('MONTH')}
-                className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                  chartPeriod === 'MONTH' ? 'bg-gold-500 text-navy-950 font-black' : 'text-slate-400'
-                }`}
-              >
-                2026
-              </button>
-              <button
-                onClick={() => setChartPeriod('ANNUAL')}
-                className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                  chartPeriod === 'ANNUAL' ? 'bg-gold-500 text-navy-950 font-black' : 'text-slate-400'
-                }`}
-              >
-                6 Month
-              </button>
-            </div>
-          </div>
-
-          {/* Stacked Bars Visualizer with Hover Tooltip Card */}
-          <div className="relative h-48 flex items-end justify-between gap-3 pt-6 px-3">
-            {[
-              { m: 'Jan', inc: 60, exp: 25 },
-              { m: 'Feb', inc: 75, exp: 35 },
-              { m: 'Mar', inc: 95, exp: 40, isHover: activeTooltipMonth === 'Mar' },
-              { m: 'Apr', inc: 80, exp: 30 },
-              { m: 'May', inc: 85, exp: 38 },
-              { m: 'Jun', inc: 70, exp: 28 },
-            ].map((bar) => (
-              <div
-                key={bar.m}
-                onMouseEnter={() => setActiveTooltipMonth(bar.m)}
-                className="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer"
-              >
-                {bar.isHover && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 p-2.5 rounded-xl bg-slate-900 border border-gold-500/40 shadow-xl text-[10px] font-mono text-white space-y-1 z-10">
-                    <div className="text-gold-400 font-bold">{bar.m} 2026 Overview</div>
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-emerald-400">Income:</span>
-                      <span>5,420,000 DZD</span>
-                    </div>
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-rose-400">Expense:</span>
-                      <span>1,791,000 DZD</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Stacked Double Bar */}
-                <div className="w-full flex items-end justify-center gap-1.5 h-full">
-                  <div
-                    style={{ height: `${bar.inc}%` }}
-                    className="w-3.5 sm:w-4 rounded-t-lg bg-gold-400 group-hover:bg-gold-300 transition-all shadow-sm"
-                  />
-                  <div
-                    style={{ height: `${bar.exp}%` }}
-                    className="w-3.5 sm:w-4 rounded-t-lg bg-emerald-500 group-hover:bg-emerald-400 transition-all shadow-sm"
-                  />
-                </div>
-                <span className="text-[10px] font-mono text-slate-400">{bar.m}</span>
+          <div className="space-y-1.5 pt-2 border-t border-white/10 text-xs font-mono">
+            {kinds.map((k) => (
+              <div key={k.type} className="flex items-center justify-between gap-2">
+                <span className="text-slate-400">{ar ? k.ar : k.en}</span>
+                <span className="text-white font-bold">{money(k.amount)}</span>
               </div>
             ))}
           </div>
-
-          <div className="flex items-center justify-center gap-6 text-xs font-mono text-slate-400 pt-2 border-t border-white/5">
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-md bg-gold-400" /> {locale === 'ar' ? 'المداخيل (Income)' : 'Income'}</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-md bg-emerald-500" /> {locale === 'ar' ? 'المستحقات (Payouts)' : 'Expense'}</span>
-          </div>
         </div>
 
-        {/* Spending & Track Breakdown Donut (Finova Style) */}
-        <div className="lg:col-span-3 rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-black text-white">
-              {locale === 'ar' ? 'توزع المداخيل حسب المسار' : 'Revenue Breakdown'}
-            </h3>
-            <span className="text-xs text-gold-400 font-mono font-bold">2026</span>
+        <div className={`lg:col-span-4 ${card}`}>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+              <Landmark className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-bold text-slate-400">{t('مستحقات الأساتذة غير المدفوعة', 'Teacher payouts still owed')}</span>
           </div>
 
-          <div className="relative w-36 h-36 mx-auto flex items-center justify-center">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-              <path
-                className="text-slate-800"
-                strokeWidth="4"
-                stroke="currentColor"
-                fill="none"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-              <path
-                className="text-gold-400"
-                strokeDasharray="35, 100"
-                strokeWidth="4.5"
-                strokeLinecap="round"
-                stroke="currentColor"
-                fill="none"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-              <path
-                className="text-emerald-400"
-                strokeDasharray="25, 100"
-                strokeDashoffset="-35"
-                strokeWidth="4.5"
-                strokeLinecap="round"
-                stroke="currentColor"
-                fill="none"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-              <path
-                className="text-sky-400"
-                strokeDasharray="20, 100"
-                strokeDashoffset="-60"
-                strokeWidth="4.5"
-                strokeLinecap="round"
-                stroke="currentColor"
-                fill="none"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-base font-black font-mono">100%</span>
-              <span className="text-[9px] text-slate-400 uppercase">National</span>
-            </div>
+          <div>
+            {loading ? (
+              <Skeleton className="h-8 w-2/3" />
+            ) : (
+              <h3 className="text-2xl sm:text-3xl font-black text-rose-400 font-mono">{money(data?.payrollLiability)}</h3>
+            )}
+            <p className="text-xs text-slate-400 mt-1">{t('مجموع الدفعات المعلقة وحصص الأساتذة غير المسددة.', 'Pending payouts plus unpaid teacher shares.')}</p>
           </div>
 
-          <div className="space-y-1.5 text-xs font-mono text-slate-300">
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-gold-400" /> BAC Packs</span>
-              <span className="text-white font-bold">35%</span>
+          <div className="space-y-1.5 pt-2 border-t border-white/10 text-xs font-mono">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-slate-400">{t('عمولات السفراء المستحقة', 'Ambassador commissions earned')}</span>
+              <span className="text-white font-bold">{money(data?.ambassadorCommissions)}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400" /> University LMD</span>
-              <span className="text-white font-bold">25%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-sky-400" /> Medical & Health</span>
-              <span className="text-white font-bold">20%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Goals & Reserve Arc Gauge (Moneed Style) */}
-        <div className="lg:col-span-3 rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-black text-white">
-              {locale === 'ar' ? 'صندوق الأمان المالي' : 'Platform Goals & Reserve'}
-            </h3>
-            <Sparkles className="w-4 h-4 text-gold-400" />
-          </div>
-
-          {/* Half Circle Gauge */}
-          <div className="p-4 rounded-2xl bg-black/40 border border-white/5 text-center space-y-2">
-            <span className="text-xs text-slate-400 font-mono block">Payroll Reserve Goal</span>
-            <div className="text-2xl font-black text-gold-400 font-mono">
-              {formatDZD(livePayrollLiability)}
-            </div>
-            <span className="text-[10px] text-slate-500 font-mono block">/ 2,500,000 DZD Target</span>
-            <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden mt-2">
-              <div className="h-full bg-gradient-to-r from-gold-500 to-emerald-400 rounded-full w-[72%]" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-400">Ambassador Payouts</span>
-              <span className="text-emerald-400 font-bold">100% Ready</span>
-            </div>
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-400">Server & Meet Costs</span>
-              <span className="text-gold-400 font-bold">Optimized</span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-slate-400">{t('هامش هذا الشهر بعد المستحقات', 'This month after payouts and commissions')}</span>
+              <span className={`font-bold ${(data?.netMargin ?? 0) < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>{money(data?.netMargin)}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ================= 3. RECENT TRANSACTIONS STREAM (Images 4 & 5 Style) ================= */}
-      <div className="rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
+      {/* Middle row: monthly cash flow and revenue mix */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className={`lg:col-span-8 ${card}`}>
           <div>
-            <h3 className="text-base font-black text-white">
-              {locale === 'ar' ? 'سجل العمليات والتحويلات المالية المباشرة' : 'Recent Transaction Stream'}
-            </h3>
-            <p className="text-xs text-slate-400">
-              {locale === 'ar' ? 'تحديث فوري لمدفوعات الطلبة، تفعيل البطاقات، وصرف مستحقات الأساتذة.' : 'Live platform ledger of subscriptions, payouts, and card verifications.'}
-            </p>
+            <h3 className="text-base font-black text-white">{t('التدفق النقدي خلال 6 أشهر', 'Cash flow, last 6 months')}</h3>
+            <p className="text-xs text-slate-400">{t('الإيرادات المؤكدة مقابل المستحقات المدفوعة لكل شهر.', 'Approved income against payouts paid, per month.')}</p>
           </div>
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <span className="px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-gold-400">
-              LIVE TRANSACTIONS
-            </span>
-            <button
-              onClick={() => loadFinancials()}
-              disabled={loading}
-              className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-all"
-              title={locale === 'ar' ? 'تحديث فوري' : 'Actualiser'}
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-gold-400' : ''}`} />
-            </button>
-          </div>
+
+          {!loading && !hasChartData ? (
+            <div className="flex h-48 items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 text-center text-sm text-slate-400">
+              {t('لا توجد حركات مالية بعد. ستظهر الأعمدة هنا بعد الموافقة على أول دفعة من قسم العمليات.', 'No money has moved yet. Bars appear here after you approve the first payment in Operations.')}
+            </div>
+          ) : (
+            <>
+              <div className="relative h-48 flex items-end justify-between gap-3 pt-6 px-3" role="group" aria-label={t('مخطط الإيرادات والمستحقات الشهرية', 'Monthly income and payouts chart')}>
+                {monthly.map((m) => (
+                  <button
+                    key={m.month}
+                    type="button"
+                    onMouseEnter={() => setActiveMonth(m.month)}
+                    onFocus={() => setActiveMonth(m.month)}
+                    aria-label={`${monthLabel(m.month)}: ${formatDZD(m.income)} / ${formatDZD(m.payouts)}`}
+                    className="flex-1 flex flex-col items-center gap-2 h-full justify-end group min-h-11"
+                  >
+                    <div className="w-full flex items-end justify-center gap-1.5 h-full">
+                      <div style={{ height: `${(m.income / chartMax) * 100}%` }} className="w-3.5 sm:w-4 min-h-px rounded-t-lg bg-gold-400 group-hover:bg-gold-300 transition-colors" />
+                      <div style={{ height: `${(m.payouts / chartMax) * 100}%` }} className="w-3.5 sm:w-4 min-h-px rounded-t-lg bg-emerald-500 group-hover:bg-emerald-400 transition-colors" />
+                    </div>
+                    <span className="text-[11px] font-mono text-slate-400">{monthLabel(m.month)}</span>
+                  </button>
+                ))}
+              </div>
+              {hoverMonth && (
+                <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white/[0.03] border border-white/5 px-3 py-2 text-xs font-mono" aria-live="polite">
+                  <span className="text-gold-400 font-bold">{monthLabel(hoverMonth.month)} {hoverMonth.month.slice(0, 4)}</span>
+                  <span className="text-slate-300">{t('الإيراد', 'Income')}: <b className="text-white">{money(hoverMonth.income)}</b></span>
+                  <span className="text-slate-300">{t('المستحقات المدفوعة', 'Payouts paid')}: <b className="text-white">{money(hoverMonth.payouts)}</b></span>
+                </div>
+              )}
+              <div className="flex items-center justify-center gap-6 text-xs font-mono text-slate-400 pt-2 border-t border-white/5">
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-md bg-gold-400" />{t('الإيراد', 'Income')}</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-md bg-emerald-500" />{t('المستحقات المدفوعة', 'Payouts paid')}</span>
+              </div>
+            </>
+          )}
         </div>
 
-        <div className="space-y-2.5">
-          {transactions.map((tx) => {
-            const isNegative = tx.amount < 0;
-            return (
-              <div
-                key={tx.id}
-                className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 flex items-center justify-between gap-3 transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
-                      isNegative ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    }`}
-                  >
-                    {isNegative ? <ArrowUpRight className="w-5 h-5" /> : <ArrowDownLeft className="w-5 h-5" />}
-                  </div>
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-white">
-                      {locale === 'ar' ? tx.nameAr : tx.nameFr}
-                    </h4>
-                    <p className="text-[10px] text-slate-400 font-mono">
-                      {tx.method} • {tx.date}
-                    </p>
-                  </div>
-                </div>
+        <div className={`lg:col-span-4 ${card}`}>
+          <div>
+            <h3 className="text-base font-black text-white">{t('مصدر الإيرادات', 'Where income comes from')}</h3>
+            <p className="text-xs text-slate-400">{t('حسب نوع العملية المؤكدة، منذ البداية.', 'By type of approved payment, all time.')}</p>
+          </div>
 
-                <div className="flex items-center gap-3 shrink-0">
-                  <span
-                    className={`text-sm sm:text-base font-black font-mono ${
-                      isNegative ? 'text-rose-400' : 'text-emerald-400'
-                    }`}
-                  >
-                    {isNegative ? '' : '+'}
-                    {formatDZD(tx.amount)}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold font-mono">
-                    {tx.status}
-                  </span>
+          {revenueTotal <= 0 ? (
+            <div className="flex h-40 items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 text-center text-sm text-slate-400">
+              {t('لا توجد إيرادات مؤكدة بعد.', 'No approved revenue yet.')}
+            </div>
+          ) : (
+            <>
+              <div className="relative w-36 h-36 mx-auto flex items-center justify-center">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
+                  <circle cx="18" cy="18" r="15.9155" className="text-slate-800" strokeWidth="4" stroke="currentColor" fill="none" />
+                  {mix.map((k) => {
+                    const pct = (k.amount / revenueTotal) * 100;
+                    if (pct <= 0) return null;
+                    const el = (
+                      <circle key={k.type} cx="18" cy="18" r="15.9155" className={k.stroke} strokeWidth="4.5" stroke="currentColor" fill="none" strokeDasharray={`${pct} ${100 - pct}`} strokeDashoffset={-offset} />
+                    );
+                    offset += pct;
+                    return el;
+                  })}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+                  <span className="text-sm font-black font-mono">{formatDZD(revenueTotal)}</span>
                 </div>
               </div>
-            );
-          })}
+
+              <div className="space-y-1.5 text-xs font-mono text-slate-300">
+                {mix
+                  .filter((k) => k.amount > 0)
+                  .map((k) => (
+                    <div key={k.type} className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5"><span className={`w-2 h-2 rounded-full ${k.bar}`} />{ar ? k.ar : k.en}</span>
+                      <span className="text-white font-bold">{Math.round((k.amount / revenueTotal) * 100)}%</span>
+                    </div>
+                  ))}
+              </div>
+            </>
+          )}
         </div>
+      </div>
+
+      {/* Transaction stream */}
+      <div className="rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl">
+        <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/10">
+          <div>
+            <h3 className="text-base font-black text-white">{t('آخر العمليات المالية', 'Recent transactions')}</h3>
+            <p className="text-xs text-slate-400">{t('الدفعات المؤكدة والمعلقة وتحويلات الأساتذة، من قاعدة البيانات مباشرة.', 'Approved and pending payments and teacher payouts, straight from the database.')}</p>
+          </div>
+          <button
+            onClick={() => loadFinancials()}
+            disabled={loading}
+            aria-label={t('تحديث البيانات', 'Refresh data')}
+            className="h-11 w-11 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-gold-400' : ''}`} />
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="space-y-2.5">
+            <Skeleton className="h-16" />
+            <Skeleton className="h-16" />
+            <Skeleton className="h-16" />
+          </div>
+        ) : !data || data.transactions.length === 0 ? (
+          <div className="flex items-center gap-3 rounded-2xl border border-dashed border-white/10 px-5 py-8 text-sm text-slate-400">
+            <Scale className="w-5 h-5 shrink-0 text-slate-500" />
+            {t('لا توجد عمليات بعد. تظهر هنا كل دفعة بعد أن يطلبها طالب في قسم العمليات.', 'No transactions yet. Each payment shows up here once a student requests it and it reaches Operations.')}
+          </div>
+        ) : (
+          <ul className="space-y-2.5">
+            {data.transactions.map((tx) => {
+              const isNegative = tx.amount < 0;
+              return (
+                <li key={tx.id} className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 flex items-center justify-between gap-3 transition-colors">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border ${isNegative ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'}`}>
+                      {isNegative ? <ArrowUpRight className="w-5 h-5" /> : <ArrowDownLeft className="w-5 h-5" />}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-xs sm:text-sm font-bold text-white truncate">{ar ? tx.nameAr : tx.nameFr}</h4>
+                      <p className="text-[11px] text-slate-400 font-mono">{[tx.method, tx.date].filter(Boolean).join(' · ')}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className={`text-sm sm:text-base font-black font-mono ${isNegative ? 'text-rose-400' : 'text-emerald-400'}`}>
+                      {isNegative ? '' : '+'}
+                      {formatDZD(tx.amount)}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded-md border text-[11px] font-bold font-mono ${STATUS_STYLE[tx.status] || STATUS_STYLE.COMPLETE}`}>
+                      {tx.status === 'PENDING' ? t('معلقة', 'Pending') : t('مكتملة', 'Complete')}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );
