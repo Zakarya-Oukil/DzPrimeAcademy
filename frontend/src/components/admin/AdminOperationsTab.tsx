@@ -81,7 +81,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
   useEffect(() => {
     setLoading(true);
     loadOperations();
-    const interval = setInterval(loadOperations, 15000); // 15s auto-poll
+    const interval = setInterval(() => { if (document.visibilityState === 'visible') loadOperations(); }, 45000); // polls only while the tab is visible // 15s auto-poll
     return () => clearInterval(interval);
   }, [loadOperations]);
 

@@ -84,6 +84,7 @@ export const MockCheckoutModal: React.FC<MockCheckoutModalProps> = ({ bundle, on
         >
           <button
             data-testid="mock-checkout-close-btn"
+            aria-label="Close"
             onClick={onClose}
             className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400"
           >

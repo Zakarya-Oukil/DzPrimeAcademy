@@ -3,14 +3,15 @@ import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { requireCatalogActor } from '@/lib/ownership';
 import { parseImageField } from '@/lib/safeUrl';
+import { guard } from '@/lib/http';
 
-export async function GET() {
+async function GETHandler() {
   await ensureSeeded();
   const courses = await prisma.course.findMany({ orderBy: { createdAt: 'desc' } });
   return NextResponse.json(courses);
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
   const actor = await requireCatalogActor(request);
   if ('error' in actor) return actor.error;
   const { user, isStaff } = actor;
@@ -54,3 +55,6 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json(course, { status: 201 });
 }
+
+export const GET = guard(GETHandler);
+export const POST = guard(POSTHandler);

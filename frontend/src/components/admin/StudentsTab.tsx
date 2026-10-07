@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   Search,
@@ -49,18 +49,36 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
   const [deleteCandidate, setDeleteCandidate] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const load = () => {
-    fetch('/api/students')
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data)) setUsers(data);
+  const [total, setTotal] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const loadSeq = useRef(0);
+
+  // First page (re-run on search, debounced); "load more" appends the next page.
+  const load = (append = false, q = search) => {
+    const offset = append ? users.length : 0;
+    if (append) setLoadingMore(true);
+    const reqId = ++loadSeq.current;
+    return fetch(`/api/students?limit=100&offset=${offset}&q=${encodeURIComponent(q.trim())}`)
+      .then(async (r) => {
+        const data = await r.json();
+        if (reqId !== loadSeq.current) return; // a newer search superseded this response
+        if (Array.isArray(data)) {
+          setUsers((prev) => (append ? [...prev, ...data] : data));
+          setTotal(Number(r.headers.get('X-Total-Count')) || data.length);
+        }
       })
-      .finally(() => setLoading(false));
+      .catch(() => {})
+      .finally(() => {
+        setLoading(false);
+        setLoadingMore(false);
+      });
   };
 
   useEffect(() => {
-    load();
-  }, []);
+    const t = setTimeout(() => load(false, search), 300);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   const handleToggleVerify = async (id: string, isVerified: boolean) => {
     setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, isVerified: !isVerified } : u)));
@@ -279,6 +297,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
                         href={`/${locale}/profile/${u.studentCardId || u.id}`}
                         target="_blank"
                         title={locale === 'ar' ? 'عرض الملف العام ورمز QR' : 'Voir profil public'}
+                        aria-label={locale === 'ar' ? 'عرض الملف العام ورمز QR' : 'Voir profil public'}
                         className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all"
                       >
                         <ExternalLink className="w-3.5 h-3.5 text-gold-400" />
@@ -288,6 +307,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
                       <button
                         onClick={() => setDeleteCandidate(u)}
                         title={locale === 'ar' ? 'حذف الطالب' : 'Supprimer'}
+                        aria-label={locale === 'ar' ? 'حذف الطالب' : 'Supprimer'}
                         className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-all"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -300,6 +320,18 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
           </tbody>
         </table>
       </div>
+
+      {users.length < total && (
+        <div className="flex justify-center">
+          <button
+            onClick={() => load(true)}
+            disabled={loadingMore}
+            className="px-4 py-2 min-h-[44px] rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-gray-200 disabled:opacity-50"
+          >
+            {loadingMore ? '...' : locale === 'ar' ? `عرض المزيد (${users.length}/${total})` : `Afficher plus (${users.length}/${total})`}
+          </button>
+        </div>
+      )}
 
       {/* Add Student Modal */}
       {showAddModal && (

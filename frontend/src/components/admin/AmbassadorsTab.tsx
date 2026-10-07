@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDZD } from '@/lib/format';
+import { generateStrongPassword } from '@/lib/clientPassword';
 import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
 import { Locale } from '@/types';
 
@@ -80,8 +81,7 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
   }, []);
 
   const generateRandomPassword = () => {
-    const pass = 'Amb' + Math.floor(1000 + Math.random() * 9000) + '!';
-    setForm((prev) => ({ ...prev, password: pass }));
+    setForm((prev) => ({ ...prev, password: generateStrongPassword() }));
   };
 
   const totalCommission = ambassadors.reduce((sum, a) => sum + (a.commissionDzd || 0), 0);

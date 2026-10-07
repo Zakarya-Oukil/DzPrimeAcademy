@@ -48,7 +48,7 @@ import SocialFeed from '@/components/community/SocialFeed';
 import { TeacherCoursesPanel, TeacherSessionsPanel } from '@/components/teacher/TeacherCatalogPanels';
 import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
 
-type TeacherTab = 'studio' | 'courses' | 'sessions' | 'roster' | 'drive' | 'profile' | 'community';
+type TeacherTab = 'studio' | 'courses' | 'sessions' | 'roster' | 'profile' | 'community';
 
 export default function TeacherStudioPage() {
   const { locale, isRtl } = useTranslation();
@@ -81,48 +81,10 @@ export default function TeacherStudioPage() {
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  // Drive Pedagogical Resources State
-  const [driveFiles, setDriveFiles] = useState([
-    {
-      id: 'df-1',
-      titleAr: 'سلسلة تمارين رقم 01 - الجداء السلمي والمستقيم في الفضاء',
-      titleFr: 'Série TD N°01 - Produit scalaire & Droites',
-      module: 'Mathématiques',
-      category: 'TD',
-      fileSize: '2.4 MB',
-      createdAt: '2026-09-01',
-      downloads: 142,
-    },
-    {
-      id: 'df-2',
-      titleAr: 'ملخص القوانين والوحدات الأساسية - ميكانيك نيوتن',
-      titleFr: 'Formulaire de Révision - Mécanique de Newton',
-      module: 'Physique',
-      category: 'RÉSUMÉ',
-      fileSize: '1.8 MB',
-      createdAt: '2026-08-28',
-      downloads: 289,
-    },
-    {
-      id: 'df-3',
-      titleAr: 'امتحان تجريبي مقترح مع الحل النموذجي المفصل',
-      titleFr: 'Sujet d\'Examen Blanc & Corrigé Détaillé',
-      module: 'Sciences',
-      category: 'EXAM',
-      fileSize: '4.1 MB',
-      createdAt: '2026-08-22',
-      downloads: 415,
-    },
-  ]);
-  const [showAddDriveModal, setShowAddDriveModal] = useState(false);
-  const [newFileTitle, setNewFileTitle] = useState('');
-  const [newFileModule, setNewFileModule] = useState('');
-  const [newFileCategory, setNewFileCategory] = useState<'TD' | 'RÉSUMÉ' | 'EXAM' | 'COURS'>('TD');
-
   useEffect(() => {
     const applyHash = () => {
       const hash = window.location.hash.replace('#', '') as TeacherTab;
-      if (['studio', 'community', 'courses', 'sessions', 'roster', 'drive', 'profile'].includes(hash)) setTab(hash);
+      if (['studio', 'community', 'courses', 'sessions', 'roster', 'profile'].includes(hash)) setTab(hash);
     };
     applyHash();
     window.addEventListener('hashchange', applyHash);
@@ -159,6 +121,27 @@ export default function TeacherStudioPage() {
 
   const myCourses = courses.filter((c) => c.teacherId === currentUser?.id);
   const mySessions = sessions.filter((s) => s.teacherId === currentUser?.id);
+  const liveHours = Math.round(mySessions.reduce((t, x) => t + (x.durationMinutes || 0), 0) / 60);
+  const weekDays = (() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - start.getDay());
+    return Array.from({ length: 7 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
+  })();
+  const sessionsPerMonth = (() => {
+    const year = new Date().getFullYear();
+    const counts = Array.from({ length: 12 }, () => 0);
+    mySessions.forEach((x) => {
+      const d = new Date(x.scheduledAt);
+      if (d.getFullYear() === year) counts[d.getMonth()]++;
+    });
+    const max = Math.max(1, ...counts);
+    return counts.map((n, i) => ({
+      m: new Date(year, i, 1).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-FR', { month: 'short' }),
+      n,
+      h: (n / max) * 100,
+    }));
+  })();
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -232,7 +215,6 @@ export default function TeacherStudioPage() {
     { id: 'courses', icon: BookOpen, labelAr: 'مقرراتي ومقاييسي', labelFr: 'Mes Modules' },
     { id: 'sessions', icon: Video, labelAr: 'الحصص المباشرة', labelFr: 'Sessions Live' },
     { id: 'roster', icon: Users2, labelAr: 'قائمة الطلبة والحضور', labelFr: 'Liste & Présence' },
-    { id: 'drive', icon: FolderOpen, labelAr: 'المطبوعات والسلاسل', labelFr: 'Drive & Supports' },
     { id: 'profile', icon: UserCheck, labelAr: 'الملف وحساب CCP', labelFr: 'Profil & CCP' },
   ];
 
@@ -248,28 +230,28 @@ export default function TeacherStudioPage() {
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
-            {locale === 'ar' ? `مرحباً، أستاذ ${currentUser?.name || ''}` : `Hello, Prof. ${currentUser?.name || 'Valentina'}`}
+            {locale === 'ar' ? `مرحباً، أستاذ ${currentUser?.name || ''}` : `Bonjour, Prof. ${currentUser?.name || ''}`}
           </h1>
           <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
-            {currentUser?.institutionName || 'Université des Sciences et de la Technologie Houari Boumediene (USTHB)'} • {currentUser?.specialty || 'Informatique & Mathématiques'}
+            {[currentUser?.institutionName, currentUser?.specialty].filter(Boolean).join(' • ')}
           </p>
         </div>
 
         {/* Output Metrics Bar (Image 2 Style) */}
         <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
           <div className="text-center">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-mono">91</span>
-            <span className="text-[10px] text-slate-400 uppercase block font-bold">{locale === 'ar' ? 'طالب نشط' : 'Students'}</span>
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-mono">{myCourses.length}</span>
+            <span className="text-[10px] text-slate-400 uppercase block font-bold">{locale === 'ar' ? 'مقاييسي' : 'Modules'}</span>
           </div>
           <div className="h-8 w-px bg-slate-200 dark:bg-gray-800" />
           <div className="text-center">
-            <span className="text-2xl sm:text-3xl font-black text-gold-600 dark:text-gold-400 font-mono">104</span>
-            <span className="text-[10px] text-slate-400 uppercase block font-bold">{locale === 'ar' ? 'تسجيل بالدورات' : 'Enrollments'}</span>
+            <span className="text-2xl sm:text-3xl font-black text-gold-600 dark:text-gold-400 font-mono">{mySessions.length}</span>
+            <span className="text-[10px] text-slate-400 uppercase block font-bold">{locale === 'ar' ? 'حصص مباشرة' : 'Live sessions'}</span>
           </div>
           <div className="h-8 w-px bg-slate-200 dark:bg-gray-800" />
           <div className="text-center">
-            <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">185</span>
-            <span className="text-[10px] text-slate-400 uppercase block font-bold">{locale === 'ar' ? 'ساعة تدريس' : 'Hours Live'}</span>
+            <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">{liveHours}</span>
+            <span className="text-[10px] text-slate-400 uppercase block font-bold">{locale === 'ar' ? 'ساعة تدريس' : 'Live hours'}</span>
           </div>
         </div>
       </div>
@@ -374,16 +356,18 @@ export default function TeacherStudioPage() {
               </span>
             </div>
 
-            {/* Calendar Mini Header */}
+            {/* Calendar Mini Header: current week */}
             <div className="flex items-center justify-between p-2.5 rounded-2xl bg-amber-500/10 dark:bg-navy-950 border border-amber-500/20 text-xs font-mono">
-              <span className="text-slate-500 dark:text-slate-400">Sun 22</span>
-              <span className="text-slate-500 dark:text-slate-400">Mon 23</span>
-              <span className="text-slate-500 dark:text-slate-400">Tue 24</span>
-              <span className="font-black px-2 py-0.5 rounded-lg bg-slate-950 dark:bg-gold-500 text-white dark:text-navy-950 shadow-sm">
-                Wed 25
-              </span>
-              <span className="text-slate-500 dark:text-slate-400">Thu 26</span>
-              <span className="text-slate-500 dark:text-slate-400">Fri 27</span>
+              {weekDays.map((d) => (
+                <span
+                  key={d.toDateString()}
+                  className={d.toDateString() === new Date().toDateString()
+                    ? 'font-black px-2 py-0.5 rounded-lg bg-slate-950 dark:bg-gold-500 text-white dark:text-navy-950 shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400'}
+                >
+                  {d.toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-FR', { weekday: 'short', day: 'numeric' })}
+                </span>
+              ))}
             </div>
 
             {/* Vertical Timeline Nodes */}
@@ -432,7 +416,7 @@ export default function TeacherStudioPage() {
           </div>
 
           {/* CENTER COLUMN: Salary & Payout Ledger + Courses Bento (Image 2 Center) */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-8 space-y-6">
             {/* Salary & CCP Payouts Table Card */}
             <div className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
@@ -491,95 +475,18 @@ export default function TeacherStudioPage() {
             <div className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-black text-slate-900 dark:text-white">
-                  {locale === 'ar' ? 'مؤشرات التفاعل الأكاديمي' : 'Teaching Analytics'}
+                  {locale === 'ar' ? 'الحصص المباشرة حسب الشهر' : 'Live sessions per month'}
                 </h3>
-                <span className="text-xs text-gold-600 dark:text-gold-400 font-mono font-bold">2026</span>
+                <span className="text-xs text-gold-600 dark:text-gold-400 font-mono font-bold">{new Date().getFullYear()}</span>
               </div>
               <div className="h-28 flex items-end justify-between gap-2 px-2 pt-2">
-                {[
-                  { m: 'Jan', h: 30 },
-                  { m: 'Feb', h: 45 },
-                  { m: 'Mar', h: 60 },
-                  { m: 'Apr', h: 80 },
-                  { m: 'May', h: 95 },
-                  { m: 'Jun', h: 70 },
-                ].map((pt) => (
+                {sessionsPerMonth.map((pt) => (
                   <div key={pt.m} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-                    <div style={{ height: `${pt.h}%` }} className="w-full rounded-t-lg bg-gold-400/80 dark:bg-gold-500/80 transition-all hover:bg-gold-500" />
+                    <span className="text-[10px] text-slate-500 font-mono">{pt.n || ''}</span>
+                    <div style={{ height: `${pt.h}%` }} className="w-full min-h-[2px] rounded-t-lg bg-gold-400/80 dark:bg-gold-500/80" />
                     <span className="text-[10px] text-slate-400 font-mono">{pt.m}</span>
                   </div>
                 ))}
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT COLUMN: Attendance Punch-Card & Composition (Image 2 Right) */}
-          <div className="lg:col-span-3 space-y-6">
-            {/* Dark Attendance Report Card with Punch Dots (Image 2 Style) */}
-            <div className="rounded-3xl bg-[#090E1F] border border-white/10 text-white p-5 sm:p-6 space-y-4 shadow-xl">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-black uppercase tracking-wider text-slate-300">
-                  {locale === 'ar' ? 'تقرير الحضور' : 'Attendance Report'}
-                </span>
-                <ArrowUpRight className="w-4 h-4 text-gold-400" />
-              </div>
-
-              <div className="flex items-baseline gap-2 font-mono">
-                <span className="text-3xl font-black text-white">63</span>
-                <span className="text-xs text-emerald-400 font-bold">↗ 12</span>
-                <span className="text-[10px] text-slate-400">{locale === 'ar' ? 'حاضر اليوم' : 'Present'}</span>
-              </div>
-
-              {/* Punch-card dot matrix (4 rows x 8 cols) */}
-              <div className="grid grid-cols-8 gap-2 pt-2">
-                {Array.from({ length: 32 }).map((_, i) => {
-                  const isGold = (i * 3 + 7) % 3 === 0;
-                  return (
-                    <div
-                      key={i}
-                      className={`w-3.5 h-3.5 rounded-full ${
-                        isGold ? 'bg-gold-400 shadow-sm shadow-gold-400/50' : 'bg-slate-800'
-                      }`}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Student Composition Circular Arc (Image 2 Style) */}
-            <div className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-4 shadow-sm text-center">
-              <span className="text-xs font-black uppercase tracking-wider text-slate-400 block">
-                {locale === 'ar' ? 'توزع التخصصات' : 'Student Composition'}
-              </span>
-
-              <div className="relative w-28 h-28 mx-auto flex items-center justify-center">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                  <path
-                    className="text-slate-100 dark:text-slate-800"
-                    strokeWidth="4"
-                    stroke="currentColor"
-                    fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    className="text-gold-500"
-                    strokeDasharray="70, 100"
-                    strokeWidth="4.5"
-                    strokeLinecap="round"
-                    stroke="currentColor"
-                    fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-lg font-black font-mono">345</span>
-                  <span className="text-[9px] text-slate-400 uppercase">Total</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-4 text-xs font-mono text-slate-600 dark:text-slate-400">
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gold-500" /> 70% LMD</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700" /> 30% BAC</span>
               </div>
             </div>
           </div>
@@ -594,187 +501,6 @@ export default function TeacherStudioPage() {
 
       {/* ================= 5. ROSTER TAB ================= */}
       {tab === 'roster' && <TeacherRosterPanel locale={locale} />}
-
-      {/* ================= 6. DRIVE TAB ================= */}
-      {tab === 'drive' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/60 dark:border-gray-800">
-            <div>
-              <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <FolderOpen className="w-5 h-5 text-gold-500" />
-                <span>{locale === 'ar' ? 'المطبوعات وسلاسل التمارين (Drive)' : 'Supports de Cours & Séries'}</span>
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
-                {locale === 'ar'
-                  ? `إجمالي الملفات المشاركة مع طلبتك: ${driveFiles.length} ملف`
-                  : `${driveFiles.length} documents partagés avec vos étudiants`}
-              </p>
-            </div>
-
-            <button
-              onClick={() => setShowAddDriveModal(true)}
-              data-testid="add-drive-file-btn"
-              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-gold-500 to-amber-500 hover:from-gold-400 hover:to-amber-400 text-navy-950 font-black text-xs flex items-center gap-2 shadow-md shadow-gold-500/20 active:scale-95 transition-all w-fit"
-            >
-              <Plus className="w-4 h-4 stroke-[3]" />
-              <span>{locale === 'ar' ? 'رفع مطبوعة أو ملخص جديد' : 'Ajouter un Document'}</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {driveFiles.map((file) => (
-              <div
-                key={file.id}
-                data-testid={`drive-file-${file.id}`}
-                className="p-4 rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 shadow-sm hover:border-gold-500/50 hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gold-500/15 border border-gold-500/30 text-gold-600 dark:text-gold-400 flex items-center justify-center">
-                      <FileText className="w-5 h-5" />
-                    </div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-navy-900 text-slate-700 dark:text-slate-300 font-mono text-[10px] font-bold">
-                      {file.category}
-                    </span>
-                  </div>
-
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
-                    {locale === 'ar' ? file.titleAr : file.titleFr || file.titleAr}
-                  </h4>
-                  <p className="text-[11px] text-gold-600 dark:text-gold-400 font-semibold mt-1.5">{file.module}</p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                  <span>{file.fileSize} &bull; {file.createdAt}</span>
-
-                  <div className="flex items-center gap-1.5">
-                    <a
-                      href="#download"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        alert(locale === 'ar' ? `بدء تنزيل: ${file.titleAr}` : `Téléchargement de: ${file.titleFr || file.titleAr}`);
-                      }}
-                      className="p-1.5 rounded-xl bg-slate-100 dark:bg-navy-800 hover:bg-gold-500 hover:text-navy-950 text-slate-600 dark:text-slate-300 transition-colors"
-                      title={locale === 'ar' ? 'تحميل' : 'Télécharger'}
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                    </a>
-                    <button
-                      onClick={() => setDriveFiles(driveFiles.filter((f) => f.id !== file.id))}
-                      className="p-1.5 rounded-xl hover:bg-rose-500/10 text-slate-400 hover:text-rose-500 transition-colors"
-                      title={locale === 'ar' ? 'حذف' : 'Supprimer'}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Add Drive File Modal */}
-          {showAddDriveModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-              <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/30 p-6 space-y-4 shadow-2xl text-slate-900 dark:text-white">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
-                  <h3 className="font-black text-sm sm:text-base flex items-center gap-2">
-                    <UploadCloud className="w-5 h-5 text-gold-500" />
-                    <span>{locale === 'ar' ? 'رفع مطبوعة أو ملخص جديد' : 'Nouveau Document Pédagogique'}</span>
-                  </h3>
-                  <button
-                    onClick={() => setShowAddDriveModal(false)}
-                    className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (!newFileTitle.trim()) return;
-                    const newEntry = {
-                      id: `df-${Date.now()}`,
-                      titleAr: newFileTitle.trim(),
-                      titleFr: newFileTitle.trim(),
-                      module: newFileModule.trim() || (locale === 'ar' ? 'مقياس عام' : 'Module Général'),
-                      category: newFileCategory,
-                      fileSize: '1.5 MB',
-                      createdAt: new Date().toISOString().slice(0, 10),
-                      downloads: 0,
-                    };
-                    setDriveFiles([newEntry, ...driveFiles]);
-                    setNewFileTitle('');
-                    setNewFileModule('');
-                    setShowAddDriveModal(false);
-                  }}
-                  className="space-y-3 font-arabic text-xs"
-                >
-                  <div>
-                    <label className="block text-slate-700 dark:text-gray-300 mb-1 font-semibold">
-                      {locale === 'ar' ? 'عنوان السلسلة أو المطبوعة' : 'Titre du document'}
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={newFileTitle}
-                      onChange={(e) => setNewFileTitle(e.target.value)}
-                      placeholder={locale === 'ar' ? 'مثال: سلسلة تمارين رقم 02 - التحليل' : 'Ex: Série TD N°02 - Analyse'}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-200 dark:border-gold-500/20 text-slate-900 dark:text-white focus:outline-none focus:border-gold-400"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-slate-700 dark:text-gray-300 mb-1 font-semibold">
-                        {locale === 'ar' ? 'المقياس / المادة' : 'Module'}
-                      </label>
-                      <input
-                        type="text"
-                        value={newFileModule}
-                        onChange={(e) => setNewFileModule(e.target.value)}
-                        placeholder="Math, Physique..."
-                        className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-200 dark:border-gold-500/20 text-slate-900 dark:text-white focus:outline-none focus:border-gold-400"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 dark:text-gray-300 mb-1 font-semibold">
-                        {locale === 'ar' ? 'نوع الوثيقة' : 'Catégorie'}
-                      </label>
-                      <select
-                        value={newFileCategory}
-                        onChange={(e) => setNewFileCategory(e.target.value as any)}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-200 dark:border-gold-500/20 text-slate-900 dark:text-white focus:outline-none"
-                      >
-                        <option value="TD">TD / تمارين</option>
-                        <option value="RÉSUMÉ">ملخص / Résumé</option>
-                        <option value="EXAM">امتحان / Examen</option>
-                        <option value="COURS">درس / Cours</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-2xl border-2 border-dashed border-slate-300 dark:border-gold-500/30 text-center space-y-1.5 hover:bg-gold-500/5 transition-colors cursor-pointer">
-                    <UploadCloud className="w-7 h-7 text-gold-500 mx-auto" />
-                    <p className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                      {locale === 'ar' ? 'اسحب ملف PDF أو اضغط للاختيار' : 'Glissez votre fichier PDF ici'}
-                    </p>
-                    <p className="text-[10px] text-slate-400">PDF, PPTX, DOCX (Max 25MB)</p>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md shadow-gold-500/20 active:scale-95 transition-all mt-2"
-                  >
-                    <Check className="w-4 h-4 stroke-[3]" />
-                    <span>{locale === 'ar' ? 'نشر الملف لجميع الطلبة' : 'Publier le document'}</span>
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* ================= 7. PROFILE & CCP TAB ================= */}
       {tab === 'profile' && (

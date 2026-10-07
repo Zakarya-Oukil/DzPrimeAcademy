@@ -47,6 +47,16 @@ const StandardMembershipCard: React.FC<MembershipCardProps> = ({
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+  // The real membership end date comes from the server (the card itself carries no date of its own).
+  const [membershipExpiry, setMembershipExpiry] = useState('');
+  useEffect(() => {
+    const id = user?.studentCardId;
+    if (!id) return;
+    fetch('/api/card/verify/' + encodeURIComponent(id))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setMembershipExpiry(d?.card?.expiryDate || ''))
+      .catch(() => {});
+  }, [user?.studentCardId]);
   const frontCardRef = useRef<HTMLDivElement>(null);
   const backCardRef = useRef<HTMLDivElement>(null);
   const exportFrontRef = useRef<HTMLDivElement>(null);
@@ -68,9 +78,9 @@ const StandardMembershipCard: React.FC<MembershipCardProps> = ({
 
   // Synthesize card data from user or props
   const card: MembershipCardData = customCardData || {
-    cardId: user?.studentCardId || 'DZ-GLD-16-7842',
-    holderName: user?.name || 'علاء الدين / علاء الدين',
-    holderNameAr: user?.name || 'علاء الدين',
+    cardId: user?.studentCardId || '',
+    holderName: user?.name || '',
+    holderNameAr: user?.name || '',
     role: user?.role || 'STUDENT_PAID',
     roleTitleAr:
       user?.role === 'AMBASSADOR'
@@ -102,15 +112,15 @@ const StandardMembershipCard: React.FC<MembershipCardProps> = ({
         : user?.role === 'STUDENT_PAID'
         ? 'Golden Member'
         : 'Student',
-    institutionName: user?.institutionName || 'جامعة العلوم والتكنولوجيا USTHB',
+    institutionName: user?.institutionName || '',
     wilayaCode: user?.wilayaCode || 16,
     wilayaName: user?.wilayaName || 'الجزائر العاصمة',
-    issueDate: '2024/2025',
-    expiryDate: '2026/09/30',
+    issueDate: '',
+    expiryDate: membershipExpiry,
     isVerified: user?.isVerified ?? true,
-    qrPayload: `https://dzprimeacademy.live/verify/${user?.studentCardId || 'DZ-GLD-16-7842'}`,
-    phone: user?.phone || '+213 555 93 54 20',
-    email: user?.email || 'contact@dzprimeacademy.live',
+    qrPayload: user?.studentCardId ? `https://dzprimeacademy.live/verify/${user.studentCardId}` : '',
+    phone: user?.phone || '',
+    email: user?.email || '',
   };
 
   // Generate dynamic QR Code for the card back (points to public profile)
@@ -248,7 +258,7 @@ const StandardMembershipCard: React.FC<MembershipCardProps> = ({
                   {t('card.validThru')}
                 </span>
                 <span className="text-[10px] sm:text-xs font-semibold text-gray-200">
-                  {card.expiryDate}
+                  {card.expiryDate || '-'}
                 </span>
               </div>
             </div>

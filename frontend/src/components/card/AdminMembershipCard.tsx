@@ -35,11 +35,8 @@ export const AdminMembershipCard: React.FC<AdminMembershipCardProps> = ({
   const { currentUser } = useAuthStore();
 
   const rawRole = user?.role || customCardData?.role || 'ADMIN';
-  const isZakarya =
-    user?.name?.toLowerCase().includes('zakar') ||
-    user?.email?.toLowerCase().includes('zakar') ||
-    customCardData?.holderName?.toLowerCase().includes('zakar') ||
-    user?.email === 'zakaryaoukil2003@gmail.com';
+  // The platform owner is recognised by role, not by a hard-coded name or email address.
+  const isZakarya = user?.role === 'OWNER';
 
   const roleDisplayAr =
     customCardData?.jobTitle ||
@@ -59,7 +56,7 @@ export const AdminMembershipCard: React.FC<AdminMembershipCardProps> = ({
       : 'إدارة المنصة المركزية');
 
   const card: MembershipCardData = customCardData || {
-    cardId: user?.studentCardId || 'DZ-OWN-16-0001',
+    cardId: user?.studentCardId || '',
     holderName: user?.name || (isZakarya || rawRole === 'OWNER' ? 'Zakarya Oukil' : 'إدارة المنصة المركزية'),
     holderNameAr: user?.name || (isZakarya || rawRole === 'OWNER' ? 'زكرياء أوكيل (Zakarya Oukil)' : 'إدارة المنصة المركزية'),
     role: rawRole,
@@ -86,12 +83,12 @@ export const AdminMembershipCard: React.FC<AdminMembershipCardProps> = ({
     institutionName: user?.institutionName || 'DZ Prime Academy HQ',
     wilayaCode: user?.wilayaCode || 16,
     wilayaName: user?.wilayaName || 'الجزائر العاصمة',
-    issueDate: '2024/2025',
-    expiryDate: '2026/09/30',
+    issueDate: '',
+    expiryDate: '',
     isVerified: user?.isVerified ?? true,
-    qrPayload: `https://dzprimeacademy.live/verify/${user?.studentCardId || 'DZ-OWN-16-0001'}`,
-    phone: user?.phone || '+213 668 71 87 84',
-    email: user?.email || 'zakaryaoukil2003@gmail.com',
+    qrPayload: `https://dzprimeacademy.live/verify/${user?.studentCardId || ''}`,
+    phone: user?.phone || '',
+    email: user?.email || '',
     bio: user?.bio,
   };
 

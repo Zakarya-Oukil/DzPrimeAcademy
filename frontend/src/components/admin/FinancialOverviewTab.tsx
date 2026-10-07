@@ -88,7 +88,7 @@ export const FinancialOverviewTab: React.FC<FinancialOverviewTabProps> = ({ loca
 
   useEffect(() => {
     loadFinancials();
-    const interval = setInterval(loadFinancials, 15000);
+    const interval = setInterval(() => { if (document.visibilityState === 'visible') loadFinancials(); }, 60000); // polls only while the tab is visible
     return () => clearInterval(interval);
   }, [loadFinancials]);
 

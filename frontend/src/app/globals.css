@@ -195,3 +195,17 @@ body {
   transform: rotateY(180deg) translateZ(1px);
   -webkit-transform: rotateY(180deg) translateZ(1px);
 }
+
+/* Touch targets: on touch / narrow screens controls are at least 44px tall; icon-only buttons are 44px wide too. */
+@media (pointer: coarse), (max-width: 767px) {
+  button,
+  select,
+  [role='button'],
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden']) {
+    min-height: 44px;
+  }
+  button:has(> svg:only-child),
+  [role='button']:has(> svg:only-child) {
+    min-width: 44px;
+  }
+}

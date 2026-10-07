@@ -19,13 +19,9 @@ export async function GET(request: NextRequest) {
     const seriesStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1));
 
     const [
-      revenueAgg,
+      opsByStatusType,
       monthAgg,
-      byType,
-      pendingAgg,
-      approvedCount,
-      paidOutAgg,
-      pendingPayoutAgg,
+      payoutsByStatus,
       unpaidShares,
       commissionAgg,
       monthCommissionAgg,
@@ -35,13 +31,9 @@ export async function GET(request: NextRequest) {
       recentPending,
       recentPayouts,
     ] = await Promise.all([
-      prisma.pendingOperation.aggregate({ where: { status: 'APPROVED', amountDzd: { gt: 0 } }, _sum: { amountDzd: true } }),
+      prisma.pendingOperation.groupBy({ by: ['status', 'type'], where: { status: { in: ['APPROVED', 'PENDING'] }, amountDzd: { gt: 0 } }, _sum: { amountDzd: true }, _count: true }),
       prisma.pendingOperation.aggregate({ where: { status: 'APPROVED', amountDzd: { gt: 0 }, approvedAt: { gte: monthStart } }, _sum: { amountDzd: true } }),
-      prisma.pendingOperation.groupBy({ by: ['type'], where: { status: 'APPROVED', amountDzd: { gt: 0 } }, _sum: { amountDzd: true } }),
-      prisma.pendingOperation.aggregate({ where: { status: 'PENDING', amountDzd: { gt: 0 } }, _sum: { amountDzd: true }, _count: true }),
-      prisma.pendingOperation.count({ where: { status: 'APPROVED', amountDzd: { gt: 0 } } }),
-      prisma.facultyPayout.aggregate({ where: { status: 'PAID' }, _sum: { amountDzd: true } }),
-      prisma.facultyPayout.aggregate({ where: { status: 'PENDING' }, _sum: { amountDzd: true } }),
+      prisma.facultyPayout.groupBy({ by: ['status'], where: { status: { in: ['PAID', 'PENDING'] } }, _sum: { amountDzd: true } }),
       prisma.teacherProfile.aggregate({ where: { payoutStatus: { not: 'PAID' } }, _sum: { monthlyShareDzd: true } }),
       prisma.commissionEntry.aggregate({ _sum: { amountDzd: true } }),
       prisma.commissionEntry.aggregate({ where: { createdAt: { gte: monthStart } }, _sum: { amountDzd: true } }),
@@ -60,10 +52,15 @@ export async function GET(request: NextRequest) {
       prisma.facultyPayout.findMany({ where: { status: 'PAID' }, orderBy: { approvedAt: { sort: 'desc', nulls: 'last' } }, take: 10, include: { teacherProfile: { include: { user: { select: { name: true } } } } } }),
     ]);
 
-    const totalRevenue = revenueAgg._sum.amountDzd || 0;
-    const totalPaidOut = paidOutAgg._sum.amountDzd || 0;
+    const approvedRows = opsByStatusType.filter((r) => r.status === 'APPROVED');
+    const pendingRows = opsByStatusType.filter((r) => r.status === 'PENDING');
+    const sum = (rows: { _sum: { amountDzd: number | null } }[]) => rows.reduce((a, r) => a + (r._sum.amountDzd || 0), 0);
+    const count = (rows: { _count: number }[]) => rows.reduce((a, r) => a + r._count, 0);
+    const payoutSum = (status: string) => payoutsByStatus.find((r) => r.status === status)?._sum.amountDzd || 0;
+    const totalRevenue = sum(approvedRows);
+    const totalPaidOut = payoutSum('PAID');
     const monthlyIncome = monthAgg._sum.amountDzd || 0;
-    const payrollLiability = (pendingPayoutAgg._sum.amountDzd || 0) + (unpaidShares._sum.monthlyShareDzd || 0);
+    const payrollLiability = payoutSum('PENDING') + (unpaidShares._sum.monthlyShareDzd || 0);
 
     const incomeByMonth = new Map(incomeRows.map((r) => [r.m, Number(r.v)]));
     const payoutByMonth = new Map(payoutRows.map((r) => [r.m, Number(r.v)]));
@@ -123,13 +120,13 @@ export async function GET(request: NextRequest) {
       totalBalance: totalRevenue - totalPaidOut,
       monthlyIncome,
       realVerifiedRevenue: totalRevenue,
-      revenueByType: Object.fromEntries(byType.map((r) => [r.type, r._sum.amountDzd || 0])),
+      revenueByType: Object.fromEntries(approvedRows.map((r) => [r.type, r._sum.amountDzd || 0])),
       payrollLiability,
       ambassadorCommissions: commissionAgg._sum.amountDzd || 0,
       netMargin: monthlyIncome - payrollLiability - (monthCommissionAgg._sum.amountDzd || 0),
-      pendingAmountDzd: pendingAgg._sum.amountDzd || 0,
-      approvedOpsCount: approvedCount,
-      pendingOpsCount: pendingAgg._count,
+      pendingAmountDzd: sum(pendingRows),
+      approvedOpsCount: count(approvedRows),
+      pendingOpsCount: count(pendingRows),
       monthly,
       transactions,
     });

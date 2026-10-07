@@ -39,6 +39,7 @@ export const MiniCalendar: React.FC<MiniCalendarProps> = ({ sessions, locale }) 
       <div className="flex items-center justify-between mb-4">
         <button
           data-testid="calendar-prev-month"
+          aria-label="Previous month"
           onClick={() => setCursor(new Date(year, month - 1, 1))}
           className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400"
         >
@@ -49,6 +50,7 @@ export const MiniCalendar: React.FC<MiniCalendarProps> = ({ sessions, locale }) 
         </h4>
         <button
           data-testid="calendar-next-month"
+          aria-label="Next month"
           onClick={() => setCursor(new Date(year, month + 1, 1))}
           className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400"
         >

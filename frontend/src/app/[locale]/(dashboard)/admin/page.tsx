@@ -72,7 +72,7 @@ export default function AdminCommandCenterPage() {
         .catch(() => {});
     };
     fetchCount();
-    const timer = setInterval(fetchCount, 15000);
+    const timer = setInterval(() => { if (document.visibilityState === 'visible') fetchCount(); }, 45000); // polls only while the tab is visible
     return () => clearInterval(timer);
   }, [canSeeOperations]);
 

@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requirePermission } from '@/lib/auth';
 import { canManageUser, hasAnyPermission } from '@/lib/rbac';
+import { guard, textProblem, badField } from '@/lib/http';
 
 // Pay-related fields (CCP, rate) need HR or finance; the rest is HR only.
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+async function PUTHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requirePermission(request, ['users.manage', 'finance.manage']);
   if ('error' in authResult) return authResult.error;
 
@@ -22,6 +23,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   if (hourlyRateDzd === null || hoursTaught === null || studentsCount === null) {
     return NextResponse.json({ error: 'قيمة رقمية غير صالحة' }, { status: 400 });
   }
+
+  const bad = textProblem({ university: [body.university, 160], specialty: [body.specialty, 120], ccpAccount: [body.ccpAccount, 30], ccpCle: [body.ccpCle, 4] });
+  if (bad) return badField(bad);
 
   const existing = await prisma.teacherProfile.findUnique({ where: { id } });
   if (!existing) {
@@ -50,7 +54,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   return NextResponse.json(profile);
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+async function DELETEHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
@@ -75,9 +79,11 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   if (user) {
     await prisma.sessionRegistration.deleteMany({ where: { studentId: user.id } }).catch(() => {});
     await prisma.enrollment.deleteMany({ where: { studentId: user.id } }).catch(() => {});
-    await prisma.session.deleteMany({ where: { userId: user.id } }).catch(() => {});
     await prisma.passwordResetToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
     await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
   }
   return NextResponse.json({ success: true, message: 'تم حذف الأستاذ بنجاح' });
 }
+
+export const PUT = guard(PUTHandler);
+export const DELETE = guard(DELETEHandler);

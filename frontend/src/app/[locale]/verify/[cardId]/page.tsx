@@ -15,7 +15,7 @@ interface VerifiedCard {
   wilayaCode: number | null;
   wilayaName: string | null;
   isVerified: boolean;
-  expiryDate: string;
+  expiryDate: string | null;
 }
 
 export default function VerifyCardPage({
@@ -149,7 +149,7 @@ export default function VerifyCardPage({
 
           <div className="flex items-center justify-between">
             <span className="text-slate-500 dark:text-gray-400">{t('verify.validity')}:</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold font-mono">{card.expiryDate}</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold font-mono">{card.expiryDate || '-'}</span>
           </div>
         </div>
 

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
 import { canManageUser } from '@/lib/rbac';
+import { guard } from '@/lib/http';
 
-export async function DELETE(
+async function DELETEHandler(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -38,9 +39,10 @@ export async function DELETE(
   await prisma.sessionRegistration.deleteMany({ where: { studentId: id } });
   await prisma.enrollment.deleteMany({ where: { studentId: id } });
   await prisma.subscription.deleteMany({ where: { userId: id } });
-  await prisma.session.deleteMany({ where: { userId: id } });
   await prisma.passwordResetToken.deleteMany({ where: { userId: id } });
   await prisma.user.delete({ where: { id } });
 
   return NextResponse.json({ success: true, message: `تم حذف الطالب ${student.name} بنجاح` });
 }
+
+export const DELETE = guard(DELETEHandler);

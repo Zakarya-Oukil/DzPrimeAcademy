@@ -71,7 +71,7 @@ export const CardExportTemplate: React.FC<CardExportTemplateProps> = ({
           </div>
           <div className="flex flex-col items-end">
             <span className="text-[11px] text-[#D4AF37]/80 uppercase font-semibold tracking-wider">VALID UNTIL</span>
-            <span className="text-base font-semibold text-gray-200">{card.expiryDate}</span>
+            <span className="text-base font-semibold text-gray-200">{card.expiryDate || '-'}</span>
           </div>
         </div>
       </div>

@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { requireCatalogActor } from '@/lib/ownership';
+import { getUserFromRequest } from '@/lib/auth';
+import { hasAnyPermission } from '@/lib/rbac';
 import { isHttpsUrl } from '@/lib/safeUrl';
+import { guard } from '@/lib/http';
 
-export async function GET() {
+// The schedule is public; the join link is not. It is shown only to staff, the session's own teacher, and students
+// who registered for that session (it used to be sent to every anonymous visitor).
+async function GETHandler(request: NextRequest) {
   await ensureSeeded();
+  const user = await getUserFromRequest(request);
   const sessions = await prisma.liveSession.findMany({ orderBy: { scheduledAt: 'asc' } });
   const sessionIds = sessions.map((s) => s.id);
   const registrations = await prisma.sessionRegistration.groupBy({
@@ -15,10 +21,21 @@ export async function GET() {
   });
   const countMap = new Map(registrations.map((r) => [r.sessionId, r._count.id]));
 
-  return NextResponse.json(sessions.map((s) => ({ ...s, registrationsCount: countMap.get(s.id) || 0 })));
+  const isStaff = !!user && hasAnyPermission(user, 'catalog.manage');
+  const mine = user && !isStaff
+    ? new Set((await prisma.sessionRegistration.findMany({ where: { studentId: user.id, sessionId: { in: sessionIds } }, select: { sessionId: true } })).map((r) => r.sessionId))
+    : new Set<string>();
+
+  return NextResponse.json(
+    sessions.map((s) => ({
+      ...s,
+      meetUrl: isStaff || (user && s.teacherId === user.id) || mine.has(s.id) ? s.meetUrl : null,
+      registrationsCount: countMap.get(s.id) || 0,
+    }))
+  );
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
   const actor = await requireCatalogActor(request);
   if ('error' in actor) return actor.error;
   const { user, isStaff } = actor;
@@ -67,3 +84,6 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json(session, { status: 201 });
 }
+
+export const GET = guard(GETHandler);
+export const POST = guard(POSTHandler);

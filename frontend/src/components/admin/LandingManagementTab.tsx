@@ -47,10 +47,10 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
     wilayasCount: string;
     satisfactionRate: string;
   }>({
-    examsCount: '12,450+',
-    studentsCount: '52,300+',
-    wilayasCount: '58',
-    satisfactionRate: '99.8%',
+    examsCount: '',
+    studentsCount: '',
+    wilayasCount: '',
+    satisfactionRate: '',
   });
 
   const [loading, setLoading] = useState(true);

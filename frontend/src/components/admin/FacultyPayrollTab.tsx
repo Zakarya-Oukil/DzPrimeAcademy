@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDZD } from '@/lib/format';
+import { generateStrongPassword } from '@/lib/clientPassword';
 import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
 import { Locale } from '@/types';
 
@@ -89,9 +90,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
   }, []);
 
   const generateRandomPassword = () => {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
-    let pass = 'Prof' + Math.floor(1000 + Math.random() * 9000) + '!';
-    setForm((prev) => ({ ...prev, password: pass }));
+    setForm((prev) => ({ ...prev, password: generateStrongPassword() }));
   };
 
   const handleApprove = async (id: string) => {

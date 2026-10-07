@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requirePermission } from '@/lib/auth';
 import { parseImageField } from '@/lib/safeUrl';
+import { guard } from '@/lib/http';
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+async function PUTHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
@@ -39,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   return NextResponse.json(bundle);
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+async function DELETEHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
@@ -47,3 +48,6 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   await prisma.bundle.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }
+
+export const PUT = guard(PUTHandler);
+export const DELETE = guard(DELETEHandler);

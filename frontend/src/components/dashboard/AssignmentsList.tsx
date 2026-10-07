@@ -14,12 +14,6 @@ interface AssignmentsListProps {
   locale: string;
 }
 
-const DEFAULT_ASSIGNMENTS: AssignmentItem[] = [
-  { id: 'a1', title: 'Série TD - Analyse 1 (Ch.3)', date: '02 Sept, 10:30', status: 'IN_PROGRESS' },
-  { id: 'a2', title: 'QCM Anatomie - Membre Supérieur', date: '28 Août, 14:00', status: 'COMPLETED' },
-  { id: 'a3', title: 'BAC Math - Sujet Blanc 04', date: '10 Sept, 09:00', status: 'UPCOMING' },
-];
-
 const STATUS_STYLE: Record<string, string> = {
   IN_PROGRESS: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
   COMPLETED: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
@@ -30,7 +24,7 @@ const STATUS_LABEL_AR: Record<string, string> = { IN_PROGRESS: 'قيد التق�
 const STATUS_LABEL_FR: Record<string, string> = { IN_PROGRESS: 'En cours', COMPLETED: 'Terminé ✓', UPCOMING: 'À venir' };
 
 export const AssignmentsList: React.FC<AssignmentsListProps> = ({ locale }) => {
-  const [items, setItems] = useState<AssignmentItem[]>(DEFAULT_ASSIGNMENTS);
+  const [items, setItems] = useState<AssignmentItem[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDate, setNewDate] = useState('');

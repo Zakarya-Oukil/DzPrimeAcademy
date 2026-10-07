@@ -617,6 +617,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setRateModalAmbassador(null)}
+                  aria-label="Close"
               className="fixed inset-0 bg-black/70 backdrop-blur-md"
             />
 
@@ -729,6 +730,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setBookModalAmbassador(null)}
+                  aria-label="Close"
               className="fixed inset-0 bg-black/70 backdrop-blur-md"
             />
 

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requirePermission } from '@/lib/auth';
 import { canManageUser } from '@/lib/rbac';
+import { guard } from '@/lib/http';
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+async function DELETEHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
@@ -28,10 +29,11 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   if (user) {
     await prisma.sessionRegistration.deleteMany({ where: { studentId: user.id } }).catch(() => {});
     await prisma.enrollment.deleteMany({ where: { studentId: user.id } }).catch(() => {});
-    await prisma.session.deleteMany({ where: { userId: user.id } }).catch(() => {});
     await prisma.passwordResetToken.deleteMany({ where: { userId: user.id } }).catch(() => {});
     await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
   }
 
   return NextResponse.json({ success: true, message: 'تم حذف السفير بنجاح' });
 }
+
+export const DELETE = guard(DELETEHandler);

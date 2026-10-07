@@ -26,9 +26,17 @@ export async function GET(
     );
   }
 
+  // The end date is the real subscription's; accounts without one (free students, staff) have no expiry to show.
+  const subscription = await prisma.subscription.findFirst({
+    where: { userId: matchedUser.id },
+    orderBy: { endDate: 'desc' },
+    select: { endDate: true, status: true },
+  });
+  const membership = !subscription ? 'NONE' : subscription.status === 'ACTIVE' && subscription.endDate > new Date() ? 'ACTIVE' : 'EXPIRED';
+
   return NextResponse.json({
-    isValid: true,
-    message: 'بطاقة عضوية معتمدة ورسمية',
+    isValid: membership !== 'EXPIRED',
+    message: membership === 'EXPIRED' ? 'انتهت صلاحية هذه العضوية' : 'بطاقة عضوية معتمدة ورسمية',
     card: {
       cardId: matchedUser.studentCardId,
       holderName: matchedUser.name,
@@ -37,7 +45,8 @@ export async function GET(
       wilayaCode: matchedUser.wilayaCode,
       wilayaName: matchedUser.wilayaName,
       isVerified: matchedUser.isVerified,
-      expiryDate: '2026/09/30',
+      membership,
+      expiryDate: subscription ? subscription.endDate.toISOString().slice(0, 10).replace(/-/g, '/') : null,
     },
   });
 }

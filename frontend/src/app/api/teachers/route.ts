@@ -5,10 +5,11 @@ import { ensureSeeded } from '@/lib/seed';
 import { hashPassword, requirePermission } from '@/lib/auth';
 import { generateTempPassword, passwordProblem } from '@/lib/passwords';
 import { hasAnyPermission } from '@/lib/rbac';
+import { guard } from '@/lib/http';
 
 // Staff only. HR and finance see the full record; catalog managers (who only need a
 // teacher picker for courses and sessions) get no bank, rate or payout data.
-export async function GET(request: NextRequest) {
+async function GETHandler(request: NextRequest) {
   const authResult = await requirePermission(request, ['users.manage', 'finance.manage', 'catalog.manage']);
   if ('error' in authResult) return authResult.error;
   const canSeeMoney = hasAnyPermission(authResult.user, ['users.manage', 'finance.manage']);
@@ -19,6 +20,7 @@ export async function GET(request: NextRequest) {
   const profiles = await prisma.teacherProfile.findMany({
     include: { payouts: { orderBy: { createdAt: 'desc' }, take: 3 } },
     orderBy: { createdAt: 'asc' },
+    take: 500,
   });
 
   const userIds = profiles.map((p) => p.userId);
@@ -62,7 +64,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(result);
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
   const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
@@ -127,7 +129,11 @@ export async function POST(request: NextRequest) {
     const { passwordHash: _omit, tokenVersion: _tv, ...safeUser } = user;
     return NextResponse.json({ ...profile, user: safeUser, tempPassword: clearPassword }, { status: 201 });
   } catch (error: any) {
+    if (error?.code?.startsWith?.('P2') || error instanceof SyntaxError) throw error; // guard() answers 404/409/400
     console.error('Error creating teacher:', error);
-    return NextResponse.json({ error: error?.message || 'فشل إضافة الأستاذ' }, { status: 500 });
+    return NextResponse.json({ error: 'فشل إضافة الأستاذ' }, { status: 500 });
   }
 }
+
+export const GET = guard(GETHandler);
+export const POST = guard(POSTHandler);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { ExamItem, TrackType, ModuleItem } from '@/types';
-import { EXAMS, MODULES, INSTITUTIONS } from '@/lib/initial-data';
+import { MODULES, INSTITUTIONS } from '@/lib/initial-data';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 import { isGoldenMember } from '@/lib/rbac';
@@ -42,6 +42,15 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
   const { t, locale, isRtl } = useTranslation();
   const { currentUser } = useAuthStore();
   const isGold = isGoldenMember(currentUser);
+
+  // Exams come from the server: it applies the tier rule and signs private file links (they expire after 5 minutes).
+  const [exams, setExams] = useState<ExamItem[]>([]);
+  useEffect(() => {
+    fetch('/api/exams')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d && Array.isArray(d.exams)) setExams(d.exams); })
+      .catch(() => {});
+  }, [currentUser?.id, currentUser?.role]);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,7 +120,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
 
   // Filter exams based on all criteria
   const filteredExams = useMemo(() => {
-    return EXAMS.filter((exam) => {
+    return exams.filter((exam) => {
       // Search query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -142,17 +151,17 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
 
       return true;
     });
-  }, [searchQuery, selectedTrack, selectedModuleId, selectedTermType]);
+  }, [exams, searchQuery, selectedTrack, selectedModuleId, selectedTermType]);
 
   const bookmarkedExams = useMemo(() => {
-    return EXAMS.filter((ex) => bookmarkedExamIds.includes(ex.id));
-  }, [bookmarkedExamIds]);
+    return exams.filter((ex) => bookmarkedExamIds.includes(ex.id));
+  }, [exams, bookmarkedExamIds]);
 
   const trackTabs = [
-    { id: 'ALL', labelAr: 'الكل (جميع الشعب)', labelFr: 'Tous les niveaux', count: EXAMS.length },
-    { id: 'UNIVERSITY_LMD', labelAr: 'الإعلام الآلي والرياضيات (L1/L2)', labelFr: 'Informatique & Maths LMD', count: 7 },
-    { id: 'BAC', labelAr: 'البكالوريا الوطنية (3AS BAC)', labelFr: 'Baccalauréat Algérien', count: 3 },
-    { id: 'MEDICAL', labelAr: 'العلوم الطبية والصيدلة', labelFr: 'Médecine & Santé', count: 2 },
+    { id: 'ALL', labelAr: 'الكل (جميع الشعب)', labelFr: 'Tous les niveaux', count: exams.length },
+    { id: 'UNIVERSITY_LMD', labelAr: 'الإعلام الآلي والرياضيات (L1/L2)', labelFr: 'Informatique & Maths LMD', count: exams.filter((e) => e.trackType === 'UNIVERSITY_LMD').length },
+    { id: 'BAC', labelAr: 'البكالوريا الوطنية (3AS BAC)', labelFr: 'Baccalauréat Algérien', count: exams.filter((e) => e.trackType === 'BAC').length },
+    { id: 'MEDICAL', labelAr: 'العلوم الطبية والصيدلة', labelFr: 'Médecine & Santé', count: exams.filter((e) => e.trackType === 'MEDICAL').length },
   ];
 
   return (
@@ -425,7 +434,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {filteredExams.map((exam) => {
             const isBookmarked = bookmarkedExamIds.includes(exam.id);
-            const isLocked = !exam.isFreeSample && !isGold;
+            const isLocked = exam.isLocked ?? (!exam.isFreeSample && !isGold);
 
             return (
               <motion.div
@@ -671,7 +680,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
                 </button>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  {!activePreviewExam.isFreeSample && !isGold ? (
+                  {(activePreviewExam.isLocked ?? (!activePreviewExam.isFreeSample && !isGold)) ? (
                     <button
                       onClick={() => {
                         setActivePreviewExam(null);

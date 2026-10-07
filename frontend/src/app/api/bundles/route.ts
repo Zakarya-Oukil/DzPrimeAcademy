@@ -3,8 +3,9 @@ import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { requirePermission } from '@/lib/auth';
 import { parseImageField } from '@/lib/safeUrl';
+import { guard } from '@/lib/http';
 
-export async function GET(request: NextRequest) {
+async function GETHandler(request: NextRequest) {
   await ensureSeeded();
   const { searchParams } = new URL(request.url);
   const includeInactive = searchParams.get('all') === 'true';
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(bundles);
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
   const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
@@ -57,3 +58,6 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json(bundle, { status: 201 });
 }
+
+export const GET = guard(GETHandler);
+export const POST = guard(POSTHandler);

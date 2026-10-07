@@ -20,7 +20,8 @@ RUN npx prisma generate
 # Build Next.js with standalone output
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-RUN npm run build:next || npx next build
+# No "|| fallback": a failing build must fail the image build, not ship a half-built app.
+RUN npm run build
 
 # 3. Production Runner
 FROM base AS runner

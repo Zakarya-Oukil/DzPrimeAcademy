@@ -54,14 +54,14 @@ export default function CardStudioPage() {
     } else {
       const updated: User = {
         id: `user-${Date.now()}`,
-        email: 'student@dzprime.academy',
+        email: '',
         role: 'STUDENT_FREE',
         name,
         wilayaCode: Number(wilayaCode),
         wilayaName: wilaya ? getLocalizedWilayaName(wilaya, locale) : 'Alger',
         institutionName,
         phone,
-        studentCardId: `DZ-STU-${wilayaCode}-${Math.floor(1000 + Math.random() * 9000)}`,
+        studentCardId: '',
         isVerified: true,
         createdAt: new Date().toISOString().split('T')[0],
       };
@@ -102,6 +102,7 @@ export default function CardStudioPage() {
               </label>
               <input
                 type="text"
+                aria-label={t('card.nameLabel')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-300 dark:border-gold-500/30 text-slate-900 dark:text-white focus:outline-none focus:border-gold-500 font-bold"
@@ -129,6 +130,7 @@ export default function CardStudioPage() {
               </label>
               <input
                 type="text"
+                aria-label={t('card.institutionLabel')}
                 value={institutionName}
                 onChange={(e) => setInstitutionName(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-300 dark:border-gold-500/30 text-slate-900 dark:text-white focus:outline-none focus:border-gold-500"
@@ -142,6 +144,7 @@ export default function CardStudioPage() {
               <input
                 type="text"
                 dir="ltr"
+                aria-label={t('card.phoneLabel')}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-300 dark:border-gold-500/30 text-slate-900 dark:text-white focus:outline-none focus:border-gold-500 font-mono text-left"

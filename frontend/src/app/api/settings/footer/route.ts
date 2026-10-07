@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requirePermission } from '@/lib/auth';
 import { DEFAULT_FOOTER_CONFIG, FooterConfig } from '@/lib/footerConfig';
+import { guard } from '@/lib/http';
+import { stripUnsafeUrls } from '@/lib/safeUrl';
 
-export async function GET() {
+async function GETHandler() {
   try {
     const settings = await prisma.platformSettings.findUnique({
       where: { id: 'singleton' },
@@ -51,26 +53,28 @@ export async function GET() {
   }
 }
 
-export async function PUT(request: NextRequest) {
+async function PUTHandler(request: NextRequest) {
   try {
     const authResult = await requirePermission(request, 'settings.manage');
     if ('error' in authResult) return authResult.error;
 
     const body = await request.json();
 
-    if (!body || typeof body !== 'object') {
+    if (!body || typeof body !== 'object' || Array.isArray(body) || JSON.stringify(body).length > 200_000) {
       return NextResponse.json({ error: 'Invalid configuration payload' }, { status: 400 });
     }
+    // javascript:/data: links would run in every visitor's browser when the footer link is clicked.
+    const safe = stripUnsafeUrls(body).value;
 
     // Upsert into platform settings
     const updated = await prisma.platformSettings.upsert({
       where: { id: 'singleton' },
       update: {
-        footerConfig: body,
+        footerConfig: safe,
       },
       create: {
         id: 'singleton',
-        footerConfig: body,
+        footerConfig: safe,
       },
     });
 
@@ -80,6 +84,9 @@ export async function PUT(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Error updating footer config:', error);
-    return NextResponse.json({ error: error.message || 'Failed to update footer configuration' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update footer configuration' }, { status: 500 });
   }
 }
+
+export const GET = guard(GETHandler);
+export const PUT = guard(PUTHandler);

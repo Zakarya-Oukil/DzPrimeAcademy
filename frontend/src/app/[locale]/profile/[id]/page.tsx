@@ -189,10 +189,7 @@ export default function PublicProfilePage({
   );
   const canExportCard = isCardOwner || isAdmin;
 
-  const isZakarya =
-    user.email === 'zakaryaoukil2003@gmail.com' ||
-    user.studentCardId === 'DZ-OWN-16-0001' ||
-    (user.name && user.name.toLowerCase().includes('zakar'));
+  const isZakarya = user.role === 'OWNER';
 
   const roleTitle =
     user.jobTitle ||
@@ -460,18 +457,14 @@ export default function PublicProfilePage({
             {isTeacher && (
               <div className="space-y-6">
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-1">
-                    <span className="text-xl font-black text-gold-400">{teacherProfile?.hoursTaught || 48}h</span>
+                    <span className="text-xl font-black text-gold-400">{teacherProfile?.hoursTaught ?? 0}h</span>
                     <p className="text-[11px] text-gray-400">{locale === 'ar' ? 'ساعات التدريس' : 'Heures enseignées'}</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-1">
-                    <span className="text-xl font-black text-lime-400">{teacherProfile?.studentsCount || 420}+</span>
+                    <span className="text-xl font-black text-lime-400">{teacherProfile?.studentsCount ?? 0}</span>
                     <p className="text-[11px] text-gray-400">{locale === 'ar' ? 'طالب مستفيد' : 'Étudiants formés'}</p>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-1">
-                    <span className="text-xl font-black text-amber-300">5.0 ★</span>
-                    <p className="text-[11px] text-gray-400">{locale === 'ar' ? 'التقييم البيداغوجي' : 'Note Pédagogique'}</p>
                   </div>
                 </div>
 

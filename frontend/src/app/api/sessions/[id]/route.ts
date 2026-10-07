@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { mayManage, requireCatalogActor } from '@/lib/ownership';
 import { isHttpsUrl } from '@/lib/safeUrl';
+import { guard } from '@/lib/http';
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+async function PUTHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const actor = await requireCatalogActor(request);
   if ('error' in actor) return actor.error;
 
@@ -33,7 +34,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   return NextResponse.json(session);
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+async function DELETEHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const actor = await requireCatalogActor(request);
   if ('error' in actor) return actor.error;
 
@@ -47,3 +48,6 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   await prisma.liveSession.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }
+
+export const PUT = guard(PUTHandler);
+export const DELETE = guard(DELETEHandler);

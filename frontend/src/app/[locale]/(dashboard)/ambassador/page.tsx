@@ -50,7 +50,7 @@ import SocialFeed from '@/components/community/SocialFeed';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 import { isAmbassador, isTeacher } from '@/lib/rbac';
-import { RECENT_POSTS, AMBASSADORS, CERTIFIED_TEACHERS, WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
+import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
 import { Post, PostType, PostComment, AmbassadorProfile, Locale } from '@/types';
 import { formatDZD } from '@/lib/format';
 
@@ -61,13 +61,12 @@ export default function AmbassadorDashboardPage() {
   const { currentUser, updateProfile } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState<AmbassadorTab>('overview');
-  const [posts, setPosts] = useState<Post[]>(RECENT_POSTS);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [postType, setPostType] = useState<PostType>('SESSION_SCHEDULE');
   const [isOnline, setIsOnline] = useState(false);
   const [location, setLocation] = useState('');
-  const [selectedTeacherId, setSelectedTeacherId] = useState('user-teacher');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedPromo, setCopiedPromo] = useState(false);
@@ -145,59 +144,9 @@ export default function AmbassadorDashboardPage() {
     }
   }, [currentUser]);
 
-  const defaultAmbassadorProfile: AmbassadorProfile = {
-    id: 'amb-default',
-    userId: currentUser?.id || 'user-ambassador',
-    user: {
-      id: currentUser?.id || 'user-ambassador',
-      name: currentUser?.name || 'Ambassadeur DZ PRIME',
-      email: currentUser?.email || 'ambassador@dzprime.academy',
-      role: 'AMBASSADOR',
-      phone: currentUser?.phone || '0555000000',
-      createdAt: currentUser?.createdAt || '2026-01-01T00:00:00.000Z',
-    },
-    wilayaCode: currentUser?.wilayaCode || 16,
-    wilayaNameAr: currentUser?.wilayaName || 'الجزائر',
-    wilayaNameFr: 'Alger',
-    institutionId: 'inst-usthb',
-    institutionNameAr: currentUser?.institutionName || 'جامعة العلوم والتكنولوجيا هواري بومدين (USTHB)',
-    institutionNameFr: 'USTHB Bab Ezzouar',
-    specialtyName: currentUser?.specialty || 'Informatique & Sciences',
-    telegramHandle: '@dzprime_ambassador',
-    bioAr: 'سفير معتمد لمنصة DZ PRIME ACADEMY، أرافق الطلبة للتحضير والتميز الأكاديمي.',
-    bioFr: "Ambassadeur certifié DZ PRIME ACADEMY, j'accompagne les étudiants vers l'excellence.",
-    ratingAverage: 5.0,
-    ratingsCount: 48,
-    isVerified: true,
-    upcomingSessionsCount: 3,
-    totalTipsShared: 12,
-    studentsMentoredCount: 1240,
-    reviews: [
-      {
-        id: 'rev-1',
-        studentName: 'Yacine B.',
-        institution: 'USTHB',
-        comment: 'سفير متميز وحصص مراجعة في القمة!',
-        score: 5,
-        createdAt: '2026-02-15T00:00:00.000Z',
-      },
-      {
-        id: 'rev-2',
-        studentName: 'Amira M.',
-        institution: 'Fac Centrale',
-        comment: 'Disponibilité et explications très claires.',
-        score: 5,
-        createdAt: '2026-02-20T00:00:00.000Z',
-      },
-    ],
-  };
-
-  const fallbackAmbassador: AmbassadorProfile =
-    AMBASSADORS.find((a) => a.userId === currentUser?.id) || (AMBASSADORS.length > 0 ? AMBASSADORS[0] : defaultAmbassadorProfile);
-
   const currentPromoCode = dbAmbassador?.promoCode || `WIL${currentUser?.wilayaCode || 16}-VIP`;
-  const currentCommission = dbAmbassador?.commissionDzd ?? 432988;
-  const currentReferrals = dbAmbassador?.referralsCount ?? 215;
+  const currentCommission = dbAmbassador?.commissionDzd ?? 0;
+  const currentReferrals = dbAmbassador?.referralsCount ?? 0;
 
   const handleTabClick = (tKey: AmbassadorTab) => {
     setActiveTab(tKey);
@@ -301,56 +250,66 @@ export default function AmbassadorDashboardPage() {
     }
   };
 
-  const handleCreatePost = (e: React.FormEvent) => {
+  const [postError, setPostError] = useState('');
+  const [posting, setPosting] = useState(false);
+
+  // Posts live in the database (same API as the community feed); this tab shows the session-type posts.
+  useEffect(() => {
+    if (!currentUser) return;
+    fetch('/api/posts?limit=50')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d && Array.isArray(d.posts)) setPosts(d.posts);
+      })
+      .catch(() => {});
+  }, [currentUser?.id]);
+
+  const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !content) return;
-
-    const teacherObj = CERTIFIED_TEACHERS.find((tch) => tch.id === selectedTeacherId);
-
-    const newPost: Post = {
-      id: `post-${Date.now()}`,
-      title,
-      content,
-      type: postType,
-      wilayaCode: currentUser?.wilayaCode || fallbackAmbassador?.wilayaCode || 16,
-      wilayaName: currentUser?.wilayaName || fallbackAmbassador?.wilayaNameAr || 'Alger',
-      institutionName: currentUser?.institutionName || fallbackAmbassador?.institutionNameAr || 'USTHB Bab Ezzouar',
-      isOnline,
-      location: isOnline ? undefined : location || 'Amphithéâtre C',
-      isApproved: true,
-      authorId: currentUser?.id || 'user-ambassador',
-      authorName: currentUser?.name || 'Ambassadeur',
-      authorRole: currentUser?.role || 'AMBASSADOR',
-      assignedTeacherId: teacherObj?.id || selectedTeacherId,
-      assignedTeacherName: teacherObj?.name || 'Professeur Invité',
-      comments: [],
-      createdAt: new Date().toISOString(),
-    };
-
-    setPosts([newPost, ...posts]);
-    setTitle('');
-    setContent('');
-    setLocation('');
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
+    if (!title.trim() || !content.trim() || posting) return;
+    setPosting(true);
+    setPostError('');
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content, type: postType, isOnline, location: isOnline ? undefined : location || undefined }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setPostError(data.error || (locale === 'ar' ? 'تعذر نشر الإعلان' : 'Publication impossible'));
+        return;
+      }
+      setPosts((prev) => [data.post, ...prev]);
+      setTitle('');
+      setContent('');
+      setLocation('');
+      setIsSubmitted(true);
+      setTimeout(() => setIsSubmitted(false), 3000);
+    } catch {
+      setPostError(locale === 'ar' ? 'خطأ في الاتصال' : 'Erreur réseau');
+    } finally {
+      setPosting(false);
+    }
   };
 
-  const handleAddComment = (postId: string) => {
-    if (!commentText.trim()) return;
-    const newComment: PostComment = {
-      id: `cmt-${Date.now()}`,
-      authorId: currentUser?.id || 'user-ambassador',
-      authorName: currentUser?.name || 'Ambassadeur',
-      authorRole: currentUser?.role || 'AMBASSADOR',
-      content: commentText.trim(),
-      createdAt: new Date().toISOString(),
-    };
-
-    setPosts((prev) =>
-      prev.map((p) => (p.id === postId ? { ...p, comments: [...(p.comments || []), newComment] } : p))
-    );
-    setCommentText('');
-    setActiveCommentPostId(null);
+  const handleAddComment = async (postId: string) => {
+    const text = commentText.trim();
+    if (!text) return;
+    try {
+      const res = await fetch(`/api/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: text }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.comment) return;
+      setPosts((prev) =>
+        prev.map((p) => (p.id === postId ? { ...p, comments: [...(p.comments || []), data.comment] } : p))
+      );
+      setCommentText('');
+      setActiveCommentPostId(null);
+    } catch {}
   };
 
   const navTabs = [
@@ -383,7 +342,7 @@ export default function AmbassadorDashboardPage() {
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              {currentUser?.institutionName || fallbackAmbassador?.institutionNameAr || 'USTHB Bab Ezzouar'} • {fallbackAmbassador?.wilayaNameAr || 'الجزائر'}
+              {[currentUser?.institutionName, currentUser?.wilayaName].filter(Boolean).join(' • ')}
             </p>
           </div>
         </div>
@@ -472,243 +431,42 @@ export default function AmbassadorDashboardPage() {
       {/* ================= 2. MAIN BENTO GRID: SLESFORCESS STYLE OVERVIEW ================= */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          {/* Top 4 KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            {/* Card 1: Total Insights */}
-            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 flex flex-col justify-between space-y-4 hover:border-gold-500/40 transition-all shadow-md">
+          {/* KPI Cards: real values from the ambassador record only */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-                <span>{locale === 'ar' ? 'إجمالي المشاهدات والتفاعل' : 'Total Insights'}</span>
+                <span>{locale === 'ar' ? 'عدد الإحالات' : 'Referrals'}</span>
                 <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300">
-                  <ArrowUpRight className="w-4 h-4" />
+                  <Users className="w-4 h-4" />
                 </div>
               </div>
-              <div>
-                <div className="text-3xl font-black text-white font-mono tracking-tight">215,756</div>
-                <div className="text-xs text-emerald-400 font-bold mt-1 flex items-center gap-1">
-                  <span>+2.3%</span>
-                  <span className="text-slate-500 font-normal">{locale === 'ar' ? 'مقارنة بالشهر الماضي' : "that's last month"}</span>
-                </div>
-              </div>
+              <div className="text-3xl font-black text-white font-mono tracking-tight">{currentReferrals}</div>
             </div>
 
-            {/* Card 2: Overall Revenue */}
-            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 flex flex-col justify-between space-y-4 hover:border-gold-500/40 transition-all shadow-md">
+            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-                <span>{locale === 'ar' ? 'إجمالي عوائد الإحالات' : 'Overall Revenue'}</span>
+                <span>{locale === 'ar' ? 'إجمالي عوائد الإحالات' : 'Commission earned'}</span>
                 <div className="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400">
                   <TrendingUp className="w-4 h-4" />
                 </div>
               </div>
-              <div>
-                <div className="text-3xl font-black text-gold-400 font-mono tracking-tight">
-                  {formatDZD(currentCommission)}
-                </div>
-                <div className="text-xs text-gold-400 font-bold mt-1 flex items-center gap-1">
-                  <span>+12.5%</span>
-                  <span className="text-slate-500 font-normal">{locale === 'ar' ? 'مقارنة بالأسبوع الماضي' : "that's last week"}</span>
-                </div>
-              </div>
+              <div className="text-3xl font-black text-gold-400 font-mono tracking-tight">{formatDZD(currentCommission)}</div>
             </div>
 
-            {/* Card 3: Finance Balance & Multi-Color Progress */}
-            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 flex flex-col justify-between space-y-4 hover:border-gold-500/40 transition-all shadow-md">
+            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-                <span>{locale === 'ar' ? 'رصيد العمولة والهدف' : 'Finance Balance'}</span>
+                <span>{locale === 'ar' ? 'كود الخصم' : 'Promo code'}</span>
                 <div className="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-400">
                   <DollarSign className="w-4 h-4" />
                 </div>
               </div>
-              <div className="space-y-2">
-                <div className="text-3xl font-black text-white font-mono tracking-tight">
-                  {formatDZD(currentCommission * 1.5)}
-                </div>
-                {/* Multi-segmented bar */}
-                <div className="w-full h-3 rounded-full bg-white/10 flex overflow-hidden p-0.5">
-                  <div className="bg-purple-500 h-full rounded-full w-[45%]" title="Profit" />
-                  <div className="bg-gold-400 h-full rounded-full w-[35%] ml-1" title="Total Earning" />
-                  <div className="bg-slate-700 h-full rounded-full w-[20%] ml-1" title="Target" />
-                </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-500" /> {locale === 'ar' ? 'أرباح' : 'Profit'}</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gold-400" /> {locale === 'ar' ? 'مكتسب' : 'Earning'}</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-700" /> {locale === 'ar' ? 'الهدف' : 'Target'}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 4: Conversion Rate Donut Gauge */}
-            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 flex flex-col justify-between space-y-3 hover:border-gold-500/40 transition-all shadow-md">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-                <span>{locale === 'ar' ? 'معدل تحويل الاشتراكات' : 'Sales Conversion Rate'}</span>
-                <span className="text-xs text-gold-400 font-mono font-bold">12.5%</span>
-              </div>
-              <div className="flex items-center justify-center py-1">
-                {/* SVG Donut */}
-                <div className="relative w-24 h-24 flex items-center justify-center">
-                  <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                    <path
-                      className="text-slate-800"
-                      strokeWidth="3.8"
-                      stroke="currentColor"
-                      fill="none"
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                    <path
-                      className="text-purple-500"
-                      strokeDasharray="45, 100"
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                      stroke="currentColor"
-                      fill="none"
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                    <path
-                      className="text-gold-400"
-                      strokeDasharray="25, 100"
-                      strokeDashoffset="-45"
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                      stroke="currentColor"
-                      fill="none"
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-sm font-black font-mono">12.5%</span>
-                    <span className="text-[8px] text-slate-400 uppercase">Success</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-purple-500" /> Leads</span>
-                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-gold-400" /> VIP Gold</span>
-                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-slate-700" /> Free</span>
-              </div>
+              <div className="text-xl font-black text-white font-mono tracking-widest break-all">{currentPromoCode}</div>
             </div>
           </div>
 
-          {/* Middle Row: Heatmap Matrix + Growth Chart + Quick Activity Toolkit */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
-            {/* Left: Referral & Activity Heatmap Matrix (Image 1 Style) */}
-            <div className="lg:col-span-5 rounded-3xl bg-[#090E1F] border border-white/10 p-5 sm:p-6 space-y-4 shadow-xl">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-black text-white">
-                    {locale === 'ar' ? 'مصفوفة نشاط وانضمام الطلبة' : 'Student Recruitment Matrix'}
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    {locale === 'ar' ? 'توزع التسجيلات الأسبوعية عبر ولايتك' : 'Weekly student enrollments across 58 wilayas'}
-                  </p>
-                </div>
-                <span className="px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-[11px] text-gold-400 font-mono">
-                  58 WILAYAS
-                </span>
-              </div>
-
-              {/* Heatmap Legend */}
-              <div className="flex items-center gap-3 text-[10px] text-slate-400 font-mono pt-1">
-                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-800 border border-white/5" /> 100</span>
-                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-gold-950 border border-gold-800" /> 300</span>
-                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-gold-600 border border-gold-500" /> 500</span>
-                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-lime-400 text-slate-950 font-bold" /> 1000+</span>
-              </div>
-
-              {/* Heatmap Grid (6 rows x 10 cols) */}
-              <div className="grid grid-cols-10 gap-1.5 pt-2">
-                {Array.from({ length: 60 }).map((_, i) => {
-                  const intensity = (i * 7 + 13) % 4;
-                  const bgClass =
-                    intensity === 3
-                      ? 'bg-lime-400 shadow-sm shadow-lime-400/30'
-                      : intensity === 2
-                      ? 'bg-gold-500'
-                      : intensity === 1
-                      ? 'bg-gold-900/60'
-                      : 'bg-slate-800/80';
-                  return (
-                    <div
-                      key={i}
-                      className={`h-5 rounded-md ${bgClass} transition-all hover:scale-125 cursor-pointer`}
-                      title={`Week ${Math.floor(i / 10) + 1} - Activity Level ${intensity + 1}`}
-                    />
-                  );
-                })}
-              </div>
-
-              <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-2 border-t border-white/5">
-                <span>JAN</span>
-                <span>MAR</span>
-                <span>MAY</span>
-                <span>JUL</span>
-                <span>SEP</span>
-                <span>NOV</span>
-              </div>
-            </div>
-
-            {/* Center: Sales & Recruitment Growth Chart (Image 1 Style) */}
-            <div className="lg:col-span-4 rounded-3xl bg-[#090E1F] border border-white/10 p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-black text-white">
-                    {locale === 'ar' ? 'نمو الإحالات والعمولات' : 'Sales & Commission Growth'}
-                  </h3>
-                  <span className="text-xs text-slate-400 font-mono">DZD / MONTH</span>
-                </div>
-
-                <div className="flex items-center p-1 rounded-xl bg-black/40 border border-white/10 text-[11px] font-mono">
-                  <button
-                    onClick={() => setGrowthView('MONTH')}
-                    className={`px-2.5 py-0.5 rounded-lg font-bold transition-all ${
-                      growthView === 'MONTH' ? 'bg-white text-slate-950 font-black' : 'text-slate-400'
-                    }`}
-                  >
-                    Month
-                  </button>
-                  <button
-                    onClick={() => setGrowthView('ANNUAL')}
-                    className={`px-2.5 py-0.5 rounded-lg font-bold transition-all ${
-                      growthView === 'ANNUAL' ? 'bg-white text-slate-950 font-black' : 'text-slate-400'
-                    }`}
-                  >
-                    Annually
-                  </button>
-                </div>
-              </div>
-
-              {/* Bar Visualizer with Highlighted August Peak */}
-              <div className="h-44 flex items-end justify-between gap-2 pt-4 px-2">
-                {[
-                  { month: 'Jun', val: 40 },
-                  { month: 'Jul', val: 65 },
-                  { month: 'Aug', val: 95, isPeak: true },
-                  { month: 'Sep', val: 70 },
-                  { month: 'Oct', val: 55 },
-                  { month: 'Nov', val: 80 },
-                ].map((bar) => (
-                  <div key={bar.month} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-                    {bar.isPeak && (
-                      <div className="px-2 py-1 rounded-lg bg-purple-500 text-white text-[10px] font-mono font-black mb-1 shadow-lg animate-bounce">
-                        432,988
-                      </div>
-                    )}
-                    <div
-                      style={{ height: `${bar.val}%` }}
-                      className={`w-full rounded-t-xl transition-all ${
-                        bar.isPeak
-                          ? 'bg-gradient-to-t from-purple-600 via-purple-500 to-lime-300 shadow-lg shadow-purple-500/30'
-                          : 'bg-slate-800 group-hover:bg-slate-700'
-                      }`}
-                    />
-                    <span className={`text-[10px] font-mono ${bar.isPeak ? 'text-lime-300 font-bold' : 'text-slate-500'}`}>
-                      {bar.month}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Right: Quick Action Toolkit & Promo Code ("Your Activity" Image 1) */}
-            <div className="lg:col-span-3 rounded-3xl bg-[#090E1F] border border-white/10 p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
+            <div className="lg:col-span-5 rounded-3xl bg-[#090E1F] border border-white/10 p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
               <div>
                 <h3 className="text-base font-black text-white">
                   {locale === 'ar' ? 'أدواتك التسويقية السريعة' : 'Your Activity & Toolkit'}
@@ -839,23 +597,6 @@ export default function AmbassadorDashboardPage() {
 
               <div>
                 <label className="text-xs font-bold text-slate-300 block mb-1">
-                  {locale === 'ar' ? 'الأستاذ المؤطر' : 'Enseignant Encadrant'}
-                </label>
-                <select
-                  value={selectedTeacherId}
-                  onChange={(e) => setSelectedTeacherId(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none font-arabic"
-                >
-                  {CERTIFIED_TEACHERS.map((tch) => (
-                    <option key={tch.id} value={tch.id}>
-                      {tch.name} ({tch.specialty})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
                   {locale === 'ar' ? 'تفاصيل ومحاور الحصة' : 'Détails & Programme'}
                 </label>
                 <textarea
@@ -870,11 +611,18 @@ export default function AmbassadorDashboardPage() {
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 hover:from-gold-400 hover:to-amber-400 text-navy-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-2"
+                disabled={posting}
+                className="w-full py-3 disabled:opacity-60 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 hover:from-gold-400 hover:to-amber-400 text-navy-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" />
                 <span>{locale === 'ar' ? 'نشر الإعلان للطلبة فوراً' : 'Publier la session'}</span>
               </button>
+
+              {postError && (
+                <div role="alert" className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-bold text-center font-arabic">
+                  {postError}
+                </div>
+              )}
 
               {isSubmitted && (
                 <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold text-center font-arabic">
@@ -908,7 +656,7 @@ export default function AmbassadorDashboardPage() {
                       <div>
                         <h4 className="text-sm font-black text-white">{post.title}</h4>
                         <p className="text-[11px] text-slate-400 font-arabic">
-                          {post.authorName} • {post.institutionName} • {post.assignedTeacherName}
+                          {[post.authorName, post.institutionName, post.assignedTeacherName].filter(Boolean).join(' • ')}
                         </p>
                       </div>
                     </div>
@@ -976,7 +724,6 @@ export default function AmbassadorDashboardPage() {
               <Users className="w-5 h-5 text-gold-400" />
               <span>{locale === 'ar' ? 'دليل شبكة سفراء 58 ولاية' : 'Annuaire National des Ambassadeurs'}</span>
             </h3>
-            <span className="text-xs text-slate-400 font-mono">58 Wilayas Covered</span>
           </div>
           <AmbassadorDirectory />
         </div>
@@ -990,36 +737,10 @@ export default function AmbassadorDashboardPage() {
               <Star className="w-5 h-5 text-gold-400 fill-gold-400" />
               <span>{locale === 'ar' ? 'تقييمات وآراء الطلبة المعتمدة' : 'Avis et retours des étudiants'}</span>
             </h3>
-            <span className="text-xs text-gold-400 font-mono font-bold">5.0 / 5.0 Rating</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(fallbackAmbassador?.reviews || defaultAmbassadorProfile.reviews || []).map((rev) => (
-              <div
-                key={rev.id}
-                className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 space-y-3 shadow-md"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center font-bold text-xs font-mono">
-                      {rev.studentName.slice(0, 1)}
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-black text-white">{rev.studentName}</h4>
-                      <span className="text-[10px] text-slate-400">{rev.institution}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 text-gold-400">
-                    {Array.from({ length: rev.score }).map((_, idx) => (
-                      <Star key={idx} className="w-3.5 h-3.5 fill-gold-400 text-gold-400" />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed font-arabic bg-black/20 p-3 rounded-2xl border border-white/5">
-                  &ldquo;{rev.comment}&rdquo;
-                </p>
-              </div>
-            ))}
+          <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-8 text-center text-xs text-slate-400 font-arabic">
+            {locale === 'ar' ? 'لا توجد تقييمات بعد.' : 'Aucun avis pour le moment.'}
           </div>
         </div>
       )}

@@ -5,10 +5,11 @@ import { ensureSeeded } from '@/lib/seed';
 import { hashPassword, requirePermission } from '@/lib/auth';
 import { generateTempPassword, passwordProblem } from '@/lib/passwords';
 import { hasAnyPermission } from '@/lib/rbac';
+import { guard, textProblem, intInRange, badField } from '@/lib/http';
 
 // Staff only: the list carries commission and promo data. Ambassadors' public
 // face is /api/profile/[id].
-export async function GET(request: NextRequest) {
+async function GETHandler(request: NextRequest) {
   const authResult = await requirePermission(request, ['users.manage', 'catalog.manage']);
   if ('error' in authResult) return authResult.error;
   const isHR = hasAnyPermission(authResult.user, 'users.manage');
@@ -16,6 +17,7 @@ export async function GET(request: NextRequest) {
   await ensureSeeded();
   const ambassadors = await prisma.ambassadorProfile.findMany({
     orderBy: { createdAt: 'asc' },
+    take: 500,
   });
 
   const userIds = ambassadors.map((a) => a.userId);
@@ -59,7 +61,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(result);
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
   const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
@@ -150,18 +152,24 @@ export async function POST(request: NextRequest) {
     const { passwordHash: _omit, tokenVersion: _tv, ...safeUser } = user;
     return NextResponse.json({ ...profile, user: safeUser, tempPassword: clearPassword }, { status: 201 });
   } catch (error: any) {
+    if (error?.code?.startsWith?.('P2') || error instanceof SyntaxError) throw error; // guard() answers 404/409/400
     console.error('Error creating ambassador:', error);
-    return NextResponse.json({ error: error?.message || 'فشل إضافة السفير' }, { status: 500 });
+    return NextResponse.json({ error: 'فشل إضافة السفير' }, { status: 500 });
   }
 }
 
-export async function PUT(request: NextRequest) {
+async function PUTHandler(request: NextRequest) {
   const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
   try {
     const body = await request.json();
     const { id, isVerified, upcomingSessionsCount, telegramHandle, bioAr, specialtyName } = body;
+
+    const bad = textProblem({ telegramHandle: [telegramHandle, 64], bioAr: [bioAr, 1000], specialtyName: [specialtyName, 120] });
+    if (bad) return badField(bad);
+    if (typeof id !== 'string') return badField('id');
+    if (upcomingSessionsCount !== undefined && !intInRange(Number(upcomingSessionsCount), 0, 1000)) return badField('upcomingSessionsCount');
 
     // Same normal form resolvePromo looks up, and unique across ambassador codes and platform campaigns.
     let promoCode: string | undefined = undefined;
@@ -190,6 +198,11 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(profile);
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || 'فشل تحديث بيانات السفير' }, { status: 500 });
+    if (error?.code?.startsWith?.('P2') || error instanceof SyntaxError) throw error; // guard() answers 404/409/400
+    return NextResponse.json({ error: 'فشل تحديث بيانات السفير' }, { status: 500 });
   }
 }
+
+export const GET = guard(GETHandler);
+export const POST = guard(POSTHandler);
+export const PUT = guard(PUTHandler);

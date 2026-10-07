@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { EXAMS } from '@/lib/initial-data';
+import { prisma } from '@/lib/db';
+import { ensureSeeded } from '@/lib/seed';
 import { getUserFromRequest } from '@/lib/auth';
+import { guard } from '@/lib/http';
+import { isStorageRef, signedDownloadUrl } from '@/lib/storageSign';
 
-export async function GET(request: NextRequest) {
+async function GETHandler(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const moduleId = searchParams.get('moduleId');
 
-  // Verify server-side authentication and role
+  await ensureSeeded();
   const user = await getUserFromRequest(request);
   const hasPaidAccess = !!user && (
     user.role === 'STUDENT_PAID' ||
@@ -15,29 +18,30 @@ export async function GET(request: NextRequest) {
     user.role === 'OWNER'
   );
 
-  let filtered = EXAMS;
-  if (moduleId) {
-    filtered = filtered.filter((e) => e.moduleId === moduleId);
-  }
+  const exams = await prisma.exam.findMany({
+    where: moduleId ? { moduleId } : undefined,
+    orderBy: [{ year: 'desc' }, { title: 'asc' }],
+    take: 500,
+  });
 
-  // Enforce tier restriction securely on the server
-  if (!hasPaidAccess) {
-    filtered = filtered.map((exam, idx) => {
-      if (exam.isFreeSample || idx < 2) {
-        return exam;
-      }
-      return {
-        ...exam,
-        fileUrl: '#locked',
-        solutionUrl: undefined,
-        isLocked: true,
-      };
-    });
-  }
+  // The tier rule is applied on the server: locked exams never leave it with a usable file link.
+  const visible = await Promise.all(
+    exams.map(async (exam, idx) => {
+      const open = hasPaidAccess || exam.isFreeSample || idx < 2;
+      if (!open) return { ...exam, fileUrl: '#locked', solutionUrl: null, isLocked: true };
+
+      // Private files: hand out a link that expires in 5 minutes instead of a permanent address.
+      const fileUrl = isStorageRef(exam.fileUrl) ? (await signedDownloadUrl(exam.fileUrl)) ?? '#unavailable' : exam.fileUrl;
+      const solutionUrl = isStorageRef(exam.solutionUrl) ? await signedDownloadUrl(exam.solutionUrl) : exam.solutionUrl;
+      return { ...exam, fileUrl, solutionUrl, isLocked: false };
+    })
+  );
 
   return NextResponse.json({
     success: true,
-    count: filtered.length,
-    exams: filtered,
+    count: visible.length,
+    exams: visible,
   });
 }
+
+export const GET = guard(GETHandler);

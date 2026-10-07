@@ -48,7 +48,8 @@ export default function DawaratCatalogPage() {
   }, [lockedTrack]);
 
   useEffect(() => {
-    if (currentUser) {
+    // Enrollments exist for students only; other roles would just get a 403.
+    if (isStudent) {
       fetch('/api/enrollments')
         .then((r) => (r.ok ? r.json() : []))
         .then((data) => {
@@ -58,7 +59,7 @@ export default function DawaratCatalogPage() {
         })
         .catch(() => {});
     }
-  }, [currentUser]);
+  }, [isStudent]);
 
   const handleEnroll = (c: PlatformCourse, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -73,7 +74,7 @@ export default function DawaratCatalogPage() {
       type: 'COURSE_ENROLLMENT',
       title: locale === 'ar' ? `دورة: ${c.titleAr}` : `Cours: ${c.titleFr || c.titleAr}`,
       details: `Course ID: ${c.id} | Formateur: ${c.teacherName} | ${c.category}`,
-      amountDzd: c.priceDzd || 3500,
+      amountDzd: c.priceDzd ?? 0,
       targetId: c.id,
       user: {
         name: currentUser.name,

@@ -6,8 +6,9 @@ import { hashPassword, requirePermission } from '@/lib/auth';
 import { passwordProblem } from '@/lib/passwords';
 import { isSuperAdmin, isAssignableAdminRole, canAssignAdminRole } from '@/lib/rbac';
 import { Role } from '@/types';
+import { guard } from '@/lib/http';
 
-export async function GET(request: NextRequest) {
+async function GETHandler(request: NextRequest) {
   const authResult = await requirePermission(request, 'staff.manage');
   if ('error' in authResult) return authResult.error;
 
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
       ],
     },
     orderBy: { createdAt: 'asc' },
+    take: 500,
     select: {
       id: true,
       email: true,
@@ -44,7 +46,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(staff);
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
   // Only roles holding staff.manage (Super Admin, General Admin, HR Manager) may add staff.
   const authResult = await requirePermission(request, 'staff.manage');
   if ('error' in authResult) return authResult.error;
@@ -162,10 +164,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(user, { status: 201 });
   } catch (error: any) {
+    if (error?.code?.startsWith?.('P2') || error instanceof SyntaxError) throw error; // guard() answers 404/409/400
     console.error('Error creating staff member:', error);
     return NextResponse.json(
-      { error: error?.message || 'فشل إضافة الإداري' },
+      { error: 'فشل إضافة الإداري' },
       { status: 500 }
     );
   }
 }
+
+export const GET = guard(GETHandler);
+export const POST = guard(POSTHandler);
