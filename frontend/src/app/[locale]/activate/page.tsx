@@ -7,6 +7,7 @@ import { CheckCircle2, AlertCircle, Loader2, ArrowRight, Sparkles, Mail, Message
 import confetti from 'canvas-confetti';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
+import { CardActivationChooser } from '@/components/shared/CardActivationChooser';
 
 function ActivationContent() {
   const searchParams = useSearchParams();
@@ -17,15 +18,15 @@ function ActivationContent() {
   const isAr = locale === 'ar';
   const { setCurrentUser } = useAuthStore();
 
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'card'>('loading');
   const [message, setMessage] = useState('');
   const [userName, setUserName] = useState('');
+  const [chooserOpen, setChooserOpen] = useState(true);
   const isActivatingRef = React.useRef(false);
 
   useEffect(() => {
     if (!token) {
-      setStatus('error');
-      setMessage(isAr ? 'رمز التفعيل مفقود أو الرابط غير مكتمل' : 'Lien d\'activation invalide ou incomplet');
+      setStatus('card'); // no token: this is the digital-card activation entry point
       return;
     }
 
@@ -46,7 +47,7 @@ function ActivationContent() {
               particleCount: 120,
               spread: 80,
               origin: { y: 0.5 },
-              colors: ['#D4AF37', '#A3E635', '#38BDF8', '#FFFFFF'],
+              colors: ['#f2aa34', '#f2aa34', '#38BDF8', '#FFFFFF'],
             });
           } catch (e) {}
 
@@ -67,11 +68,11 @@ function ActivationContent() {
 
 
   return (
-    <div className="min-h-screen bg-[#05070D] text-white flex items-center justify-center p-4 font-arabic">
+    <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-4 font-arabic">
       <motion.div
         initial={{ opacity: 0, scale: 0.94, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-md rounded-3xl bg-gradient-to-b from-[#0D152A] to-[#070B16] border border-white/10 p-6 sm:p-8 text-center shadow-2xl space-y-6 relative overflow-hidden"
+        className="w-full max-w-md rounded-3xl bg-[#111114] border border-white/10 p-6 sm:p-8 text-center shadow-2xl space-y-6 relative overflow-hidden"
       >
         {/* Glow backdrop */}
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-lime-400/10 rounded-full blur-3xl pointer-events-none" />
@@ -88,9 +89,26 @@ function ActivationContent() {
           </div>
         )}
 
+        {status === 'card' && (
+          <div className="space-y-4 py-4">
+            <h2 className="text-xl font-black text-white">{isAr ? 'تفعيل بطاقتك الرقمية' : 'Activer votre carte numérique'}</h2>
+            <p className="text-xs text-gray-300">
+              {isAr ? 'تواصل مع فريقنا عبر واتساب أو تيليغرام لتفعيل عضويتك الذهبية.' : "Contactez l'équipe par WhatsApp ou Telegram pour activer votre adhésion Gold."}
+            </p>
+            <button
+              type="button"
+              onClick={() => setChooserOpen(true)}
+              className="w-full py-3.5 rounded-2xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs"
+            >
+              {isAr ? 'فعّل بطاقتك الرقمية' : 'Activer ma carte'}
+            </button>
+            <CardActivationChooser isOpen={chooserOpen} onClose={() => setChooserOpen(false)} />
+          </div>
+        )}
+
         {status === 'success' && (
           <div className="space-y-5">
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-lime-400/20 to-emerald-400/30 border border-lime-400/40 flex items-center justify-center mx-auto shadow-lg shadow-lime-400/20">
+            <div className="w-20 h-20 rounded-3xl bg-lime-400/20 border border-lime-400/40 flex items-center justify-center mx-auto shadow-lg shadow-lime-400/20">
               <CheckCircle2 className="w-10 h-10 text-lime-400" />
             </div>
 
@@ -101,7 +119,7 @@ function ActivationContent() {
               </span>
 
               <h2 className="text-xl sm:text-2xl font-black text-white">
-                {isAr ? `أهلاً بك يا ${userName || 'طالبنا المتميز'}! 🎉` : `Félicitations ${userName || 'Étudiant'} ! 🎉`}
+                {isAr ? `أهلاً بك يا ${userName || 'طالبنا المتميز'}! ` : `Félicitations ${userName || 'Étudiant'} ! `}
               </h2>
 
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-sm mx-auto">
@@ -126,7 +144,7 @@ function ActivationContent() {
 
             <button
               onClick={() => router.push(`/${locale}/student`)}
-              className="w-full py-3.5 rounded-2xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all"
+              className="w-full py-3.5 rounded-2xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all"
             >
               <span>{isAr ? 'الانتقال إلى لوحة دراستي' : 'Accéder à mon espace'}</span>
               <ArrowRight className="w-4 h-4 rtl:rotate-180" />
@@ -158,7 +176,7 @@ function ActivationContent() {
             <div className="space-y-2">
               <button
                 onClick={() => router.push(`/${locale}?auth=login`)}
-                className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs transition-all shadow-lg shadow-lime-400/20"
+                className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs transition-all shadow-lg shadow-lime-400/20"
               >
                 {isAr ? 'تسجيل الدخول إلى حسابي' : 'Se connecter à mon compte'}
               </button>
@@ -174,7 +192,7 @@ function ActivationContent() {
                 href="https://wa.me/qr/5473INCXN3HJI1"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/30 border border-[#25D366]/40 text-[#25D366] font-bold text-xs flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-[#e8eaec]/20 hover:bg-[#e8eaec]/30 border border-[#e8eaec]/40 text-[#e8eaec] font-bold text-xs flex items-center justify-center gap-2"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>{isAr ? 'مراسلة الدعم عبر واتساب' : 'Contacter le support WhatsApp'}</span>
@@ -191,7 +209,7 @@ export default function AccountActivationPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#05070D] flex items-center justify-center text-white">
+        <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white">
           <Loader2 className="w-8 h-8 text-lime-400 animate-spin" />
         </div>
       }

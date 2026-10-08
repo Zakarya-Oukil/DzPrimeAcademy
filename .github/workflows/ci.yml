@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main, 'fix/**', 'feat/**']
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: audit
+          POSTGRES_DB: audit
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # A throwaway database inside this job. Nothing here can reach production.
+      DATABASE_URL: postgresql://postgres:audit@localhost:55432/audit
+      DIRECT_URL: postgresql://postgres:audit@localhost:55432/audit
+      JWT_SECRET: ci-only-secret-not-used-anywhere-else
+      SUPABASE_URL: http://localhost:54999
+      SUPABASE_SERVICE_ROLE_KEY: test-service-key
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+      - name: Type check
+        run: npm run typecheck
+      - name: Production build
+        run: npm run build
+
+      - name: Create schema and seed the catalog
+        run: npx prisma db push --skip-generate && npm run db:seed
+
+      - name: Start the app (dev mode, see tests/probes/README.md)
+        run: |
+          nohup npm run dev > ../dev.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:3000/api/courses >/dev/null && exit 0; sleep 2; done
+          echo "app did not start"; cat ../dev.log; exit 1
+
+      - name: Regression probes
+        run: npm run test:probes
+
+      - name: App log on failure
+        if: failure()
+        run: tail -n 200 ../dev.log || true

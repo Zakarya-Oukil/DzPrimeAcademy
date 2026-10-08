@@ -15,7 +15,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onOpenLogin, onOpenRegister 
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-10" data-testid="auth-gate">
-      <div className="w-full max-w-sm text-center p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0C1428] shadow-lg">
+      <div className="w-full max-w-sm text-center p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111114] shadow-lg">
         <div className="w-14 h-14 rounded-2xl bg-lime-400/15 border border-lime-400/30 flex items-center justify-center mx-auto mb-4">
           <ShieldAlert className="w-7 h-7 text-lime-500" />
         </div>
@@ -29,7 +29,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onOpenLogin, onOpenRegister 
           <button
             data-testid="auth-gate-login-btn"
             onClick={onOpenLogin}
-            className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 transition-all active:scale-95"
+            className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 transition-all active:scale-95"
           >
             <LogIn className="w-4 h-4" />
             <span>{locale === 'ar' ? 'تسجيل الدخول' : 'Se connecter'}</span>
@@ -56,7 +56,7 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ homeHref }) => {
   const { locale } = useTranslation();
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-10" data-testid="access-denied">
-      <div className="w-full max-w-sm text-center p-6 sm:p-8 rounded-3xl border border-rose-200 dark:border-rose-500/30 bg-white dark:bg-[#0C1428] shadow-lg">
+      <div className="w-full max-w-sm text-center p-6 sm:p-8 rounded-3xl border border-rose-200 dark:border-rose-500/30 bg-white dark:bg-[#111114] shadow-lg">
         <div className="w-14 h-14 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center mx-auto mb-4">
           <ShieldAlert className="w-7 h-7 text-rose-500" />
         </div>
@@ -69,7 +69,7 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ homeHref }) => {
         <Link
           href={homeHref}
           data-testid="access-denied-home-link"
-          className="inline-flex mt-6 px-5 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs items-center justify-center gap-2 transition-all"
+          className="inline-flex mt-6 px-5 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs items-center justify-center gap-2 transition-all"
         >
           {locale === 'ar' ? 'الذهاب إلى لوحتي' : 'Aller à mon tableau de bord'}
         </Link>

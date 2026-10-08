@@ -1,6 +1,12 @@
 import type { Metadata, Viewport } from 'next';
 import { DashboardShell } from '@/components/layout/DashboardShell';
+import { Readex_Pro, Reem_Kufi, Marcellus } from 'next/font/google';
 import '../globals.css';
+
+// Foundations type pairing: Readex Pro (UI, Arabic + Latin), Reem Kufi (Arabic display), Marcellus (Latin display)
+const readex = Readex_Pro({ subsets: ['arabic', 'latin'], weight: ['400', '500', '600', '700'], display: 'swap', variable: '--font-sans' });
+const reemKufi = Reem_Kufi({ subsets: ['arabic'], weight: ['600', '700'], display: 'swap', variable: '--font-display-ar' });
+const marcellus = Marcellus({ subsets: ['latin'], weight: '400', display: 'swap', variable: '--font-display-latin' });
 
 export async function generateMetadata({
   params,
@@ -12,12 +18,12 @@ export async function generateMetadata({
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dzprimeacademy.live';
 
   const title = isAr
-    ? 'DZ PRIME ACADEMY | منصة التعليم الأكاديمي والامتحانات الأولى في الجزائر'
-    : 'DZ PRIME ACADEMY | Plateforme Éducative & Annales N°1 en Algérie';
+    ? 'DZ PRIME ACADEMY | المنصة التعليمية والخدماتية الجزائرية'
+    : 'DZ PRIME ACADEMY | La plateforme éducative et de services algérienne';
 
   const description = isAr
-    ? 'المنصة التعليمية الأولى في الجزائر: بوت الامتحانات والملخصات الذكي، حصص الدعم المباشرة (Dawarat Live)، بطاقة العضوية الرقمية المشفرة، وشبكة سفراء معتمدين في 58 ولاية.'
-    : "La première plateforme académique en Algérie : Bot d'examens intelligent, cours interactifs en direct, carte numérique certifiée et réseau d'ambassadeurs dans les 58 wilayas.";
+    ? 'المنصة التعليمية الجزائرية: مساعد الامتحانات والملخصات الذكي، حصص الدعم المباشرة (Dawarat Live)، بطاقة العضوية الرقمية المشفرة، وشبكة سفراء معتمدين في 58 ولاية.'
+    : "La plateforme académique algérienne : assistant examens, cours interactifs en direct, carte numérique certifiée et réseau d'ambassadeurs dans les 58 wilayas.";
 
   return {
     metadataBase: new URL(baseUrl),
@@ -125,7 +131,7 @@ export default async function LocalizedLayout({
         url: baseUrl,
         logo: `${baseUrl}/images/logo.png`,
         description:
-          'المنصة التعليمية والأكاديمية الأولى في الجزائر للتحضير للبكالوريا والدراسة الجامعية والطب عبر 58 ولاية.',
+          'المنصة التعليمية والأكاديمية الجزائرية للتحضير للبكالوريا والدراسة الجامعية والطب عبر 58 ولاية.',
         address: {
           '@type': 'PostalAddress',
           addressCountry: 'DZ',
@@ -164,7 +170,7 @@ export default async function LocalizedLayout({
   };
 
   return (
-    <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'} suppressHydrationWarning>
+    <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'} suppressHydrationWarning className={`${readex.variable} ${reemKufi.variable} ${marcellus.variable}`} style={{ ['--font-display' as string]: isRtl ? 'var(--font-display-ar)' : 'var(--font-display-latin)' }}>
       <head>
         <script
           type="application/ld+json"
@@ -195,7 +201,7 @@ export default async function LocalizedLayout({
       </head>
       <body
         suppressHydrationWarning
-        className="min-h-screen bg-[#F4F6FA] dark:bg-[#040817] text-slate-900 dark:text-white selection:bg-gold-500 selection:text-navy-950 transition-colors duration-300"
+        className="min-h-screen bg-background text-foreground font-sans selection:bg-gold-500 selection:text-navy-950 transition-colors duration-300"
       >
         <DashboardShell>{children}</DashboardShell>
       </body>

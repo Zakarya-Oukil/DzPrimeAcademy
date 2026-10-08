@@ -82,7 +82,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
       const res = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, locale }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -155,8 +155,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
     e.preventDefault();
     setErrorMsg('');
     setLoginNotice('');
-    if (password.length < 6) {
-      setErrorMsg(locale === 'ar' ? 'كلمة المرور يجب أن تكون 6 خانات على الأقل' : 'Le mot de passe doit contenir au moins 6 caractères');
+    if (password.length < 8 || /^\d+$/.test(password)) {
+      setErrorMsg(locale === 'ar' ? 'كلمة المرور يجب أن تكون 8 خانات على الأقل ولا تتكون من أرقام فقط' : 'Le mot de passe doit contenir au moins 8 caractères, pas uniquement des chiffres');
       return;
     }
     setLoading(true);
@@ -194,7 +194,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.92, opacity: 0, y: 16 }}
           transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-          className="relative w-full max-w-md max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl border border-slate-200 dark:border-lime-500/30 bg-white dark:bg-gradient-to-b dark:from-[#0D152A] dark:to-[#060913] p-5 sm:p-8 text-slate-900 dark:text-white shadow-2xl my-auto"
+          className="relative w-full max-w-md max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl border border-slate-200 dark:border-lime-500/30 bg-white dark:bg-[#111114] p-5 sm:p-8 text-slate-900 dark:text-white shadow-2xl my-auto"
         >
           <button
             data-testid="auth-modal-close-btn"
@@ -218,7 +218,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
               data-testid="auth-tab-login"
               onClick={() => { setActiveTab('login'); setErrorMsg(''); }}
               className={`flex-1 py-2 rounded-xl font-bold transition-all flex items-center justify-center gap-1.5 ${
-                activeTab === 'login' ? 'bg-lime-400 text-slate-950' : 'text-slate-600 dark:text-gray-300'
+                activeTab === 'login' ? 'bg-lime-400 text-navy-950' : 'text-slate-600 dark:text-gray-300'
               }`}
             >
               <LogIn className="w-3.5 h-3.5" />
@@ -228,7 +228,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
               data-testid="auth-tab-register"
               onClick={() => { setActiveTab('register'); setErrorMsg(''); }}
               className={`flex-1 py-2 rounded-xl font-bold transition-all flex items-center justify-center gap-1.5 ${
-                activeTab === 'register' ? 'bg-lime-400 text-slate-950' : 'text-slate-600 dark:text-gray-300'
+                activeTab === 'register' ? 'bg-lime-400 text-navy-950' : 'text-slate-600 dark:text-gray-300'
               }`}
             >
               <UserPlus className="w-3.5 h-3.5" />
@@ -362,7 +362,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
                 type="submit"
                 data-testid="login-submit-btn"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all mt-2 disabled:opacity-60"
+                className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all mt-2 disabled:opacity-60"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
                 <span>{locale === 'ar' ? 'دخول إلى الحساب' : 'Se Connecter'}</span>
@@ -474,7 +474,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
                 type="submit"
                 data-testid="register-submit-btn"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all mt-1 disabled:opacity-60"
+                className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all mt-1 disabled:opacity-60"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
                 <span>{locale === 'ar' ? 'إنشاء الحساب' : 'Créer mon Compte'}</span>
@@ -530,7 +530,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
                     type="submit"
                     disabled={loading}
                     data-testid="forgot-submit-btn"
-                    className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all mt-2 disabled:opacity-60"
+                    className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all mt-2 disabled:opacity-60"
                   >
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
                     <span>{locale === 'ar' ? 'إرسال رابط الاستعادة' : 'Envoyer le lien'}</span>

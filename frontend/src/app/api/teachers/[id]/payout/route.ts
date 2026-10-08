@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { requireAdmin } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
+import { guard } from '@/lib/http';
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await requireAdmin(request);
+async function POSTHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await requirePermission(request, 'finance.manage');
   if ('error' in authResult) return authResult.error;
 
   const { id } = await params;
@@ -28,3 +29,5 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   return NextResponse.json(updated);
 }
+
+export const POST = guard(POSTHandler);

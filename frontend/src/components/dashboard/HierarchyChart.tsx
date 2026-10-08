@@ -12,6 +12,7 @@ import {
   Megaphone,
   Code,
   Handshake,
+  MapPin,
   Compass,
   Building,
   School,
@@ -51,7 +52,7 @@ export const HierarchyChart: React.FC = () => {
 
   if (!canViewHierarchy) {
     return (
-      <div className="w-full rounded-3xl border border-slate-800 bg-slate-900/80 p-8 sm:p-12 text-center text-slate-400 space-y-4 backdrop-blur-xl shadow-2xl font-arabic">
+      <div className="w-full rounded-3xl border border-slate-800 bg-slate-900/80 p-8 sm:p-12 text-center text-slate-400 space-y-4 shadow-2xl font-arabic">
         <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-lg">
           <ShieldAlert className="w-8 h-8" />
         </div>
@@ -66,7 +67,7 @@ export const HierarchyChart: React.FC = () => {
   }
 
   return (
-    <div className="w-full rounded-3xl border border-gold-500/30 dark:border-gold-500/40 bg-gradient-to-b from-[#060B18] via-[#091124] to-[#040711] p-4 sm:p-8 md:p-10 shadow-2xl text-white relative overflow-hidden transition-all duration-300 font-arabic select-none">
+    <div className="w-full rounded-3xl border border-gold-500/30 dark:border-gold-500/40 bg-[#0b0b0d] p-4 sm:p-8 md:p-10 shadow-2xl text-white relative overflow-hidden transition-all duration-300 font-arabic select-none">
       {/* Background Decorative Lighting */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[350px] sm:w-[700px] h-[350px] bg-gold-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none" />
@@ -76,7 +77,7 @@ export const HierarchyChart: React.FC = () => {
         {/* Left Col: Brand Emblem & Title */}
         <div className="lg:col-span-4 text-center lg:text-start flex flex-col items-center lg:items-start gap-3">
           <div className="flex items-center gap-3">
-            <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-gold-glow border border-gold-400/60 flex items-center justify-center shrink-0 bg-[#070C1E]">
+            <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-gold-glow border border-gold-400/60 flex items-center justify-center shrink-0 bg-[#0b0b0d]">
               <Image
                 src="/images/dzprime-gold-emblem.png"
                 alt="DZ Prime Gold Emblem"
@@ -88,7 +89,7 @@ export const HierarchyChart: React.FC = () => {
               <span className="text-[10px] sm:text-xs font-mono font-bold tracking-widest text-gold-400 uppercase">
                 DZ PRIME ACADEMY
               </span>
-              <h2 className="text-xl sm:text-2xl font-black text-transparent bg-gradient-to-r from-white via-gold-200 to-gold-400 bg-clip-text">
+              <h2 className="text-gold-700 dark:text-gold-400 text-xl sm:text-2xl font-black  ">
                 الهيكل القيادي والتنظيمي
               </h2>
             </div>
@@ -103,7 +104,7 @@ export const HierarchyChart: React.FC = () => {
           {/* Box 1: Founder & CEO */}
           <motion.div
             whileHover={{ scale: 1.02, y: -2 }}
-            className="p-3.5 rounded-2xl border border-gold-500/70 bg-gradient-to-b from-[#0D1836] to-[#080E20] shadow-lg flex flex-col items-center text-center"
+            className="p-3.5 rounded-2xl border border-gold-500/70 bg-[#111114] shadow-lg flex flex-col items-center text-center"
           >
             <div className="w-9 h-9 rounded-xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400 mb-1.5 shadow-sm">
               <Crown className="w-4 h-4" />
@@ -120,9 +121,9 @@ export const HierarchyChart: React.FC = () => {
           {/* Box 2: Chief Technology Officer (Zakarya Oukil) */}
           <motion.div
             whileHover={{ scale: 1.02, y: -2 }}
-            className="p-3.5 rounded-2xl border-2 border-amber-400 bg-gradient-to-b from-[#14234b] to-[#080E20] shadow-xl shadow-amber-500/20 flex flex-col items-center text-center relative"
+            className="p-3.5 rounded-2xl border-2 border-amber-400 bg-[#14234b] shadow-xl shadow-amber-500/20 flex flex-col items-center text-center relative"
           >
-            <div className="absolute -top-2 px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[9px] shadow">
+            <div className="absolute -top-2 px-2 py-0.5 rounded-full bg-amber-500 text-navy-950 font-black text-[9px] shadow">
               Zakarya Oukil
             </div>
             <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-amber-300 mb-1.5 mt-1 shadow-sm">
@@ -140,7 +141,7 @@ export const HierarchyChart: React.FC = () => {
           {/* Box 3: Admin Général (Level 95) */}
           <motion.div
             whileHover={{ scale: 1.02, y: -2 }}
-            className="p-3.5 rounded-2xl border border-purple-500/60 bg-gradient-to-b from-[#170e30] to-[#080E20] shadow-lg flex flex-col items-center text-center"
+            className="p-3.5 rounded-2xl border border-purple-500/60 bg-[#111114] shadow-lg flex flex-col items-center text-center"
           >
             <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 mb-1.5 shadow-sm">
               <ShieldCheck className="w-4 h-4" />
@@ -171,7 +172,7 @@ export const HierarchyChart: React.FC = () => {
           {/* 1. COO */}
           <motion.div
             whileHover={{ scale: 1.02, y: -2 }}
-            className="p-4 rounded-2xl border border-gold-500/40 bg-[#091228]/90 hover:bg-[#0E1A38] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
+            className="p-4 rounded-2xl border border-gold-500/40 bg-[#111114]/90 hover:bg-[#111114] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
           >
             <div className="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400 mb-2.5">
               <Settings className="w-5 h-5" />
@@ -187,7 +188,7 @@ export const HierarchyChart: React.FC = () => {
           {/* 2. Financial Affairs Manager */}
           <motion.div
             whileHover={{ scale: 1.02, y: -2 }}
-            className="p-4 rounded-2xl border border-gold-500/40 bg-[#091228]/90 hover:bg-[#0E1A38] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
+            className="p-4 rounded-2xl border border-gold-500/40 bg-[#111114]/90 hover:bg-[#111114] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
           >
             <div className="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400 mb-2.5">
               <Landmark className="w-5 h-5" />
@@ -203,7 +204,7 @@ export const HierarchyChart: React.FC = () => {
           {/* 3. Student Affairs & Services Manager */}
           <motion.div
             whileHover={{ scale: 1.02, y: -2 }}
-            className="p-4 rounded-2xl border border-gold-500/40 bg-[#091228]/90 hover:bg-[#0E1A38] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
+            className="p-4 rounded-2xl border border-gold-500/40 bg-[#111114]/90 hover:bg-[#111114] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
           >
             <div className="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400 mb-2.5">
               <GraduationCap className="w-5 h-5" />
@@ -219,7 +220,7 @@ export const HierarchyChart: React.FC = () => {
           {/* 4. Marketing & Media Manager */}
           <motion.div
             whileHover={{ scale: 1.02, y: -2 }}
-            className="p-4 rounded-2xl border border-gold-500/40 bg-[#091228]/90 hover:bg-[#0E1A38] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
+            className="p-4 rounded-2xl border border-gold-500/40 bg-[#111114]/90 hover:bg-[#111114] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
           >
             <div className="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400 mb-2.5">
               <Megaphone className="w-5 h-5" />
@@ -235,7 +236,7 @@ export const HierarchyChart: React.FC = () => {
           {/* 5. Technology & Platform Manager */}
           <motion.div
             whileHover={{ scale: 1.02, y: -2 }}
-            className="p-4 rounded-2xl border border-gold-500/40 bg-[#091228]/90 hover:bg-[#0E1A38] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
+            className="p-4 rounded-2xl border border-gold-500/40 bg-[#111114]/90 hover:bg-[#111114] hover:border-gold-400 transition-all flex flex-col items-center text-center shadow-sm"
           >
             <div className="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400 mb-2.5">
               <Code className="w-5 h-5" />
@@ -261,18 +262,18 @@ export const HierarchyChart: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {[
-            { title: t('hierarchy.westCoord'), desc: t('hierarchy.westDesc'), wilayas: 'Oran, Tlemcen, Mostaganem, Chlef, SBA...', icon: '🌅' },
-            { title: t('hierarchy.eastCoord'), desc: t('hierarchy.eastDesc'), wilayas: 'Constantine, Sétif, Annaba, Batna, Guelma...', icon: '⛰️' },
-            { title: t('hierarchy.centerCoord'), desc: t('hierarchy.centerDesc'), wilayas: 'Alger, Blida, Tizi Ouzou, Boumerdès, Béjaïa...', icon: '🏛️' },
-            { title: t('hierarchy.southCoord'), desc: t('hierarchy.southDesc'), wilayas: 'Ouargla, Biskra, Adrar, Ghardaïa, El Oued...', icon: '🌴' },
+            { title: t('hierarchy.westCoord'), desc: t('hierarchy.westDesc'), wilayas: 'Oran, Tlemcen, Mostaganem, Chlef, SBA...', icon: '' },
+            { title: t('hierarchy.eastCoord'), desc: t('hierarchy.eastDesc'), wilayas: 'Constantine, Sétif, Annaba, Batna, Guelma...', icon: '' },
+            { title: t('hierarchy.centerCoord'), desc: t('hierarchy.centerDesc'), wilayas: 'Alger, Blida, Tizi Ouzou, Boumerdès, Béjaïa...', icon: '' },
+            { title: t('hierarchy.southCoord'), desc: t('hierarchy.southDesc'), wilayas: 'Ouargla, Biskra, Adrar, Ghardaïa, El Oued...', icon: '' },
           ].map((reg, idx) => (
             <motion.div
               key={idx}
               whileHover={{ scale: 1.02, y: -2 }}
-              className="p-4 rounded-2xl border border-gold-500/35 bg-[#081024] hover:bg-[#0D1836] transition-all flex flex-col justify-between shadow-sm"
+              className="p-4 rounded-2xl border border-gold-500/35 bg-[#111114] hover:bg-[#111114] transition-all flex flex-col justify-between shadow-sm"
             >
               <div className="flex items-center gap-2.5">
-                <span className="text-2xl">{reg.icon}</span>
+                <MapPin className="w-6 h-6 text-gold-600 dark:text-gold-400" aria-hidden="true" />
                 <h4 className="text-xs sm:text-sm font-bold text-gold-200">{reg.title}</h4>
               </div>
               <p className="text-[11px] text-slate-300 mt-2 leading-relaxed">{reg.desc}</p>
@@ -285,7 +286,7 @@ export const HierarchyChart: React.FC = () => {
       </div>
 
       {/* ================= LEVEL 5: AMBASSADOR NETWORK (شبكة السفراء) ================= */}
-      <div className="my-8 p-5 sm:p-6 rounded-3xl border border-gold-500/40 bg-gradient-to-r from-[#080E20] via-[#0D1632] to-[#080E20] shadow-md">
+      <div className="my-8 p-5 sm:p-6 rounded-3xl border border-gold-500/40 bg-[#111114] shadow-md">
         <div className="text-center mb-5">
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-gold-500/20 border border-gold-500/50 text-gold-300 text-xs sm:text-sm font-black mb-1">
             <Users className="w-4 h-4 text-gold-400" />
@@ -296,7 +297,7 @@ export const HierarchyChart: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <motion.div
             whileHover={{ scale: 1.01 }}
-            className="p-4 sm:p-5 rounded-2xl bg-[#060B1A] border border-gold-500/30 flex items-center gap-4 shadow-sm"
+            className="p-4 sm:p-5 rounded-2xl bg-[#0b0b0d] border border-gold-500/30 flex items-center gap-4 shadow-sm"
           >
             <div className="w-12 h-12 rounded-2xl bg-gold-500/20 border border-gold-500/40 flex items-center justify-center text-gold-400 shrink-0">
               <GraduationCap className="w-6 h-6" />
@@ -309,7 +310,7 @@ export const HierarchyChart: React.FC = () => {
 
           <motion.div
             whileHover={{ scale: 1.01 }}
-            className="p-4 sm:p-5 rounded-2xl bg-[#060B1A] border border-gold-500/30 flex items-center gap-4 shadow-sm"
+            className="p-4 sm:p-5 rounded-2xl bg-[#0b0b0d] border border-gold-500/30 flex items-center gap-4 shadow-sm"
           >
             <div className="w-12 h-12 rounded-2xl bg-gold-500/20 border border-gold-500/40 flex items-center justify-center text-gold-400 shrink-0">
               <Building className="w-6 h-6" />
@@ -344,7 +345,7 @@ export const HierarchyChart: React.FC = () => {
               <motion.div
                 key={idx}
                 whileHover={{ scale: 1.02, y: -2 }}
-                className="p-3.5 sm:p-4 rounded-2xl bg-[#091228] border border-gold-500/30 flex flex-col items-center text-center shadow-sm"
+                className="p-3.5 sm:p-4 rounded-2xl bg-[#111114] border border-gold-500/30 flex flex-col items-center text-center shadow-sm"
               >
                 <div className="w-9 h-9 rounded-xl bg-gold-500/20 border border-gold-400/30 flex items-center justify-center text-gold-400 mb-2">
                   <Icon className="w-4 h-4" />
@@ -361,7 +362,7 @@ export const HierarchyChart: React.FC = () => {
         </div>
 
         {/* ================= BOTTOM SLOGAN RIBBON ================= */}
-        <div className="mt-8 py-3 px-6 rounded-2xl bg-gradient-to-r from-amber-500/20 via-gold-500/35 to-amber-500/20 border border-gold-500/60 inline-flex items-center gap-2 font-black text-gold-200 text-xs sm:text-sm md:text-base tracking-wide shadow-gold-glow">
+        <div className="mt-8 py-3 px-6 rounded-2xl bg-amber-500/20 border border-gold-500/60 inline-flex items-center gap-2 font-black text-gold-200 text-xs sm:text-sm md:text-base tracking-wide shadow-gold-glow">
           <span>🇩🇿</span>
           <span>{t('hierarchy.slogan')}</span>
         </div>

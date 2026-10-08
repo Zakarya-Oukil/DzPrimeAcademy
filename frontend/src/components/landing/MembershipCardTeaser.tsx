@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ShieldCheck, QrCode, Mail, Phone, Globe } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
-import { ContactActionModal } from '../shared/ContactActionModal';
+import { CardActivationChooser } from '../shared/CardActivationChooser';
 
 export const MembershipCardTeaser: React.FC = () => {
   const { locale } = useTranslation();
@@ -30,26 +30,26 @@ export const MembershipCardTeaser: React.FC = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8" data-testid="landing-membership-teaser">
-      <div className="rounded-[2rem] sm:rounded-[2.5rem] bg-[#0B1021] border border-white/10 p-7 sm:p-12 flex flex-col lg:flex-row items-center gap-8 sm:gap-12">
+      <div className="rounded-[2rem] sm:rounded-[2.5rem] bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 p-7 sm:p-12 flex flex-col lg:flex-row items-center gap-8 sm:gap-12">
         <div className="flex-1">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-400/10 border border-lime-400/30 text-lime-300 text-[10px] font-black">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/40 text-gold-800 dark:text-gold-300 text-[10px] font-black">
             <ShieldCheck className="w-3 h-3" />
             {locale === 'ar' ? 'موثّق وآمن' : 'Sécurisé & Vérifié'}
           </span>
-          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-white">{c.title}</h2>
-          <p className="mt-3 text-sm text-slate-300 leading-relaxed max-w-md">{c.body}</p>
+          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{c.title}</h2>
+          <p className="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-md">{c.body}</p>
           <button
             type="button"
             onClick={() => setCardModalOpen(true)}
             data-testid="landing-membership-cta"
-            className="mt-6 px-6 py-3.5 rounded-2xl bg-lime-400 hover:bg-lime-300 active:scale-95 text-slate-950 font-black text-sm shadow-[0_0_20px_-5px_rgba(163,230,53,0.4)] transition-all cursor-pointer inline-flex items-center justify-center"
+            className="mt-6 px-6 py-3.5 rounded-2xl bg-lime-400 hover:bg-lime-300 active:scale-95 text-navy-950 font-black text-sm transition-all cursor-pointer inline-flex items-center justify-center"
           >
             {c.cta}
           </button>
         </div>
 
         <div className="w-full max-w-[300px] shrink-0">
-          <div className="rounded-2xl p-5 bg-gradient-to-br from-gold-500/20 via-navy-900 to-lime-400/10 border border-gold-500/30 shadow-2xl">
+          <div className="rounded-2xl p-5 bg-navy-900 border border-gold-500/30 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <span className="text-[10px] font-black text-gold-300 tracking-widest">DZ PRIME ACADEMY</span>
               <QrCode className="w-7 h-7 text-white/80" />
@@ -65,16 +65,7 @@ export const MembershipCardTeaser: React.FC = () => {
         </div>
       </div>
 
-      {/* Card Activation Modal (WhatsApp & Telegram) */}
-      <ContactActionModal
-        isOpen={cardModalOpen}
-        onClose={() => setCardModalOpen(false)}
-        operation={{
-          type: 'VIP_MEMBERSHIP_UPGRADE',
-          title: locale === 'ar' ? 'تفعيل بطاقة العضوية الرقمية المشفّرة (VIP Card)' : 'Activation Carte de Membre Digitale VIP',
-          amountDzd: 2500,
-        }}
-      />
+      <CardActivationChooser isOpen={cardModalOpen} onClose={() => setCardModalOpen(false)} />
     </section>
   );
 };

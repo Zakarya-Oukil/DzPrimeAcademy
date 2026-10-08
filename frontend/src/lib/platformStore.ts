@@ -8,11 +8,15 @@ export interface PlatformCourse {
   titleFr?: string | null;
   titleEn?: string | null;
   description?: string | null;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
   teacherId?: string | null;
   teacherName: string;
   category: 'BAC' | 'UNIVERSITY_LMD' | 'MEDICAL';
   lessonsCount: number;
-  rating: number;
+  /** Average of real student reviews, null until enough students have rated. */
+  rating: number | null;
+  ratingCount?: number;
   priceDzd: number;
   isLive: boolean;
   colorTheme: string;
@@ -120,7 +124,7 @@ export function usePlatformStore() {
       const optimistic: PlatformCourse = {
         ...course,
         id: tempId,
-        rating: 5.0,
+        rating: null,
         createdAt: new Date().toISOString(),
       };
       state = { ...state, courses: [optimistic, ...state.courses] };

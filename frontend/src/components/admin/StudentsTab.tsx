@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   Search,
@@ -49,18 +49,36 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
   const [deleteCandidate, setDeleteCandidate] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const load = () => {
-    fetch('/api/students')
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data)) setUsers(data);
+  const [total, setTotal] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const loadSeq = useRef(0);
+
+  // First page (re-run on search, debounced); "load more" appends the next page.
+  const load = (append = false, q = search) => {
+    const offset = append ? users.length : 0;
+    if (append) setLoadingMore(true);
+    const reqId = ++loadSeq.current;
+    return fetch(`/api/students?limit=100&offset=${offset}&q=${encodeURIComponent(q.trim())}`)
+      .then(async (r) => {
+        const data = await r.json();
+        if (reqId !== loadSeq.current) return; // a newer search superseded this response
+        if (Array.isArray(data)) {
+          setUsers((prev) => (append ? [...prev, ...data] : data));
+          setTotal(Number(r.headers.get('X-Total-Count')) || data.length);
+        }
       })
-      .finally(() => setLoading(false));
+      .catch(() => {})
+      .finally(() => {
+        setLoading(false);
+        setLoadingMore(false);
+      });
   };
 
   useEffect(() => {
-    load();
-  }, []);
+    const t = setTimeout(() => load(false, search), 300);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   const handleToggleVerify = async (id: string, isVerified: boolean) => {
     setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, isVerified: !isVerified } : u)));
@@ -190,7 +208,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
         <button
           onClick={() => setShowAddModal(true)}
           data-testid="add-student-btn"
-          className="px-4 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all shrink-0"
+          className="px-4 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all shrink-0"
         >
           <UserPlus className="w-4 h-4" />
           <span>{locale === 'ar' ? 'إضافة طالب جديد' : 'Inscrire un étudiant'}</span>
@@ -198,7 +216,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto no-scrollbar rounded-2xl border border-white/10 bg-[#0A0D18]/50">
+      <div className="overflow-x-auto no-scrollbar rounded-2xl border border-white/10 bg-[#0b0b0d]/50">
         <table className="w-full min-w-[760px] text-left text-xs">
           <thead>
             <tr className="border-b border-white/10 text-gray-400 text-[11px] uppercase bg-white/[0.02]">
@@ -279,6 +297,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
                         href={`/${locale}/profile/${u.studentCardId || u.id}`}
                         target="_blank"
                         title={locale === 'ar' ? 'عرض الملف العام ورمز QR' : 'Voir profil public'}
+                        aria-label={locale === 'ar' ? 'عرض الملف العام ورمز QR' : 'Voir profil public'}
                         className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all"
                       >
                         <ExternalLink className="w-3.5 h-3.5 text-gold-400" />
@@ -288,6 +307,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
                       <button
                         onClick={() => setDeleteCandidate(u)}
                         title={locale === 'ar' ? 'حذف الطالب' : 'Supprimer'}
+                        aria-label={locale === 'ar' ? 'حذف الطالب' : 'Supprimer'}
                         className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-all"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -301,10 +321,22 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
         </table>
       </div>
 
+      {users.length < total && (
+        <div className="flex justify-center">
+          <button
+            onClick={() => load(true)}
+            disabled={loadingMore}
+            className="px-4 py-2 min-h-[44px] rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-gray-200 disabled:opacity-50"
+          >
+            {loadingMore ? '...' : locale === 'ar' ? `عرض المزيد (${users.length}/${total})` : `Afficher plus (${users.length}/${total})`}
+          </button>
+        </div>
+      )}
+
       {/* Add Student Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-[#0C1224] p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
+          <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-[#111114] p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2 text-white font-bold text-sm">
                 <GraduationCap className="w-4 h-4 text-lime-400" />
@@ -463,7 +495,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black flex items-center gap-1.5 shadow-md active:scale-95 disabled:opacity-60"
+                  className="px-5 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black flex items-center gap-1.5 shadow-md active:scale-95 disabled:opacity-60"
                 >
                   {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserPlus className="w-3.5 h-3.5" />}
                   <span>{locale === 'ar' ? 'تأكيد التسجيل' : 'Enregistrer'}</span>
@@ -477,7 +509,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
       {/* Delete Confirmation Modal */}
       {deleteCandidate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm rounded-3xl border border-rose-500/30 bg-[#0C1224] p-6 shadow-2xl space-y-4 text-center">
+          <div className="w-full max-w-sm rounded-3xl border border-rose-500/30 bg-[#111114] p-6 shadow-2xl space-y-4 text-center">
             <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
               <Trash2 className="w-6 h-6" />
             </div>

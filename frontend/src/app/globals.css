@@ -1,36 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Brand tokens: Figma "DZ Prime Academy: Redesign" > Foundations > Theme. Light = default, Black = .dark */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f4f5f6;
+  --foreground: #0b0b0d;
+  --surface: #ffffff;
+  --surface-2: #f4f5f6;
+  --text-muted: #55575c;
+  --accent: #7f5413;
+  --accent-hi: #f2aa34;
+  --on-accent: #050505;
+  --line: rgba(5, 5, 5, 0.12);
+  --link: #1050d0;
+  --success: #1050d0;
+  --danger: #c0463a;
+  --brand-field: #021a46;
   --card-bg: #ffffff;
-  --card-border: #e2e8f0;
-  --font-sans: 'Plus Jakarta Sans', 'Cairo', 'Outfit', system-ui, -apple-system, sans-serif;
+  --card-border: rgba(5, 5, 5, 0.12);
 }
 
 .dark {
-  --background: #040711;
-  --foreground: #f8fafc;
-  --card-bg: #090e1f;
-  --card-border: rgba(212, 175, 55, 0.25);
+  --background: #050505;
+  --foreground: #f2f2f0;
+  --surface: #111114;
+  --surface-2: #17171b;
+  --text-muted: #b0b0b0;
+  --accent: #f2aa34;
+  --accent-hi: #f4d58a;
+  --on-accent: #050505;
+  --line: rgba(242, 170, 52, 0.28);
+  --link: #6db1d8;
+  --success: #6db1d8;
+  --card-bg: #111114;
+  --card-border: rgba(242, 170, 52, 0.28);
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: var(--font-sans), system-ui, sans-serif;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
   -webkit-tap-highlight-color: transparent;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-.no-scrollbar::-webkit-scrollbar {
+/* Headings: Reem Kufi (Arabic) / Marcellus (Latin), per Foundations text styles */
+h1, h2, h3 { font-family: var(--font-display), var(--font-sans), serif; }
+html[lang='ar'] h1, html[lang='ar'] h2, html[lang='ar'] h3 { font-weight: 700; }
+html:not([lang='ar']) h1, html:not([lang='ar']) h2, html:not([lang='ar']) h3 { font-weight: 400; }
+
+::-webkit-scrollbar {
   display: none;
 }
 
@@ -51,54 +73,28 @@ body {
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: #060a16;
+  background: #0b0b0d;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d4af37;
+  background: #f2aa34;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #f5d061;
+  background: #f4d58a;
 }
 
-/* Metallic gold text gradient utility */
-.text-gold-gradient {
-  background: linear-gradient(135deg, #b8860b 0%, #d4af37 40%, #aa771c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Legacy decoration utilities kept as flat equivalents so existing class names stay valid (no gradient text, glass, glow) */
+.text-gold-gradient, .dark .text-gold-gradient, .animated-gradient-text {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: var(--accent);
+  animation: none;
 }
-
-.dark .text-gold-gradient {
-  background: linear-gradient(135deg, #fff2b2 0%, #f5d061 35%, #d4af37 70%, #aa771c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Glassmorphism panel utility */
-.glass-panel-light {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.glass-panel-dark {
-  background: rgba(10, 16, 32, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-}
-
-/* Gold neon glow */
-.gold-glow {
-  box-shadow: 0 0 25px -5px rgba(212, 175, 55, 0.35);
-}
-
-.gold-glow-lg {
-  box-shadow: 0 0 45px -5px rgba(212, 175, 55, 0.5);
-}
+.glass-panel-light { background: #fff; border: 1px solid var(--line); }
+.glass-panel-dark { background: var(--surface); border: 1px solid var(--line); }
+.gold-glow, .gold-glow-lg { box-shadow: none; }
 
 /* Responsive Touch & Tap Targets */
 .touch-target {
@@ -106,60 +102,15 @@ body {
   min-width: 44px;
 }
 
-/* Animated gradient text (gold -> white -> lime) */
-.animated-gradient-text {
-  background: linear-gradient(90deg, #d4af37, #ffffff, #a3e635, #d4af37);
-  background-size: 300% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 6s ease infinite;
-}
+/* Infinite marquee ticker */
+.marquee-track { display: flex; width: max-content; animation: marqueeScroll 40s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track-rtl { animation-direction: reverse; }
+.spotlight-card { position: relative; }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Infinite marquee ticker (58 Wilayas network) */
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marqueeScroll 40s linear infinite;
-}
-
-.marquee-track:hover {
-  animation-play-state: paused;
-}
-
-@keyframes marqueeScroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-.marquee-track-rtl {
-  animation-direction: reverse;
-}
-
-/* Spotlight cursor-follow bento cards */
-.spotlight-card {
-  position: relative;
-}
-
-.spotlight-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(400px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(212, 175, 55, 0.18), transparent 60%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.spotlight-card:hover::before {
-  opacity: 1;
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
 /* 3D Flip Card (iOS Safari requires explicit -webkit- prefixes AND the rounded/overflow clip must live on a non-3D-transformed wrapper, or the back face bleeds through mirrored) */
@@ -195,3 +146,67 @@ body {
   transform: rotateY(180deg) translateZ(1px);
   -webkit-transform: rotateY(180deg) translateZ(1px);
 }
+
+/* Touch targets: on touch / narrow screens controls are at least 44px tall; icon-only buttons are 44px wide too. */
+@media (pointer: coarse), (max-width: 767px) {
+  button,
+  select,
+  [role='button'],
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden']) {
+    min-height: 44px;
+  }
+  button:has(> svg:only-child),
+  [role='button']:has(> svg:only-child) {
+    min-width: 44px;
+  }
+}
+
+/* Light mode: bright logo colours used as TEXT fall back to their darker brand shade so they pass 4.5:1 on light surfaces.
+   Scoped to main/header/footer; the admin console (always dark) and the dark sidebar keep the bright shade; the admin and ambassador consoles are always black (the shell adds .dark there). */
+html:not(.dark) :is(main, header, footer) .text-gold-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-gold-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-gold-500:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-amber-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-amber-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-amber-500:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-yellow-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-yellow-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-yellow-500:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-lime-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-lime-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-lime-500:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-orange-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-orange-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-orange-500:not(.dark *) { color: #7f5413; }
+html:not(.dark) :is(main, header, footer) .text-sapphire-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-sapphire-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-sky-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-sky-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-blue-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-blue-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-cyan-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-cyan-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-emerald-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-emerald-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-green-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-green-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-teal-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-teal-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-indigo-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-indigo-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-violet-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-violet-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-purple-300:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-purple-400:not(.dark *) { color: #1050d0; }
+html:not(.dark) :is(main, header, footer) .text-gold-600:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-gold-700:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-amber-600:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-amber-700:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-yellow-600:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-yellow-700:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-lime-600:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-lime-700:not(.dark *) { color: #7f5413; }
+html:not(.dark) :is(main, header, footer) .text-slate-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-slate-500:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-gray-400:not(.dark *),
+html:not(.dark) :is(main, header, footer) .text-gray-500:not(.dark *) { color: #5f6166; }

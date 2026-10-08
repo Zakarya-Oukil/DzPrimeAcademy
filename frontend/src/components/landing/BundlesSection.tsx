@@ -67,7 +67,7 @@ export const BundlesSection: React.FC = () => {
                 <button
                   data-testid={`buy-bundle-btn-${b.id}`}
                   onClick={() => setActiveBundle(b)}
-                  className="py-2.5 rounded-xl bg-slate-950 dark:bg-lime-400 text-white dark:text-slate-950 font-black text-[11px] flex items-center justify-center gap-1.5"
+                  className="py-2.5 rounded-xl bg-slate-950 dark:bg-lime-400 text-white dark:text-navy-950 font-black text-[11px] flex items-center justify-center gap-1.5"
                 >
                   <ShoppingBag className="w-3.5 h-3.5" />
                   {locale === 'ar' ? 'اشترِ الباقة' : 'Acheter'}

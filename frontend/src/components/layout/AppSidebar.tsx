@@ -149,7 +149,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
                 onClick={onMobileClose}
                 data-testid={`sidebar-nav-${item.id}`}
                 className={`group relative flex items-center justify-between px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl text-xs sm:text-[13px] font-bold transition-all duration-200 ${
-                  item.isActive ? 'bg-lime-300 text-slate-950 shadow-md font-black' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  item.isActive ? 'bg-lime-300 text-navy-950 shadow-md font-black' : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -157,7 +157,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black font-mono ${item.isActive ? 'bg-black/15 text-slate-950' : 'bg-lime-400/20 text-lime-300'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black font-mono ${item.isActive ? 'bg-black/15 text-navy-950' : 'bg-lime-400/20 text-lime-300'}`}>
                     {item.badge}
                   </span>
                 )}
@@ -172,7 +172,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
               data-testid="sidebar-nav-profile"
               className={`group relative flex items-center justify-between px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl text-xs sm:text-[13px] font-bold transition-all duration-200 ${
                 pathname.includes(`/profile/${currentUser.studentCardId || currentUser.id}`)
-                  ? 'bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 shadow-md font-black'
+                  ? 'bg-gold-500 text-navy-950 shadow-md font-black'
                   : 'text-gold-400 hover:text-gold-300 hover:bg-gold-500/10'
               }`}
             >
@@ -193,18 +193,18 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
                 type="button"
                 onClick={() => setUpgradeModalOpen(true)}
                 data-testid="sidebar-upgrade-vip-btn"
-                className="w-full relative group overflow-hidden rounded-2xl p-3 bg-gradient-to-r from-amber-500/20 via-gold-500/25 to-amber-600/20 border border-gold-400/50 hover:border-gold-400 shadow-lg shadow-gold-500/10 hover:shadow-gold-500/20 transition-all text-right rtl:text-right ltr:text-left active:scale-[0.98]"
+                className="w-full relative group overflow-hidden rounded-2xl p-3 bg-amber-500/20 border border-gold-400/50 hover:border-gold-400 shadow-lg shadow-gold-500/10 hover:shadow-gold-500/20 transition-all text-right rtl:text-right ltr:text-left active:scale-[0.98]"
               >
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2">
                     <span className="w-6 h-6 rounded-lg bg-gold-400/20 border border-gold-400/40 flex items-center justify-center text-amber-300">
-                      <Crown className="w-3.5 h-3.5 animate-pulse" />
+                      <Crown className="w-3.5 h-3.5 " />
                     </span>
                     <span className="text-xs font-black text-amber-300 font-arabic">
                       {locale === 'ar' ? 'العضوية الذهبية VIP' : 'Adhésion VIP Gold'}
                     </span>
                   </div>
-                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 font-mono">
+                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-400 text-navy-950 font-mono">
                     PRO
                   </span>
                 </div>
@@ -214,7 +214,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
                     : 'Accès illimité à tous les examens et cours'}
                 </p>
                 <div className="flex items-center justify-between text-[11px] font-black text-amber-300 pt-1.5 border-t border-gold-500/20">
-                  <span>{locale === 'ar' ? '⚡ ترقية حسابي الآن' : '⚡ Activer le VIP'}</span>
+                  <span>{locale === 'ar' ? 'ترقية حسابي الآن' : 'Activer le VIP'}</span>
                   <span className="font-mono text-white text-[10px] bg-white/10 px-2 py-0.5 rounded-full">
                     {vipPrice.toLocaleString()} DZD
                   </span>
@@ -246,8 +246,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
           data-testid="sidebar-fixed-leaderboard-btn"
           className={`group relative flex items-center justify-between px-3.5 sm:px-4 py-2.5 rounded-2xl text-xs sm:text-[13px] font-bold transition-all duration-200 border ${
             isOn('leaderboard')
-              ? 'bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 border-gold-400 shadow-md font-black'
-              : 'bg-[#0A1224] border-gold-500/30 text-gold-300 hover:border-gold-400 hover:bg-gold-500/10'
+              ? 'bg-gold-500 text-navy-950 border-gold-400 shadow-md font-black'
+              : 'bg-[#111114] border-gold-500/30 text-gold-300 hover:border-gold-400 hover:bg-gold-500/10'
           }`}
         >
           <div className="flex items-center gap-2.5">
@@ -266,15 +266,15 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
           data-testid="sidebar-fixed-bot-btn"
           className={`group relative flex items-center justify-between px-3.5 sm:px-4 py-2.5 rounded-2xl text-xs sm:text-[13px] font-bold transition-all duration-200 border ${
             isOn('bot')
-              ? 'bg-lime-400 text-slate-950 border-lime-300 shadow-md font-black'
-              : 'bg-[#0E172A] border-lime-400/30 text-lime-300 hover:border-lime-400 hover:bg-lime-400/10'
+              ? 'bg-lime-400 text-navy-950 border-lime-300 shadow-md font-black'
+              : 'bg-[#111114] border-lime-400/30 text-lime-300 hover:border-lime-400 hover:bg-lime-400/10'
           }`}
         >
           <div className="flex items-center gap-2.5">
             <Bot className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isOn('bot') ? 'text-slate-950' : 'text-lime-400'}`} />
-            <span>{locale === 'ar' ? 'بوت الامتحانات والملخصات' : 'Bot Examens & Résumés'}</span>
+            <span>{locale === 'ar' ? 'مساعد الامتحانات والملخصات' : 'Assistant examens & résumés'}</span>
           </div>
-          <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-lime-400 " />
         </Link>
 
         {/* 3. Digital Card Button */}
@@ -287,7 +287,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
     <>
       <aside
         data-testid="app-sidebar-desktop"
-        className={`hidden lg:flex flex-col w-[270px] xl:w-[290px] h-screen sticky top-0 shrink-0 bg-[#0E1526] dark:bg-[#070C1B] ${
+        className={`hidden lg:flex flex-col w-[270px] xl:w-[290px] h-screen sticky top-0 shrink-0 bg-[#111114] dark:bg-[#0b0b0d] ${
           isRtl ? 'border-l border-r-0' : 'border-r border-l-0'
         } border-slate-800/80 z-30 shadow-xl`}
       >
@@ -309,7 +309,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
               animate={{ x: 0 }}
               exit={{ x: isRtl ? '100%' : '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 240 }}
-              className={`relative w-[300px] max-w-[85vw] h-full bg-[#0E1526] text-white shadow-2xl z-10 flex flex-col ${
+              className={`relative w-[300px] max-w-[85vw] h-full bg-[#111114] text-white shadow-2xl z-10 flex flex-col ${
                 isRtl ? 'mr-0 ml-auto' : 'ml-0 mr-auto'
               }`}
             >

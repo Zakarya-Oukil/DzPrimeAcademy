@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateCardId } from '@/lib/cardId';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
-import { getUserFromRequest, hashPassword, requireAdmin } from '@/lib/auth';
-import { isSuperAdmin, isHRManager, getUserHierarchyLevel } from '@/lib/rbac';
+import { hashPassword, requirePermission } from '@/lib/auth';
+import { passwordProblem } from '@/lib/passwords';
+import { isSuperAdmin, isAssignableAdminRole, canAssignAdminRole } from '@/lib/rbac';
 import { Role } from '@/types';
+import { guard } from '@/lib/http';
 
-export async function GET(request: NextRequest) {
-  const authResult = await requireAdmin(request);
+async function GETHandler(request: NextRequest) {
+  const authResult = await requirePermission(request, 'staff.manage');
   if ('error' in authResult) return authResult.error;
 
   await ensureSeeded();
@@ -20,6 +23,7 @@ export async function GET(request: NextRequest) {
       ],
     },
     orderBy: { createdAt: 'asc' },
+    take: 500,
     select: {
       id: true,
       email: true,
@@ -42,22 +46,12 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(staff);
 }
 
-export async function POST(request: NextRequest) {
-  const actor = await getUserFromRequest(request);
-  if (!actor) {
-    return NextResponse.json({ error: 'يجب تسجيل الدخول' }, { status: 401 });
-  }
-
-  // Only Super Admin and HR Manager can add staff
+async function POSTHandler(request: NextRequest) {
+  // Only roles holding staff.manage (Super Admin, General Admin, HR Manager) may add staff.
+  const authResult = await requirePermission(request, 'staff.manage');
+  if ('error' in authResult) return authResult.error;
+  const actor = authResult.user;
   const actorIsSuper = isSuperAdmin(actor);
-  const actorIsHR = isHRManager(actor);
-
-  if (!actorIsSuper && !actorIsHR) {
-    return NextResponse.json(
-      { error: 'لا تملك صلاحية إضافة إداريين أو موظفين جدد' },
-      { status: 403 }
-    );
-  }
 
   await ensureSeeded();
 
@@ -83,11 +77,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (String(password).trim().length < 6) {
+    if (passwordProblem(String(password).trim())) {
       return NextResponse.json(
-        { error: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' },
+        { error: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل ولا تتكون من أرقام فقط' },
         { status: 400 }
       );
+    }
+
+    if (!isAssignableAdminRole(adminRole) || !['ADMIN', 'MODERATOR', 'OWNER'].includes(role)) {
+      return NextResponse.json({ error: 'دور إداري غير صالح' }, { status: 400 });
     }
 
     const normalizedEmail = String(email).toLowerCase().trim();
@@ -101,31 +99,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check hierarchy: Only Super Admin (Level 100) can create Super Admin or General Admin
-    const targetRoleLevel =
-      adminRole === 'SUPER_ADMIN' || role === 'OWNER'
-        ? 100
-        : adminRole === 'GENERAL_ADMIN'
-        ? 95
-        : adminRole === 'HR_MANAGER'
-        ? 85
-        : adminRole === 'COMMERCIAL'
-        ? 80
-        : adminRole === 'HR_EMPLOYEE'
-        ? 75
-        : 65;
-
-    const actorLevel = getUserHierarchyLevel(actor);
-
-    // Only Super Admin (Level 100) can assign General Admin or Super Admin
-    if (targetRoleLevel >= 95 && actorLevel < 100) {
-      return NextResponse.json(
-        { error: 'فقط المسؤول الأعلى (Super Admin) يمكنه تعيين أو إضافة مدير عام (Admin Général)' },
-        { status: 403 }
-      );
+    // Hierarchy: nobody may grant a role at or above their own level, and only a
+    // Super Admin may create an OWNER or hand out SUPER_ADMIN / GENERAL_ADMIN.
+    if (role === 'OWNER' && !actorIsSuper) {
+      return NextResponse.json({ error: 'فقط المسؤول الأعلى يمكنه إنشاء مالك' }, { status: 403 });
     }
-
-    if (actorLevel < 100 && targetRoleLevel >= actorLevel) {
+    if (!canAssignAdminRole(actor, adminRole)) {
       return NextResponse.json(
         { error: 'لا يمكنك تعيين دور إداري أعلى من مستواك أو مساوٍ له' },
         { status: 403 }
@@ -134,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     const passwordHash = await hashPassword(String(password).trim());
     const parsedWilayaCode = wilayaCode ? Number(wilayaCode) : 16;
-    const finalRole: Role = role === 'OWNER' && actorIsSuper ? 'OWNER' : 'ADMIN';
+    const finalRole: Role = role === 'OWNER' ? 'OWNER' : adminRole === 'MODERATOR' ? 'MODERATOR' : 'ADMIN';
 
     const cardPrefix =
       adminRole === 'GENERAL_ADMIN'
@@ -153,14 +132,15 @@ export async function POST(request: NextRequest) {
         name: String(name).trim(),
         phone: phone ? String(phone).trim() : null,
         role: finalRole,
-        adminRole: String(adminRole),
+        adminRole,
         jobTitle: jobTitle ? String(jobTitle).trim() : null,
         bio: bio ? String(bio).trim() : null,
         passwordHash,
+        mustChangePassword: true,
         wilayaCode: parsedWilayaCode,
         wilayaName: wilayaName || 'Alger',
         institutionName: 'DZ Prime Academy HQ',
-        studentCardId: `DZ-${cardPrefix}-${parsedWilayaCode}-${Math.floor(1000 + Math.random() * 9000)}`,
+        studentCardId: generateCardId(cardPrefix, parsedWilayaCode),
         isVerified: true,
       },
       select: {
@@ -184,10 +164,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(user, { status: 201 });
   } catch (error: any) {
+    if (error?.code?.startsWith?.('P2') || error instanceof SyntaxError) throw error; // guard() answers 404/409/400
     console.error('Error creating staff member:', error);
     return NextResponse.json(
-      { error: error?.message || 'فشل إضافة الإداري' },
+      { error: 'فشل إضافة الإداري' },
       { status: 500 }
     );
   }
 }
+
+export const GET = guard(GETHandler);
+export const POST = guard(POSTHandler);

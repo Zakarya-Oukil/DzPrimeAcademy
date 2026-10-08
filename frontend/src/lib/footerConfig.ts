@@ -102,9 +102,9 @@ export const SUPPORTED_SOCIAL_PLATFORMS: PlatformMetadata[] = [
     labelFr: 'WhatsApp',
     labelEn: 'WhatsApp',
     icon: MessageCircle,
-    colorHex: '#25D366',
-    bgLight: 'bg-[#25D366]/10 text-[#25D366] border-[#25D366]/30',
-    hoverClass: 'hover:text-[#25D366]',
+    colorHex: '#e8eaec',
+    bgLight: 'bg-[#e8eaec]/10 text-[#e8eaec] border-[#e8eaec]/30',
+    hoverClass: 'hover:text-[#e8eaec]',
     defaultPlaceholder: 'https://wa.me/qr/5473INCXN3HJI1',
   },
   {
@@ -113,9 +113,9 @@ export const SUPPORTED_SOCIAL_PLATFORMS: PlatformMetadata[] = [
     labelFr: 'Telegram',
     labelEn: 'Telegram',
     icon: Send,
-    colorHex: '#229ED9',
-    bgLight: 'bg-[#229ED9]/10 text-[#229ED9] border-[#229ED9]/30',
-    hoverClass: 'hover:text-[#229ED9]',
+    colorHex: '#e8eaec',
+    bgLight: 'bg-[#e8eaec]/10 text-[#e8eaec] border-[#e8eaec]/30',
+    hoverClass: 'hover:text-[#e8eaec]',
     defaultPlaceholder: 'https://t.me/dzprime_academy',
   },
   {
@@ -124,9 +124,9 @@ export const SUPPORTED_SOCIAL_PLATFORMS: PlatformMetadata[] = [
     labelFr: 'Facebook',
     labelEn: 'Facebook',
     icon: Facebook,
-    colorHex: '#1877F2',
-    bgLight: 'bg-[#1877F2]/10 text-[#1877F2] border-[#1877F2]/30',
-    hoverClass: 'hover:text-[#1877F2]',
+    colorHex: '#e8eaec',
+    bgLight: 'bg-[#e8eaec]/10 text-[#e8eaec] border-[#e8eaec]/30',
+    hoverClass: 'hover:text-[#e8eaec]',
     defaultPlaceholder: 'https://facebook.com/dzprimeacademy',
   },
   {
@@ -168,9 +168,9 @@ export const SUPPORTED_SOCIAL_PLATFORMS: PlatformMetadata[] = [
     labelFr: 'LinkedIn',
     labelEn: 'LinkedIn',
     icon: Linkedin,
-    colorHex: '#0077B5',
-    bgLight: 'bg-[#0077B5]/10 text-[#0077B5] border-[#0077B5]/30',
-    hoverClass: 'hover:text-[#0077B5]',
+    colorHex: '#e8eaec',
+    bgLight: 'bg-[#e8eaec]/10 text-[#e8eaec] border-[#e8eaec]/30',
+    hoverClass: 'hover:text-[#e8eaec]',
     defaultPlaceholder: 'https://www.linkedin.com/company/dzprimeacademy',
   },
   {
@@ -190,9 +190,9 @@ export const SUPPORTED_SOCIAL_PLATFORMS: PlatformMetadata[] = [
     labelFr: 'Discord',
     labelEn: 'Discord',
     icon: MessageCircle,
-    colorHex: '#5865F2',
-    bgLight: 'bg-[#5865F2]/10 text-[#5865F2] border-[#5865F2]/30',
-    hoverClass: 'hover:text-[#5865F2]',
+    colorHex: '#e8eaec',
+    bgLight: 'bg-[#e8eaec]/10 text-[#e8eaec] border-[#e8eaec]/30',
+    hoverClass: 'hover:text-[#e8eaec]',
     defaultPlaceholder: 'https://discord.gg/dzprime',
   },
   {
@@ -212,9 +212,9 @@ export const SUPPORTED_SOCIAL_PLATFORMS: PlatformMetadata[] = [
     labelFr: 'Site Web',
     labelEn: 'Website',
     icon: Globe,
-    colorHex: '#10B981',
-    bgLight: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30',
-    hoverClass: 'hover:text-[#10B981]',
+    colorHex: '#6db1d8',
+    bgLight: 'bg-[#6db1d8]/10 text-[#6db1d8] border-[#6db1d8]/30',
+    hoverClass: 'hover:text-[#6db1d8]',
     defaultPlaceholder: 'https://dzprimeacademy.com',
   },
 ];
@@ -228,9 +228,9 @@ export function getPlatformMeta(type: string): PlatformMetadata {
       labelFr: type,
       labelEn: type,
       icon: Globe,
-      colorHex: '#10B981',
-      bgLight: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30',
-      hoverClass: 'hover:text-[#10B981]',
+      colorHex: '#6db1d8',
+      bgLight: 'bg-[#6db1d8]/10 text-[#6db1d8] border-[#6db1d8]/30',
+      hoverClass: 'hover:text-[#6db1d8]',
       defaultPlaceholder: 'https://',
     }
   );
@@ -239,9 +239,9 @@ export function getPlatformMeta(type: string): PlatformMetadata {
 export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
   brandBio: {
     descriptionAr:
-      'المنصة الوطنية التعليمية الأولى في الجزائر. نوفر لطلبة البكالوريا والجامعات وصولاً حصرياً لأكبر بنك امتحانات مصححة ونخبة الأساتذة المعتمدين عبر 58 ولاية.',
+      'المنصة الوطنية التعليمية الجزائرية. نوفر لطلبة البكالوريا والجامعات وصولاً حصرياً لأكبر بنك امتحانات مصححة ونخبة الأساتذة المعتمدين عبر 58 ولاية.',
     descriptionFr:
-      "La première plateforme éducative nationale en Algérie. Nous offrons aux étudiants du BAC et de l'université un accès exclusif à la plus grande banque d'épreuves corrigées et aux meilleurs enseignants à travers les 58 wilayas.",
+      "La plateforme éducative nationale algérienne. Nous offrons aux étudiants du BAC et de l'université un accès exclusif à la plus grande banque d'épreuves corrigées et aux meilleurs enseignants à travers les 58 wilayas.",
   },
   socialLinks: [
     {
@@ -297,8 +297,8 @@ export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
   quickLinks: [
     {
       id: 'ql-bot',
-      labelAr: 'المساعد الذكي (DZ Prime Bot)',
-      labelFr: 'Smart Bot DZ Prime',
+      labelAr: 'مساعد الامتحانات',
+      labelFr: 'Assistant examens',
       url: '/bot',
       iconName: 'bot',
       enabled: true,
@@ -348,7 +348,7 @@ export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
     },
     {
       id: 'eco-bots',
-      name: 'Smart Bots',
+      name: 'Assistant',
       subtextAr: 'مساعد ذكي للحلول',
       subtextFr: 'Assistance IA & Sujets',
       iconName: 'bot',

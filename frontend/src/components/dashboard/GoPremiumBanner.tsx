@@ -13,7 +13,7 @@ export const GoPremiumBanner: React.FC<GoPremiumBannerProps> = ({ locale, onUpgr
     <button
       onClick={onUpgrade}
       data-testid="go-premium-banner"
-      className="relative w-full text-left p-5 rounded-3xl bg-gradient-to-br from-[#0B1224] via-[#111A33] to-[#050810] border border-lime-500/30 text-white shadow-lg overflow-hidden group transition-transform hover:scale-[1.01]"
+      className="relative w-full text-left p-5 rounded-3xl bg-[#111114] border border-lime-500/30 text-white shadow-lg overflow-hidden group transition-transform hover:scale-[1.01]"
     >
       <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-lime-400/15 blur-3xl pointer-events-none" />
       <div className="relative z-10 flex items-center gap-2 mb-2">
@@ -26,7 +26,7 @@ export const GoPremiumBanner: React.FC<GoPremiumBannerProps> = ({ locale, onUpgr
       <p className="text-[11px] text-gray-400 mt-1 relative z-10 max-w-xs">
         {locale === 'ar' ? 'بطاقة عضوية ذهبية VIP معتمدة رسمياً' : 'Carte Membership Gold VIP officielle'}
       </p>
-      <span className="inline-flex items-center gap-1.5 mt-3 px-3.5 py-1.5 rounded-xl bg-lime-400 text-slate-950 text-xs font-black relative z-10">
+      <span className="inline-flex items-center gap-1.5 mt-3 px-3.5 py-1.5 rounded-xl bg-lime-400 text-navy-950 text-xs font-black relative z-10">
         <Sparkles className="w-3.5 h-3.5" />
         <span>{locale === 'ar' ? 'ترقية فورية' : 'Get Access'}</span>
       </span>

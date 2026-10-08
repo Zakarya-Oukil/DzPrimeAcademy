@@ -9,6 +9,7 @@ import { usePlatformStore, PlatformCourse } from '@/lib/platformStore';
 import { useAuthStore } from '@/lib/store';
 import { useAuthModal } from '@/lib/authModalContext';
 import { formatDZD } from '@/lib/format';
+import { isShowableCourse, validRating } from '@/lib/courseDisplay';
 import { ContactActionModal, ContactModalOperation } from '@/components/shared/ContactActionModal';
 
 const THEME_BG: Record<string, string> = {
@@ -48,7 +49,8 @@ export default function DawaratCatalogPage() {
   }, [lockedTrack]);
 
   useEffect(() => {
-    if (currentUser) {
+    // Enrollments exist for students only; other roles would just get a 403.
+    if (isStudent) {
       fetch('/api/enrollments')
         .then((r) => (r.ok ? r.json() : []))
         .then((data) => {
@@ -58,7 +60,7 @@ export default function DawaratCatalogPage() {
         })
         .catch(() => {});
     }
-  }, [currentUser]);
+  }, [isStudent]);
 
   const handleEnroll = (c: PlatformCourse, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -73,7 +75,7 @@ export default function DawaratCatalogPage() {
       type: 'COURSE_ENROLLMENT',
       title: locale === 'ar' ? `دورة: ${c.titleAr}` : `Cours: ${c.titleFr || c.titleAr}`,
       details: `Course ID: ${c.id} | Formateur: ${c.teacherName} | ${c.category}`,
-      amountDzd: c.priceDzd || 3500,
+      amountDzd: c.priceDzd ?? 0,
       targetId: c.id,
       user: {
         name: currentUser.name,
@@ -85,6 +87,7 @@ export default function DawaratCatalogPage() {
   };
 
   const filtered = filter === 'ALL' ? courses : courses.filter((c) => c.category === filter);
+  const shown = filtered.filter(isShowableCourse);
 
   return (
     <div className="py-6 sm:py-8 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 font-arabic" data-testid="dawarat-catalog-page">
@@ -133,7 +136,7 @@ export default function DawaratCatalogPage() {
                 data-testid={`dawarat-filter-${f}`}
                 onClick={() => setFilter(f)}
                 className={`px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all ${
-                  filter === f ? 'bg-slate-950 dark:bg-lime-400 text-white dark:text-slate-950 shadow-sm' : 'text-slate-600 dark:text-gray-400'
+                  filter === f ? 'bg-slate-950 dark:bg-lime-400 text-white dark:text-navy-950 shadow-sm' : 'text-slate-600 dark:text-gray-400'
                 }`}
               >
                 {f === 'ALL' ? (locale === 'ar' ? 'الكل' : 'Tous') : f}
@@ -144,7 +147,7 @@ export default function DawaratCatalogPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="dawarat-grid">
-        {filtered.map((c, idx) => {
+        {shown.map((c, idx) => {
           const isEnrolled = enrolledIds.includes(c.id);
           const isEnrolling = enrollingId === c.id;
 
@@ -156,13 +159,13 @@ export default function DawaratCatalogPage() {
               transition={{ delay: idx * 0.05 }}
               data-testid={`dawarat-card-${c.id}`}
               onClick={() => setSelectedCourse(c)}
-              className="p-5 rounded-3xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-gold-500/40 hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between"
+              className="p-5 rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-gold-500/40 hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between"
             >
               <div>
                 <div className={`h-24 rounded-2xl bg-gradient-to-br ${THEME_BG[c.colorTheme] || THEME_BG.lime} flex items-center justify-center mb-3.5 relative overflow-hidden`}>
                   {c.isLive && (
                     <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-white " />
                       LIVE
                     </span>
                   )}
@@ -174,10 +177,14 @@ export default function DawaratCatalogPage() {
                 <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-1">{c.teacherName}</p>
 
                 <div className="flex items-center justify-between mt-3">
-                  <span className="flex items-center gap-1 text-xs font-bold text-amber-500">
-                    <Star className="w-3.5 h-3.5 fill-amber-500" />
-                    {c.rating.toFixed(1)}
-                  </span>
+                  {validRating(c.rating) ? (
+                    <span className="flex items-center gap-1 text-xs font-bold text-amber-500">
+                      <Star className="w-3.5 h-3.5 fill-amber-500" />
+                      {validRating(c.rating)}
+                    </span>
+                  ) : (
+                    <span />
+                  )}
                   <span className="text-xs font-mono font-black text-lime-600 dark:text-lime-400">
                     {formatDZD(c.priceDzd, locale)}
                   </span>
@@ -206,7 +213,7 @@ export default function DawaratCatalogPage() {
                   className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-sm ${
                     isEnrolled
                       ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-default'
-                      : 'bg-lime-400 hover:bg-lime-300 text-slate-950 active:scale-95'
+                      : 'bg-lime-400 hover:bg-lime-300 text-navy-950 active:scale-95'
                   }`}
                 >
                   {isEnrolling ? (
@@ -227,7 +234,7 @@ export default function DawaratCatalogPage() {
             </motion.div>
           );
         })}
-        {loaded && filtered.length === 0 && (
+        {loaded && shown.length === 0 && (
           <p className="text-xs text-slate-400 py-10 text-center sm:col-span-3">
             {locale === 'ar' ? 'لا توجد دورات في هذا التصنيف حالياً.' : 'Aucun cours dans cette catégorie.'}
           </p>
@@ -237,7 +244,7 @@ export default function DawaratCatalogPage() {
       {/* Course Detail Modal */}
       {selectedCourse && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-2xl relative text-slate-900 dark:text-white">
+          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-2xl relative text-slate-900 dark:text-white">
             <button
               onClick={() => setSelectedCourse(null)}
               className="absolute top-4 right-4 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400"
@@ -290,7 +297,7 @@ export default function DawaratCatalogPage() {
                 className={`px-6 py-2.5 rounded-xl font-black text-xs flex items-center gap-2 shadow-sm ${
                   enrolledIds.includes(selectedCourse.id)
                     ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                    : 'bg-lime-400 hover:bg-lime-300 text-slate-950 active:scale-95'
+                    : 'bg-lime-400 hover:bg-lime-300 text-navy-950 active:scale-95'
                 }`}
               >
                 {enrolledIds.includes(selectedCourse.id) ? (

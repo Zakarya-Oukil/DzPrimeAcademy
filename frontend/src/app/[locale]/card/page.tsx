@@ -54,14 +54,14 @@ export default function CardStudioPage() {
     } else {
       const updated: User = {
         id: `user-${Date.now()}`,
-        email: 'student@dzprime.academy',
+        email: '',
         role: 'STUDENT_FREE',
         name,
         wilayaCode: Number(wilayaCode),
         wilayaName: wilaya ? getLocalizedWilayaName(wilaya, locale) : 'Alger',
         institutionName,
         phone,
-        studentCardId: `DZ-STU-${wilayaCode}-${Math.floor(1000 + Math.random() * 9000)}`,
+        studentCardId: '',
         isVerified: true,
         createdAt: new Date().toISOString().split('T')[0],
       };
@@ -102,6 +102,7 @@ export default function CardStudioPage() {
               </label>
               <input
                 type="text"
+                aria-label={t('card.nameLabel')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-300 dark:border-gold-500/30 text-slate-900 dark:text-white focus:outline-none focus:border-gold-500 font-bold"
@@ -110,7 +111,7 @@ export default function CardStudioPage() {
 
             <div>
               <label className="block text-slate-700 dark:text-gray-300 mb-1 font-semibold">{t('card.wilayaLabel')}</label>
-              <select
+              <select aria-label={t('card.wilayaLabel')}
                 value={wilayaCode}
                 onChange={(e) => setWilayaCode(Number(e.target.value))}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-300 dark:border-gold-500/30 text-slate-800 dark:text-white focus:outline-none focus:border-gold-500"
@@ -129,6 +130,7 @@ export default function CardStudioPage() {
               </label>
               <input
                 type="text"
+                aria-label={t('card.institutionLabel')}
                 value={institutionName}
                 onChange={(e) => setInstitutionName(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-300 dark:border-gold-500/30 text-slate-900 dark:text-white focus:outline-none focus:border-gold-500"
@@ -142,6 +144,7 @@ export default function CardStudioPage() {
               <input
                 type="text"
                 dir="ltr"
+                aria-label={t('card.phoneLabel')}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-850 border border-slate-300 dark:border-gold-500/30 text-slate-900 dark:text-white focus:outline-none focus:border-gold-500 font-mono text-left"
@@ -158,7 +161,7 @@ export default function CardStudioPage() {
             <button
               type="submit"
               disabled={isSaving}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 font-black text-xs shadow-gold-glow flex items-center justify-center gap-2 active:scale-95 transition-all mt-2 disabled:opacity-60"
+              className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs shadow-gold-glow flex items-center justify-center gap-2 active:scale-95 transition-all mt-2 disabled:opacity-60"
             >
               {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               <span>{t('card.updateBtn')}</span>
@@ -175,7 +178,7 @@ export default function CardStudioPage() {
           )}
 
           {(!currentUser || (currentUser.role !== 'STUDENT_PAID' && currentUser.role !== 'OWNER' && currentUser.role !== 'ADMIN')) && (
-            <div className="w-full max-w-md p-4 rounded-3xl bg-[#090E1E] border border-gold-500/30 text-center space-y-2">
+            <div className="w-full max-w-md p-4 rounded-3xl bg-[#111114] border border-gold-500/30 text-center space-y-2">
               <span className="text-[11px] text-gray-400 font-arabic block">
                 {locale === 'ar'
                   ? 'هل تريد ترقية بطاقتك إلى عضوية VIP المشفرة وفتح كافة الدروس والامتحانات؟'
@@ -184,7 +187,7 @@ export default function CardStudioPage() {
               <button
                 type="button"
                 onClick={() => setShowContactModal(true)}
-                className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-lime-400 via-emerald-400 to-green-500 hover:from-lime-300 hover:to-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 active:scale-95 transition-all"
+                className="w-full py-3 px-4 rounded-2xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 active:scale-95 transition-all"
               >
                 <ShieldCheck className="w-4 h-4" />
                 <span>{locale === 'ar' ? 'فعّل بطاقتك الرقمية (VIP) عبر واتساب وتلغرام' : 'Activer ma Carte Numérique VIP'}</span>

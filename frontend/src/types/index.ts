@@ -49,6 +49,7 @@ export interface User {
   academicYear?: string;
   studentCardId?: string;
   isVerified?: boolean;
+  mustChangePassword?: boolean;
   createdAt: string;
 }
 
@@ -109,8 +110,10 @@ export interface ExamItem {
   year: number;
   termType: ExamType;
   fileUrl: string;
-  solutionUrl?: string;
+  solutionUrl?: string | null;
   isFreeSample: boolean;
+  /** Set by /api/exams: the server decides who may open the file. */
+  isLocked?: boolean;
   downloadsCount: number;
   moduleId: string;
   moduleName?: string;
@@ -201,7 +204,7 @@ export interface Post {
   authorRole: Role;
   assignedTeacherId?: string;
   assignedTeacherName?: string;
-  imageUrl?: string;
+  imageUrls?: string[];
   videoUrl?: string;
   linkUrl?: string;
   isPrivate?: boolean;

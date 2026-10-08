@@ -24,7 +24,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({ metrics }) => {
         return (
           <div
             key={idx}
-            className="p-5 rounded-2xl border border-slate-200 dark:border-gold-500/30 bg-white dark:bg-gradient-to-br dark:from-navy-850 dark:via-navy-900 dark:to-navy-950 shadow-sm hover:shadow-md dark:hover:shadow-gold-glow hover:border-gold-500 transition-all duration-300 relative overflow-hidden group text-left"
+            className="p-5 rounded-2xl border border-slate-200 dark:border-gold-500/30 bg-white dark:bg-navy-850 shadow-sm hover:shadow-md dark:hover:shadow-gold-glow hover:border-gold-500 transition-all duration-300 relative overflow-hidden group text-left"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-600 dark:text-gray-300 font-arabic">

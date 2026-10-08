@@ -114,7 +114,8 @@ export default function SocialFeed({
         return {
           ...p,
           likedBy: newLikedBy,
-          likesCount: newLikedBy.length
+          // likedBy only holds the viewer, so adjust the shared total by one instead of recounting it
+          likesCount: Math.max(0, (p.likesCount || 0) + (isLiked ? -1 : 1))
         };
       })
     );
@@ -184,7 +185,7 @@ export default function SocialFeed({
     const newIsPrivate = !post.isPrivate;
     try {
       const res = await fetch(`/api/posts/${post.id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isPrivate: newIsPrivate })
       });
@@ -256,7 +257,7 @@ export default function SocialFeed({
     <div className="w-full max-w-3xl mx-auto space-y-6">
       {/* Top Header / Creation Prompt */}
       {showHeader && (
-        <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-r from-slate-900/90 via-slate-800/90 to-blue-950/80 p-5 shadow-2xl backdrop-blur-xl">
+        <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-slate-900/90 p-5 shadow-2xl">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4 text-right">
               <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-lg border border-amber-400/40 flex-shrink-0 bg-slate-950">
@@ -283,7 +284,7 @@ export default function SocialFeed({
             {canCreatePost && (
               <button
                 onClick={() => setIsStudioOpen(true)}
-                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95"
+                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 font-black text-sm shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95"
               >
                 <Plus className="w-5 h-5" />
                 <span>نشر فيديو أو مقال جديد</span>
@@ -297,7 +298,7 @@ export default function SocialFeed({
               onClick={() => setActiveFilter('ALL')}
               className={`px-3.5 py-1.5 rounded-xl font-bold transition-all ${
                 activeFilter === 'ALL'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  ? 'bg-amber-500 text-navy-950 shadow-md shadow-amber-500/20'
                   : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80'
               }`}
             >
@@ -307,7 +308,7 @@ export default function SocialFeed({
               onClick={() => setActiveFilter('VIDEOS')}
               className={`px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition-all ${
                 activeFilter === 'VIDEOS'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  ? 'bg-amber-500 text-navy-950 shadow-md shadow-amber-500/20'
                   : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80'
               }`}
             >
@@ -318,7 +319,7 @@ export default function SocialFeed({
               onClick={() => setActiveFilter('ARTICLES')}
               className={`px-3.5 py-1.5 rounded-xl font-bold transition-all ${
                 activeFilter === 'ARTICLES'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  ? 'bg-amber-500 text-navy-950 shadow-md shadow-amber-500/20'
                   : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80'
               }`}
             >
@@ -329,7 +330,7 @@ export default function SocialFeed({
                 onClick={() => setActiveFilter('MY_POSTS')}
                 className={`px-3.5 py-1.5 rounded-xl font-bold transition-all ${
                   activeFilter === 'MY_POSTS'
-                    ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                    ? 'bg-amber-500 text-navy-950 shadow-md shadow-amber-500/20'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80'
                 }`}
               >
@@ -361,7 +362,7 @@ export default function SocialFeed({
           ))}
         </div>
       ) : filteredPosts.length === 0 ? (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-12 text-center space-y-4 backdrop-blur-md">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-12 text-center space-y-4">
           <div className="w-16 h-16 mx-auto rounded-full bg-slate-800/80 flex items-center justify-center text-amber-400">
             <Sparkles className="w-8 h-8" />
           </div>
@@ -372,7 +373,7 @@ export default function SocialFeed({
           {canCreatePost && (
             <button
               onClick={() => setIsStudioOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm transition-all"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold text-sm transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>إضافة أول منشور الآن</span>
@@ -397,7 +398,7 @@ export default function SocialFeed({
               <article
                 key={post.id}
                 id={`post-${post.id}`}
-                className="group relative overflow-hidden rounded-2xl border border-slate-800 hover:border-slate-700 bg-gradient-to-b from-slate-900/90 to-slate-950/95 shadow-xl transition-all backdrop-blur-xl"
+                className="group relative overflow-hidden rounded-2xl border border-slate-800 hover:border-slate-700 bg-slate-900/90 shadow-xl transition-all"
               >
                 {/* Header: Author Info & Privacy Tag */}
                 <div className="p-4 sm:p-5 flex items-start justify-between gap-3 border-b border-slate-800/60">
@@ -409,12 +410,13 @@ export default function SocialFeed({
                       {post.authorAvatar ? (
                         <Image
                           src={post.authorAvatar}
+                          unoptimized
                           alt={post.authorName}
                           fill
                           className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-amber-300 font-bold text-lg bg-gradient-to-tr from-slate-800 to-amber-950/40">
+                        <div className="w-full h-full flex items-center justify-center text-amber-300 font-bold text-lg bg-slate-800">
                           {post.authorName?.charAt(0) || 'D'}
                         </div>
                       )}
@@ -435,7 +437,7 @@ export default function SocialFeed({
                         </span>
                         {post.wilayaName && (
                           <span className="text-[10px] text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-md">
-                            📍 {post.wilayaName}
+                            {post.wilayaName}
                           </span>
                         )}
                       </div>
@@ -536,22 +538,24 @@ export default function SocialFeed({
                   </div>
                 )}
 
-                {post.imageUrl && !post.videoUrl && (
-                  <div
-                    onClick={() => setZoomImage(post.imageUrl || null)}
-                    className="relative w-full max-h-[500px] h-[340px] sm:h-[420px] bg-slate-950 cursor-pointer overflow-hidden border-y border-slate-800/80 group/img"
-                  >
-                    <Image
-                      src={post.imageUrl}
-                      alt={post.title || 'Post Image'}
-                      fill
-                      className="object-cover group-hover/img:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="bg-slate-900/90 text-white text-xs px-3 py-1.5 rounded-full border border-slate-700 shadow-lg">
-                        اضغط للتكبير
-                      </span>
-                    </div>
+                {!!post.imageUrls?.length && (
+                  <div className={`grid gap-0.5 border-y border-slate-800/80 bg-slate-950 ${post.imageUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                    {post.imageUrls.map((src, i) => (
+                      <button
+                        type="button"
+                        key={src}
+                        onClick={() => setZoomImage(src)}
+                        aria-label={`${post.title || 'Post'} - ${i + 1}/${post.imageUrls!.length}`}
+                        className={`relative w-full overflow-hidden cursor-pointer group/img ${post.imageUrls!.length === 1 ? 'h-[340px] sm:h-[420px]' : 'h-[180px] sm:h-[240px]'}`}
+                      >
+                        <Image
+                          src={src}
+                          alt={post.title || 'Post Image'}
+                          fill
+                          className="object-cover group-hover/img:scale-105 transition-transform duration-300"
+                        />
+                      </button>
+                    ))}
                   </div>
                 )}
 
@@ -620,6 +624,7 @@ export default function SocialFeed({
                           {currentUser.avatar ? (
                             <Image
                               src={currentUser.avatar}
+                              unoptimized
                               alt={currentUser.name}
                               fill
                               className="object-cover"
@@ -655,7 +660,7 @@ export default function SocialFeed({
                               submittingComment[post.id] ||
                               !commentInputs[post.id]?.trim()
                             }
-                            className="absolute left-1.5 p-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:hover:bg-amber-500 text-slate-950 transition-all"
+                            className="absolute left-1.5 p-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:hover:bg-amber-500 text-navy-950 transition-all"
                           >
                             <Send className="w-3.5 h-3.5" />
                           </button>
@@ -688,6 +693,7 @@ export default function SocialFeed({
                                 {comment.authorAvatar ? (
                                   <Image
                                     src={comment.authorAvatar}
+                                    unoptimized
                                     alt={comment.authorName}
                                     fill
                                     className="object-cover"
@@ -763,9 +769,9 @@ export default function SocialFeed({
 
       {/* Floating Notification Toast */}
       {toastMsg && (
-        <div className="fixed bottom-6 right-6 z-50 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 ">
           <div
-            className={`px-4 py-2.5 rounded-2xl shadow-2xl border text-xs font-bold flex items-center gap-2 backdrop-blur-xl ${
+            className={`px-4 py-2.5 rounded-2xl shadow-2xl border text-xs font-bold flex items-center gap-2 ${
               toastMsg.type === 'error'
                 ? 'bg-rose-950/90 border-rose-500/50 text-rose-200 shadow-rose-500/20'
                 : 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200 shadow-emerald-500/20'

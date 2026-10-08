@@ -33,7 +33,7 @@ export const CompetitiveAdvantageCallout: React.FC = () => {
     <section className="px-3 sm:px-6 lg:px-8" data-testid="landing-competitive-advantage">
       <a
         href="#bundles"
-        className="group block max-w-7xl mx-auto rounded-[2rem] sm:rounded-[2.5rem] p-7 sm:p-12 relative overflow-hidden bg-gradient-to-br from-gold-400 via-gold-500 to-amber-500"
+        className="group block max-w-7xl mx-auto rounded-[2rem] sm:rounded-[2.5rem] p-7 sm:p-12 relative overflow-hidden bg-gold-400"
       >
         <div className="absolute -top-10 -left-10 w-56 h-56 rounded-full bg-white/20 blur-2xl pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-72 h-72 rounded-full bg-lime-300/25 blur-3xl pointer-events-none" />

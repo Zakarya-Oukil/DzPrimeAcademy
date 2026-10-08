@@ -11,7 +11,9 @@
     "postinstall": "node ./node_modules/prisma/build/index.js generate",
     "db:generate": "node ./node_modules/prisma/build/index.js generate",
     "db:push": "node ./node_modules/prisma/build/index.js db push",
-    "db:seed": "node ./node_modules/tsx/dist/cli.mjs prisma/seed.ts"
+    "db:seed": "node ./node_modules/tsx/dist/cli.mjs prisma/seed.ts",
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "test:probes": "node tests/probes/run-all.cjs"
   },
   "dependencies": {
     "@prisma/client": "^6.4.0",

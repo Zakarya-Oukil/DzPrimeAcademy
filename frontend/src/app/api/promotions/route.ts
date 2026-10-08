@@ -1,129 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { ensureSeeded } from '@/lib/seed';
-import { requireCommercialOrAdmin } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
+import { AMBASSADOR_DISCOUNT_PERCENT, resolvePromo } from '@/lib/operations';
+import { clientIp, rateLimit } from '@/lib/rateLimit';
 
-export interface PromotionItem {
-  id: string;
-  code: string;
-  discountPercent: number;
-  descriptionAr: string;
-  descriptionFr: string;
-  isActive: boolean;
-  type: 'CAMPAIGN' | 'AMBASSADOR' | 'FLASH_SALE';
-  applicableTrack?: 'ALL' | 'BAC' | 'UNIVERSITY_LMD' | 'MEDICAL';
-  usageCount: number;
-  createdAt: string;
+const TYPES = ['CAMPAIGN', 'AMBASSADOR', 'FLASH_SALE'];
+const TRACKS = ['ALL', 'BAC', 'UNIVERSITY_LMD', 'MEDICAL'];
+const CODE = /^[A-Z0-9_-]{3,30}$/;
+
+const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+const bad = (error: string) => NextResponse.json({ error }, { status: 400 });
+
+// Shared field checks for create and update. Returns the clean data or an error message.
+function parsePromo(body: Record<string, unknown>, partial: boolean): { data: Record<string, unknown> } | { error: string } {
+  const data: Record<string, unknown> = {};
+  if (!partial || body.discountPercent !== undefined) {
+    const pct = Number(body.discountPercent);
+    if (!Number.isInteger(pct) || pct < 1 || pct > 100) return { error: 'نسبة التخفيض يجب أن تكون بين 1 و100' };
+    data.discountPercent = pct;
+  }
+  if (text(body.descriptionAr, 200)) data.descriptionAr = text(body.descriptionAr, 200);
+  if (text(body.descriptionFr, 200)) data.descriptionFr = text(body.descriptionFr, 200);
+  if (body.isActive !== undefined) data.isActive = Boolean(body.isActive);
+  if (body.type !== undefined) {
+    if (!TYPES.includes(body.type as string)) return { error: 'نوع غير صالح' };
+    data.type = body.type;
+  }
+  if (body.applicableTrack !== undefined) {
+    if (!TRACKS.includes(body.applicableTrack as string)) return { error: 'مسار غير صالح' };
+    data.applicableTrack = body.applicableTrack;
+  }
+  if (body.maxUses !== undefined) {
+    const n = body.maxUses === null || body.maxUses === '' ? null : Number(body.maxUses);
+    if (n !== null && (!Number.isInteger(n) || n < 1)) return { error: 'الحد الأقصى للاستخدام غير صالح' };
+    data.maxUses = n;
+  }
+  if (body.expiresAt !== undefined) {
+    const d = body.expiresAt ? new Date(String(body.expiresAt)) : null;
+    if (d && Number.isNaN(d.getTime())) return { error: 'تاريخ الانتهاء غير صالح' };
+    data.expiresAt = d;
+  }
+  return { data };
 }
 
-// In-memory persistent active commercial campaigns with official defaults
-let platformPromotions: PromotionItem[] = [
-  {
-    id: 'promo-1',
-    code: 'PROMO2026',
-    discountPercent: 25,
-    descriptionAr: 'تخفيض الافتتاح الوطني الرسمي 2026',
-    descriptionFr: 'Remise officielle d\'ouverture nationale 2026',
-    isActive: true,
-    type: 'CAMPAIGN',
-    applicableTrack: 'ALL',
-    usageCount: 142,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'promo-2',
-    code: 'BAC20',
-    discountPercent: 20,
-    descriptionAr: 'عرض خاص لطلبة البكالوريا BAC 2026',
-    descriptionFr: 'Offre spéciale candidats BAC 2026',
-    isActive: true,
-    type: 'CAMPAIGN',
-    applicableTrack: 'BAC',
-    usageCount: 89,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'promo-3',
-    code: 'EXCELLENCE30',
-    discountPercent: 30,
-    descriptionAr: 'عرض حزم الامتياز الجامعي والماستر',
-    descriptionFr: 'Pack Excellence Universitaire & Master',
-    isActive: true,
-    type: 'FLASH_SALE',
-    applicableTrack: 'UNIVERSITY_LMD',
-    usageCount: 57,
-    createdAt: new Date().toISOString(),
-  },
-];
-
 export async function GET(request: NextRequest) {
-  await ensureSeeded();
   const { searchParams } = new URL(request.url);
   const codeToValidate = searchParams.get('validate');
 
-  // If a student or checkout is validating a code:
+  // Checkout asks "is this code good, and for how much?". The server re-checks it when the operation is created.
   if (codeToValidate) {
-    const cleanCode = codeToValidate.trim().toUpperCase();
-
-    // 1. Check Platform Promo Campaigns
-    const promo = platformPromotions.find((p) => p.code.toUpperCase() === cleanCode && p.isActive);
-    if (promo) {
-      return NextResponse.json({
-        valid: true,
-        code: promo.code,
-        discountPercent: promo.discountPercent,
-        descriptionAr: promo.descriptionAr,
-        descriptionFr: promo.descriptionFr,
-        type: promo.type,
-      });
+    if (!rateLimit(`promo:${clientIp(request)}`, 30, 10 * 60 * 1000)) {
+      return NextResponse.json({ valid: false, error: 'محاولات كثيرة، حاول لاحقاً' }, { status: 429 });
     }
-
-    // 2. Check Ambassador Promo Codes in Database
-    const ambassador = await prisma.ambassadorProfile.findUnique({
-      where: { promoCode: cleanCode },
+    const promo = await resolvePromo(codeToValidate, searchParams.get('track'));
+    if (!promo) {
+      return NextResponse.json({ valid: false, error: 'كود التخفيض غير صالح أو منتهي الصلاحية' }, { status: 404 });
+    }
+    return NextResponse.json({
+      valid: true,
+      code: promo.code,
+      discountPercent: promo.percent,
+      descriptionAr: promo.descriptionAr,
+      descriptionFr: promo.descriptionFr,
+      type: promo.type,
     });
-
-    if (ambassador) {
-      return NextResponse.json({
-        valid: true,
-        code: ambassador.promoCode,
-        discountPercent: 15, // Standard 15% discount for ambassador referrals
-        descriptionAr: `كود السفير المعتمد — ولاية ${ambassador.wilayaNameAr}`,
-        descriptionFr: `Code Ambassadeur Agréé — Wilaya ${ambassador.wilayaCode}`,
-        type: 'AMBASSADOR',
-      });
-    }
-
-    return NextResponse.json(
-      { valid: false, error: 'كود التخفيض غير صالح أو منتهي الصلاحية' },
-      { status: 404 }
-    );
   }
 
-  // Otherwise, return full promotions list for Admin / Commercial management
-  const authResult = await requireCommercialOrAdmin(request);
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
-  // Retrieve ambassador promo codes for comprehensive overview
-  const ambassadors = await prisma.ambassadorProfile.findMany({
-    where: { promoCode: { not: null } },
-    select: {
-      id: true,
-      promoCode: true,
-      wilayaNameAr: true,
-      wilayaCode: true,
-      referralsCount: true,
-      commissionDzd: true,
-      isVerified: true,
-    },
-  });
+  const [platformPromotions, ambassadors] = await Promise.all([
+    prisma.promotion.findMany({ orderBy: { createdAt: 'desc' } }),
+    prisma.ambassadorProfile.findMany({
+      where: { promoCode: { not: null } },
+      select: { id: true, promoCode: true, wilayaNameAr: true, wilayaCode: true, referralsCount: true, commissionDzd: true, isVerified: true },
+    }),
+  ]);
 
   return NextResponse.json({
     platformPromotions,
     ambassadorCodes: ambassadors.map((a) => ({
       id: a.id,
       code: a.promoCode!,
-      discountPercent: 15,
+      discountPercent: AMBASSADOR_DISCOUNT_PERCENT,
       wilayaNameAr: a.wilayaNameAr,
       wilayaCode: a.wilayaCode,
       referralsCount: a.referralsCount,
@@ -134,72 +93,59 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const authResult = await requireCommercialOrAdmin(request);
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
-  const body = await request.json();
-  const cleanCode = (body.code || '').trim().toUpperCase();
+  const body = (await request.json().catch(() => null)) ?? {};
+  const code = text(body.code, 30).toUpperCase();
+  if (!CODE.test(code)) return bad('رمز التخفيض: 3 إلى 30 حرفاً (A-Z، 0-9، - أو _)');
 
-  if (!cleanCode) {
-    return NextResponse.json({ error: 'رمز التخفيض مطلوب' }, { status: 400 });
+  const parsed = parsePromo(body, false);
+  if ('error' in parsed) return bad(parsed.error);
+
+  if ((await prisma.promotion.findUnique({ where: { code } })) || (await prisma.ambassadorProfile.findUnique({ where: { promoCode: code } }))) {
+    return bad('كود التخفيض مسجل مسبقاً');
   }
 
-  // Check if exists
-  if (platformPromotions.some((p) => p.code === cleanCode)) {
-    return NextResponse.json({ error: 'كود التخفيض مسجل مسبقاً' }, { status: 400 });
+  const pct = parsed.data.discountPercent;
+  try {
+    const promo = await prisma.promotion.create({
+      data: {
+        code,
+        descriptionAr: `تخفيض بنسبة ${pct}%`,
+        descriptionFr: `Remise de ${pct}%`,
+        ...(parsed.data as { discountPercent: number }),
+      },
+    });
+    return NextResponse.json(promo, { status: 201 });
+  } catch (e: any) {
+    if (e?.code === 'P2002') return bad('كود التخفيض مسجل مسبقاً');
+    throw e;
   }
-
-  const newPromo: PromotionItem = {
-    id: `promo-${Date.now()}`,
-    code: cleanCode,
-    discountPercent: Number(body.discountPercent) || 15,
-    descriptionAr: body.descriptionAr || `تخفيض بنسبة ${body.discountPercent}%`,
-    descriptionFr: body.descriptionFr || `Remise de ${body.discountPercent}%`,
-    isActive: body.isActive !== undefined ? Boolean(body.isActive) : true,
-    type: body.type || 'CAMPAIGN',
-    applicableTrack: body.applicableTrack || 'ALL',
-    usageCount: 0,
-    createdAt: new Date().toISOString(),
-  };
-
-  platformPromotions.unshift(newPromo);
-  return NextResponse.json(newPromo, { status: 201 });
 }
 
 export async function PUT(request: NextRequest) {
-  const authResult = await requireCommercialOrAdmin(request);
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
-  const body = await request.json();
-  const { id, isActive, discountPercent, descriptionAr, descriptionFr } = body;
+  const body = (await request.json().catch(() => null)) ?? {};
+  const id = text(body.id, 100);
+  const parsed = parsePromo(body, true);
+  if ('error' in parsed) return bad(parsed.error);
 
-  platformPromotions = platformPromotions.map((p) => {
-    if (p.id === id) {
-      return {
-        ...p,
-        isActive: isActive !== undefined ? isActive : p.isActive,
-        discountPercent: discountPercent !== undefined ? Number(discountPercent) : p.discountPercent,
-        descriptionAr: descriptionAr !== undefined ? descriptionAr : p.descriptionAr,
-        descriptionFr: descriptionFr !== undefined ? descriptionFr : p.descriptionFr,
-      };
-    }
-    return p;
-  });
-
+  const result = await prisma.promotion.updateMany({ where: { id }, data: parsed.data });
+  if (result.count === 0) return NextResponse.json({ error: 'الكود غير موجود' }, { status: 404 });
   return NextResponse.json({ success: true });
 }
 
 export async function DELETE(request: NextRequest) {
-  const authResult = await requireCommercialOrAdmin(request);
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
+  const id = new URL(request.url).searchParams.get('id');
+  if (!id) return bad('ID مطلوب');
 
-  if (!id) {
-    return NextResponse.json({ error: 'ID مطلوب' }, { status: 400 });
-  }
-
-  platformPromotions = platformPromotions.filter((p) => p.id !== id);
+  const result = await prisma.promotion.deleteMany({ where: { id } });
+  if (result.count === 0) return NextResponse.json({ error: 'الكود غير موجود' }, { status: 404 });
   return NextResponse.json({ success: true });
 }

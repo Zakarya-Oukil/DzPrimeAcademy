@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { ExamItem, TrackType, ModuleItem } from '@/types';
-import { EXAMS, MODULES, INSTITUTIONS } from '@/lib/initial-data';
+import { MODULES, INSTITUTIONS } from '@/lib/initial-data';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 import { isGoldenMember } from '@/lib/rbac';
@@ -42,6 +42,15 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
   const { t, locale, isRtl } = useTranslation();
   const { currentUser } = useAuthStore();
   const isGold = isGoldenMember(currentUser);
+
+  // Exams come from the server: it applies the tier rule and signs private file links (they expire after 5 minutes).
+  const [exams, setExams] = useState<ExamItem[]>([]);
+  useEffect(() => {
+    fetch('/api/exams')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d && Array.isArray(d.exams)) setExams(d.exams); })
+      .catch(() => {});
+  }, [currentUser?.id, currentUser?.role]);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -77,11 +86,11 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
             particleCount: 25,
             spread: 40,
             origin: { y: 0.85 },
-            colors: ['#D4AF37', '#10B981', '#3B82F6'],
+            colors: ['#f2aa34', '#6db1d8', '#0880f0'],
           });
         } catch (err) {}
 
-        showToast(locale === 'ar' ? 'تم حفظ الموضوع في حقيبتك الدراسية ⭐' : 'Ajouté à votre sac d\'études ⭐');
+        showToast(locale === 'ar' ? 'تم حفظ الموضوع في حقيبتك الدراسية ' : 'Ajouté à votre sac d\'études ');
         return [...prev, exam.id];
       }
     });
@@ -93,7 +102,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
       navigator.clipboard.writeText(
         `${window.location.origin}/${locale}?exam=${exam.id}`
       );
-      showToast(locale === 'ar' ? 'تم نسخ رابط الموضوع بنجاح 📋' : 'Lien copié dans le presse-papiers 📋');
+      showToast(locale === 'ar' ? 'تم نسخ رابط الموضوع بنجاح ' : 'Lien copié dans le presse-papiers ');
     }
   };
 
@@ -111,7 +120,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
 
   // Filter exams based on all criteria
   const filteredExams = useMemo(() => {
-    return EXAMS.filter((exam) => {
+    return exams.filter((exam) => {
       // Search query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -142,23 +151,23 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
 
       return true;
     });
-  }, [searchQuery, selectedTrack, selectedModuleId, selectedTermType]);
+  }, [exams, searchQuery, selectedTrack, selectedModuleId, selectedTermType]);
 
   const bookmarkedExams = useMemo(() => {
-    return EXAMS.filter((ex) => bookmarkedExamIds.includes(ex.id));
-  }, [bookmarkedExamIds]);
+    return exams.filter((ex) => bookmarkedExamIds.includes(ex.id));
+  }, [exams, bookmarkedExamIds]);
 
   const trackTabs = [
-    { id: 'ALL', labelAr: 'الكل (جميع الشعب)', labelFr: 'Tous les niveaux', count: EXAMS.length },
-    { id: 'UNIVERSITY_LMD', labelAr: 'الإعلام الآلي والرياضيات (L1/L2)', labelFr: 'Informatique & Maths LMD', count: 7 },
-    { id: 'BAC', labelAr: 'البكالوريا الوطنية (3AS BAC)', labelFr: 'Baccalauréat Algérien', count: 3 },
-    { id: 'MEDICAL', labelAr: 'العلوم الطبية والصيدلة', labelFr: 'Médecine & Santé', count: 2 },
+    { id: 'ALL', labelAr: 'الكل (جميع الشعب)', labelFr: 'Tous les niveaux', count: exams.length },
+    { id: 'UNIVERSITY_LMD', labelAr: 'الإعلام الآلي والرياضيات (L1/L2)', labelFr: 'Informatique & Maths LMD', count: exams.filter((e) => e.trackType === 'UNIVERSITY_LMD').length },
+    { id: 'BAC', labelAr: 'البكالوريا الوطنية (3AS BAC)', labelFr: 'Baccalauréat Algérien', count: exams.filter((e) => e.trackType === 'BAC').length },
+    { id: 'MEDICAL', labelAr: 'العلوم الطبية والصيدلة', labelFr: 'Médecine & Santé', count: exams.filter((e) => e.trackType === 'MEDICAL').length },
   ];
 
   return (
     <div className="w-full space-y-6 select-none font-arabic">
       {/* ================= HERO SEARCH & 1-CLICK FAST BAR ================= */}
-      <div className="relative p-5 sm:p-7 rounded-3xl bg-gradient-to-br from-slate-900 via-navy-900 to-[#070D1F] border border-gold-500/30 text-white shadow-xl overflow-hidden">
+      <div className="relative p-5 sm:p-7 rounded-3xl bg-slate-900 border border-gold-500/30 text-white shadow-xl overflow-hidden">
         {/* Background Ambient Glow */}
         <div className="absolute -top-16 -right-16 w-64 h-64 bg-gold-500/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-lime-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -166,7 +175,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1 text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/20 border border-gold-500/40 text-gold-300 text-[11px] font-bold">
-              <Zap className="w-3.5 h-3.5 text-gold-400 animate-bounce" />
+              <Zap className="w-3.5 h-3.5 text-gold-400 " />
               <span>{locale === 'ar' ? 'البحث الذكي المباشر بدون تعقيد' : 'Accès Direct en 1 Clic'}</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
@@ -210,7 +219,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
                 ? 'ابحث بالكلمة المفتاحية: مثل Analyse 1، Algorithmique، BAC Maths، USTHB، USTO، Dr. Kadri...'
                 : 'Rechercher par mot-clé: Analyse 1, Algorithmique, BAC 2024, USTHB, USTO...'
             }
-            className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white/10 dark:bg-black/40 border border-white/20 focus:border-gold-400 text-sm text-white placeholder-gray-400 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-gold-500/20 transition-all font-arabic"
+            className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white/10 dark:bg-black/40 border border-white/20 focus:border-gold-400 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/20 transition-all font-arabic"
           />
           {searchQuery && (
             <button
@@ -241,7 +250,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
                 }}
                 className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 ${
                   active
-                    ? 'bg-gradient-to-r from-gold-500 to-amber-400 text-navy-950 font-black shadow-md'
+                    ? 'bg-gold-500 text-navy-950 font-black shadow-md'
                     : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 hover:border-gold-500/40'
                 }`}
               >
@@ -355,7 +364,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
             {bookmarkedExams.length === 0 ? (
               <p className="text-xs text-slate-500 dark:text-gray-400">
                 {locale === 'ar'
-                  ? 'لم تقم بحفظ أي مواضيع بعد. انقر على أيقونة الإشارة المرجعية (🔖) على أي امتحان لحفظه هنا للمراجعة السريعة.'
+                  ? 'لم تقم بحفظ أي مواضيع بعد. انقر على أيقونة الإشارة المرجعية () على أي امتحان لحفظه هنا للمراجعة السريعة.'
                   : 'Aucun sujet dans votre sac. Cliquez sur l\'icône de marque-page pour épingler vos révisions ici.'}
               </p>
             ) : (
@@ -425,14 +434,14 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {filteredExams.map((exam) => {
             const isBookmarked = bookmarkedExamIds.includes(exam.id);
-            const isLocked = !exam.isFreeSample && !isGold;
+            const isLocked = exam.isLocked ?? (!exam.isFreeSample && !isGold);
 
             return (
               <motion.div
                 key={exam.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="group relative p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0B132B] border border-slate-200/90 dark:border-slate-800/90 hover:border-gold-500/60 dark:hover:border-gold-500/60 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+                className="group relative p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#111114] border border-slate-200/90 dark:border-slate-800/90 hover:border-gold-500/60 dark:hover:border-gold-500/60 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   {/* Top Badges */}
@@ -519,7 +528,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
                     {isLocked ? (
                       <button
                         onClick={() => setIsUpgradeModalOpen(true)}
-                        className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 text-xs font-black flex items-center gap-1 shadow-sm hover:scale-105 transition-all"
+                        className="px-3 py-1.5 rounded-xl bg-gold-500 text-navy-950 text-xs font-black flex items-center gap-1 shadow-sm hover:scale-105 transition-all"
                       >
                         <Lock className="w-3.5 h-3.5" />
                         <span>VIP</span>
@@ -561,7 +570,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#070D1F] border border-slate-200 dark:border-gold-500/40 p-5 sm:p-7 shadow-2xl text-left font-arabic z-10 space-y-5"
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/40 p-5 sm:p-7 shadow-2xl text-left font-arabic z-10 space-y-5"
             >
               {/* Header */}
               <div className="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
@@ -633,7 +642,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
                           : 'Sujet complet comportant 3 exercices pratiques et un problème de synthèse.')}
                     </p>
                     <div className="p-3 rounded-xl bg-white dark:bg-navy-800 border border-slate-200 dark:border-gray-700 text-[11px] text-slate-600 dark:text-gray-300">
-                      <strong>💡 {locale === 'ar' ? 'توجيه بيداغوجي:' : 'Conseil de révision:'}</strong>{' '}
+                      <strong>{locale === 'ar' ? 'توجيه بيداغوجي:' : 'Conseil de révision:'}</strong>{' '}
                       {locale === 'ar'
                         ? 'ينصح بحل الموضوع في ظروف الامتحان التجريبي قبل الاطلاع على نموذج الإجابة وسلم التنقيط.'
                         : 'Travaillez le sujet en temps limité avant de consulter le corrigé détaillé.'}
@@ -671,13 +680,13 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
                 </button>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  {!activePreviewExam.isFreeSample && !isGold ? (
+                  {(activePreviewExam.isLocked ?? (!activePreviewExam.isFreeSample && !isGold)) ? (
                     <button
                       onClick={() => {
                         setActivePreviewExam(null);
                         setIsUpgradeModalOpen(true);
                       }}
-                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 font-black text-xs shadow-gold-glow flex items-center justify-center gap-2 transition-all w-full sm:w-auto"
+                      className="px-5 py-2.5 rounded-xl bg-gold-500 text-navy-950 font-black text-xs shadow-gold-glow flex items-center justify-center gap-2 transition-all w-full sm:w-auto"
                     >
                       <Sparkles className="w-4 h-4" />
                       <span>{locale === 'ar' ? 'ترقية للتحميل الكامل (VIP)' : 'Débloquer en VIP'}</span>
@@ -716,7 +725,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.9 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-950 text-xs font-bold font-arabic shadow-2xl backdrop-blur-md flex items-center gap-2 border border-gold-500/30"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-950 text-xs font-bold font-arabic shadow-2xl flex items-center gap-2 border border-gold-500/30"
           >
             <Sparkles className="w-4 h-4 text-gold-400 dark:text-gold-600" />
             <span>{toastMessage}</span>

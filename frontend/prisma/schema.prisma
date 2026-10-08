@@ -74,45 +74,71 @@ enum SessionPlatform {
 }
 
 model User {
-  id              String     @id @default(cuid())
-  email           String     @unique
-  name            String
-  avatar          String?
-  role            Role       @default(STUDENT_FREE)
-  jobTitle        String?
-  adminRole       String?
-  bio             String?
-  facebook        String?
-  instagram       String?
-  linkedin        String?
-  telegram        String?
-  youtube         String?
-  whatsapp        String?
-  website         String?
-  twitter         String?
-  github          String?
-  phone           String?
-  wilayaCode      Int?
-  wilayaName      String?
-  institutionId   String?
-  institutionName String?
-  track           TrackType?
-  specialty       String?
-  academicYear    String?
-  studentCardId   String?    @unique
-  isVerified      Boolean    @default(false)
-  passwordHash    String?
-  demoIndex       Int?       @unique
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  id                 String     @id @default(cuid())
+  email              String     @unique
+  name               String
+  avatar             String?
+  role               Role       @default(STUDENT_FREE)
+  jobTitle           String?
+  adminRole          String?
+  bio                String?
+  facebook           String?
+  instagram          String?
+  linkedin           String?
+  telegram           String?
+  youtube            String?
+  whatsapp           String?
+  website            String?
+  twitter            String?
+  github             String?
+  phone              String?
+  wilayaCode         Int?
+  wilayaName         String?
+  institutionId      String?
+  institutionName    String?
+  track              TrackType?
+  specialty          String?
+  academicYear       String?
+  studentCardId      String?    @unique
+  isVerified         Boolean    @default(false)
+  passwordHash       String?
+  // Bumped on logout and on every password change or reset: login tokens carry the version they were issued
+  // with, so older tokens stop working.
+  tokenVersion       Int        @default(0)
+  mustChangePassword Boolean    @default(false)
+  demoIndex          Int?       @unique
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  teacherProfile       TeacherProfile?
+  ambassadorProfile    AmbassadorProfile?
+  subscriptions        Subscription[]
+  enrollments          Enrollment[]
+  courseReviews        CourseReview[]
+  sessionRegistrations SessionRegistration[]
+  sessions             Session[]
+  resetTokens          PasswordResetToken[]
+  activationTokens     AccountActivationToken[]
+  operations           PendingOperation[]
+  taughtCourses        Course[]
+  taughtLiveSessions   LiveSession[]
+  posts                Post[]
+  postComments         PostComment[]
+  postLikes            PostLike[]
+
+  @@index([role])
 }
 
 model Session {
   id           String   @id @default(cuid())
   userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   sessionToken String   @unique
   expiresAt    DateTime
   createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model LoginAttempt {
@@ -127,20 +153,26 @@ model PasswordResetToken {
   id        String   @id @default(cuid())
   token     String   @unique
   userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model SessionRegistration {
-  id           String   @id @default(cuid())
+  id           String      @id @default(cuid())
   sessionId    String
+  session      LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   studentId    String
+  student      User        @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentName  String
-  registeredAt DateTime @default(now())
-  attended     Boolean  @default(false)
+  registeredAt DateTime    @default(now())
+  attended     Boolean     @default(false)
 
   @@unique([sessionId, studentId])
+  @@index([studentId])
 }
 
 model Wilaya {
@@ -193,17 +225,19 @@ model Module {
   trackType      TrackType @default(UNIVERSITY_LMD)
   examsCount     Int       @default(0)
   createdAt      DateTime  @default(now())
+
+  @@index([academicYearId])
 }
 
 model Exam {
-  id                     String      @id @default(cuid())
+  id                     String     @id @default(cuid())
   title                  String
   year                   Int
   termType               ExamType
   fileUrl                String
   solutionUrl            String?
-  isFreeSample           Boolean     @default(false)
-  downloadsCount         Int         @default(0)
+  isFreeSample           Boolean    @default(false)
+  downloadsCount         Int        @default(0)
   moduleId               String
   moduleName             String?
   authorName             String?
@@ -212,12 +246,15 @@ model Exam {
   institutionName        String?
   previewQuestionSnippet String?
   solutionSummary        String?
-  createdAt              DateTime    @default(now())
+  createdAt              DateTime   @default(now())
+
+  @@index([moduleId])
 }
 
 model AmbassadorProfile {
   id                    String   @id @default(cuid())
   userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   wilayaCode            Int
   wilayaNameAr          String
   wilayaNameFr          String?
@@ -242,6 +279,8 @@ model AmbassadorProfile {
   referralsCount        Int      @default(0)
   commissionDzd         Int      @default(0)
   createdAt             DateTime @default(now())
+
+  commissions CommissionEntry[]
 }
 
 model Rating {
@@ -253,6 +292,8 @@ model Rating {
   studentRole  Role?
   institution  String?
   createdAt    DateTime @default(now())
+
+  @@index([ambassadorId])
 }
 
 model Post {
@@ -270,38 +311,71 @@ model Post {
   location            String?
   isApproved          Boolean   @default(true)
   authorId            String
+  author              User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorName          String
+  authorAvatar        String?
   authorRole          Role
   assignedTeacherId   String?
   assignedTeacherName String?
+  videoUrl            String?
+  imageUrls           String[]  @default([])
+  linkUrl             String?
+  isPrivate           Boolean   @default(false)
   createdAt           DateTime  @default(now())
+
+  comments PostComment[]
+  likes    PostLike[]
+
+  @@index([createdAt])
+  @@index([authorId])
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@index([userId])
 }
 
 model PostComment {
   id                String   @id @default(cuid())
   postId            String
+  post              Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   authorId          String
+  author            User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorName        String
+  authorAvatar      String?
   authorRole        Role
   content           String
   isVerifiedTeacher Boolean  @default(false)
   createdAt         DateTime @default(now())
+
+  @@index([postId])
 }
 
 model Subscription {
   id        String             @id @default(cuid())
   userId    String
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   cardId    String             @unique
   planName  String             @default("GOLDEN_MEMBERSHIP")
   status    SubscriptionStatus @default(ACTIVE)
   startDate DateTime           @default(now())
   endDate   DateTime
   createdAt DateTime           @default(now())
+
+  @@index([userId])
 }
 
 model TeacherProfile {
   id              String       @id @default(cuid())
   userId          String       @unique
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   university      String
   specialty       String?
   hourlyRateDzd   Int          @default(12000)
@@ -320,13 +394,16 @@ model TeacherProfile {
 model FacultyPayout {
   id               String         @id @default(cuid())
   teacherProfileId String
-  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id])
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
   amountDzd        Int
   periodMonth      String
   status           PayoutStatus   @default(PENDING)
   approvedAt       DateTime?
   receiptRef       String?
   createdAt        DateTime       @default(now())
+
+  @@index([teacherProfileId])
+  @@index([status])
 }
 
 model Course {
@@ -335,22 +412,47 @@ model Course {
   titleFr      String?
   titleEn      String?
   description  String?
+  imageUrl     String?
+  videoUrl     String?
   teacherId    String?
+  teacher      User?     @relation(fields: [teacherId], references: [id], onDelete: SetNull)
   teacherName  String
   category     TrackType @default(UNIVERSITY_LMD)
   lessonsCount Int       @default(8)
-  rating       Float     @default(5.0)
   priceDzd     Int       @default(0)
   isLive       Boolean   @default(false)
   colorTheme   String    @default("lime")
   createdAt    DateTime  @default(now())
+
+  enrollments  Enrollment[]
+  liveSessions LiveSession[]
+  reviews      CourseReview[]
+
+  @@index([teacherId])
+}
+
+// A real 1-5 star rating from an enrolled student, one per student per course. The course rating shown on the
+// site is the average of these rows (and only once there are enough of them), never a stored number.
+model CourseReview {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  stars     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courseId, studentId])
 }
 
 model LiveSession {
   id              String          @id @default(cuid())
   title           String
   courseId        String?
+  course          Course?         @relation(fields: [courseId], references: [id], onDelete: SetNull)
   teacherId       String?
+  teacher         User?           @relation(fields: [teacherId], references: [id], onDelete: SetNull)
   teacherName     String
   scheduledAt     DateTime
   durationMinutes Int             @default(60)
@@ -360,36 +462,47 @@ model LiveSession {
   status          SessionStatus   @default(UPCOMING)
   category        TrackType       @default(UNIVERSITY_LMD)
   createdAt       DateTime        @default(now())
+
+  registrations SessionRegistration[]
+
+  @@index([teacherId])
+  @@index([scheduledAt])
 }
 
 model Enrollment {
   id              String   @id @default(cuid())
   studentId       String
+  student         User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   courseId        String
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseTitle     String
   teacherName     String
   progressPercent Int      @default(0)
   remainingHours  Float    @default(10)
   createdAt       DateTime @default(now())
+
+  @@unique([studentId, courseId])
+  @@index([courseId])
 }
 
 model Bundle {
-  id               String   @id @default(cuid())
+  id               String    @id @default(cuid())
   titleAr          String
   titleFr          String?
   descriptionAr    String
   descriptionFr    String?
+  imageUrl         String?
   track            TrackType @default(BAC)
   badge            String?
-  hours            Int      @default(24)
-  lecturesCount    Int      @default(3)
+  hours            Int       @default(24)
+  lecturesCount    Int       @default(3)
   originalPriceDzd Int
   currentPriceDzd  Int
-  colorTheme       String   @default("gold")
-  isActive         Boolean  @default(true)
-  sortOrder        Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  colorTheme       String    @default("gold")
+  isActive         Boolean   @default(true)
+  sortOrder        Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model BundlePurchase {
@@ -399,8 +512,11 @@ model BundlePurchase {
   userId        String
   userName      String
   amountDzd     Int
-  paymentStatus String   @default("MOCK_SUCCESS")
+  paymentStatus String   @default("APPROVED_BY_ADMIN")
+  operationId   String?  @unique
   createdAt     DateTime @default(now())
+
+  @@index([userId])
 }
 
 model PlatformSettings {
@@ -417,7 +533,8 @@ model PlatformSettings {
   linkedinUrl              String?  @default("https://www.linkedin.com/company/dzprimeacademy")
   landingConfig            Json?
   footerConfig             Json?
-  vipPriceDzd              Int      @default(10000)
+  officers                 Json?
+  vipPriceDzd             Int      @default(10000)
   updatedAt                DateTime @updatedAt
 }
 
@@ -444,32 +561,70 @@ enum OperationStatus {
 }
 
 model PendingOperation {
-  id              String           @id @default(cuid())
+  id              String            @id @default(cuid())
   userId          String?
+  user            User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   userName        String
   userEmail       String
   userPhone       String?
   userWilaya      String?
-  type            OperationType    @default(ACCOUNT_ACTIVATION)
+  type            OperationType     @default(ACCOUNT_ACTIVATION)
   channel         OperationChannel?
-  status          OperationStatus  @default(PENDING)
+  status          OperationStatus   @default(PENDING)
   title           String
   details         String?
-  amountDzd       Int              @default(0)
+  amountDzd       Int               @default(0)
+  promoCode       String?
+  discountDzd     Int               @default(0)
   targetId        String?
   adminNotes      String?
   approvedByAdmin String?
   approvedAt      DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  commission CommissionEntry?
+
+  @@index([status, createdAt])
+  @@index([userId])
+}
+
+model Promotion {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  discountPercent Int
+  descriptionAr   String
+  descriptionFr   String
+  isActive        Boolean   @default(true)
+  type            String    @default("CAMPAIGN")
+  applicableTrack String    @default("ALL")
+  usageCount      Int       @default(0)
+  maxUses         Int?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+model CommissionEntry {
+  id           String            @id @default(cuid())
+  ambassadorId String
+  ambassador   AmbassadorProfile @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+  operationId  String            @unique
+  operation    PendingOperation  @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  amountDzd    Int
+  ratePercent  Int
+  createdAt    DateTime          @default(now())
+
+  @@index([ambassadorId])
 }
 
 model AccountActivationToken {
   id        String   @id @default(cuid())
   token     String   @unique
   userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
-}
 
+  @@index([userId])
+}

@@ -81,7 +81,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
   useEffect(() => {
     setLoading(true);
     loadOperations();
-    const interval = setInterval(loadOperations, 15000); // 15s auto-poll
+    const interval = setInterval(() => { if (document.visibilityState === 'visible') loadOperations(); }, 45000); // polls only while the tab is visible // 15s auto-poll
     return () => clearInterval(interval);
   }, [loadOperations]);
 
@@ -144,7 +144,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
   const getChannelBadge = (channel: string | null) => {
     if (channel === 'WHATSAPP') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#25D366]/15 border border-[#25D366]/30 text-[#25D366] text-[11px] font-bold">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#e8eaec]/15 border border-[#e8eaec]/30 text-[#e8eaec] text-[11px] font-bold">
           <MessageCircle className="w-3 h-3 fill-current" />
           <span>WhatsApp</span>
         </span>
@@ -152,7 +152,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
     }
     if (channel === 'TELEGRAM') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#229ED9]/15 border border-[#229ED9]/30 text-[#229ED9] text-[11px] font-bold">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#e8eaec]/15 border border-[#e8eaec]/30 text-[#e8eaec] text-[11px] font-bold">
           <Send className="w-3 h-3 fill-current" />
           <span>Telegram</span>
         </span>
@@ -160,7 +160,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
     }
     if (channel === 'LINKEDIN') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0077B5]/15 border border-[#0077B5]/30 text-[#0077B5] text-[11px] font-bold">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#e8eaec]/15 border border-[#e8eaec]/30 text-[#e8eaec] text-[11px] font-bold">
           <Linkedin className="w-3 h-3 fill-current" />
           <span>LinkedIn</span>
         </span>
@@ -230,7 +230,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Card 1: Approved & Confirmed Revenue (Real Money Collected) */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-[#0A1A1C] to-[#070D18] border border-emerald-500/40 space-y-1 relative overflow-hidden shadow-lg shadow-emerald-500/10">
+        <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-emerald-500/40 space-y-1 relative overflow-hidden shadow-lg shadow-emerald-500/10">
           <div className="flex items-center justify-between">
             <span className="text-xs text-emerald-300 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -249,12 +249,12 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
         </div>
 
         {/* Card 2: Pending Volume */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-[#090E1E] border border-amber-500/30 space-y-1 relative overflow-hidden">
+        <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-amber-500/30 space-y-1 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs text-amber-300 font-bold">
               {isAr ? 'المبالغ قيد الانتظار' : 'Volume financier en attente'}
             </span>
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 " />
           </div>
           <div className="text-xl sm:text-2xl font-black text-amber-400 font-mono">
             {formatDZD(totalPendingAmountDzd, locale)}
@@ -265,7 +265,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
         </div>
 
         {/* Card 3: Pending Count */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-[#090E1E] border border-white/10 space-y-1">
+        <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-300 font-bold">
               {isAr ? 'الطلبات المعلقة' : 'En attente'}
@@ -281,14 +281,14 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
         </div>
 
         {/* Card 4: Total & Live Sync */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-[#090E1E] border border-white/10 flex items-center justify-between p-4 sm:p-5">
+        <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 flex items-center justify-between p-4 sm:p-5">
           <div>
             <span className="text-xs text-gray-300 font-bold">
               {isAr ? 'إجمالي سجل العمليات' : 'Total des requêtes'}
             </span>
             <div className="text-2xl sm:text-3xl font-black text-white font-mono mt-0.5">{total}</div>
             <div className="text-[10px] font-bold text-lime-400 mt-1 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-ping" />
+              <span className="w-1.5 h-1.5 rounded-full bg-lime-400 " />
               <span>{isAr ? 'تحديث تلقائي حي' : 'Sync Live'}</span>
             </div>
           </div>
@@ -304,7 +304,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="p-4 rounded-3xl bg-[#090E1E] border border-white/10 flex flex-col md:flex-row items-center gap-3">
+      <div className="p-4 rounded-3xl bg-[#111114] border border-white/10 flex flex-col md:flex-row items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -329,7 +329,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
               onClick={() => setStatusFilter(st)}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 statusFilter === st
-                  ? 'bg-lime-400 text-slate-950 font-black shadow-md shadow-lime-400/20'
+                  ? 'bg-lime-400 text-navy-950 font-black shadow-md shadow-lime-400/20'
                   : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
               }`}
             >
@@ -376,7 +376,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
             </p>
           </div>
         ) : operations.length === 0 ? (
-          <div className="py-16 text-center rounded-3xl bg-[#090E1E] border border-white/10 space-y-3">
+          <div className="py-16 text-center rounded-3xl bg-[#111114] border border-white/10 space-y-3">
             <CheckCircle2 className="w-12 h-12 text-gray-600 mx-auto" />
             <h4 className="text-base font-bold text-gray-300">
               {isAr ? 'لا توجد طلبات تطابق معايير البحث' : 'Aucune requête trouvée'}
@@ -403,7 +403,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
                 animate={{ opacity: 1, y: 0 }}
                 className={`p-4 sm:p-5 rounded-3xl border transition-all ${
                   isPending
-                    ? 'bg-[#090E1E] border-amber-500/40 shadow-lg shadow-amber-500/5'
+                    ? 'bg-[#111114] border-amber-500/40 shadow-lg shadow-amber-500/5'
                     : isApproved
                     ? 'bg-white/[0.02] border-emerald-500/30'
                     : 'bg-white/[0.01] border-white/10 opacity-70'
@@ -437,7 +437,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
                           </h4>
                           {op.userWilaya && (
                             <span className="px-2 py-0.5 rounded-md bg-white/5 text-[10px] text-gray-300 font-bold">
-                              📍 {op.userWilaya}
+                              {op.userWilaya}
                             </span>
                           )}
                         </div>
@@ -517,7 +517,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
                           href={`https://wa.me/${op.userPhone.replace(/[^0-9]/g, '').replace(/^0/, '213')}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="px-3 py-1.5 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/30 border border-[#25D366]/40 text-[#25D366] text-xs font-bold flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-xl bg-[#e8eaec]/20 hover:bg-[#e8eaec]/30 border border-[#e8eaec]/40 text-[#e8eaec] text-xs font-bold flex items-center gap-1"
                           title={isAr ? 'مراسلة الطالب عبر واتساب' : 'Contacter via WhatsApp'}
                         >
                           <MessageCircle className="w-3.5 h-3.5" />
@@ -530,7 +530,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
                           <button
                             onClick={() => handleApprove(op.id)}
                             disabled={actingId === op.id}
-                            className="px-3.5 py-1.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-50"
+                            className="px-3.5 py-1.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center gap-1.5 shadow-md shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-50"
                           >
                             {actingId === op.id ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />

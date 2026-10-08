@@ -12,6 +12,9 @@ export interface ActivationEmailParams {
   locale?: string;
 }
 
+// Anything a person typed (names) must be escaped before it goes into an HTML email.
+export const escapeHtml = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+
 export async function sendEmail({ to, subject, html, text }: SendEmailOptions): Promise<{ success: boolean; error?: string; mode: 'resend' | 'smtp' | 'preview' }> {
   // 1. Resend API (Recommended for Vercel - Free 3,000/mo)
   const resendApiKey = process.env.RESEND_API_KEY;
@@ -167,7 +170,7 @@ export function buildActivationEmailTemplate({ name, activationUrl, locale = 'ar
                 DZ <span style="color: #F5D061 !important;">PRIME</span> ACADEMY
               </div>
               <div style="font-size: 11px; font-weight: 800; color: #F5D061 !important; letter-spacing: 2px; text-transform: uppercase;">
-                ${isAr ? 'المنصة الأكاديمية الأولى في الجزائر • 58 ولاية' : 'Plateforme Nationale d\'Excellence • 58 Wilayas'}
+                ${isAr ? 'المنصة الأكاديمية الجزائرية • 58 ولاية' : 'Plateforme Nationale d\'Excellence • 58 Wilayas'}
               </div>
             </td>
           </tr>
@@ -177,7 +180,7 @@ export function buildActivationEmailTemplate({ name, activationUrl, locale = 'ar
             <td style="padding: 10px 40px 30px 40px; text-align: ${isAr ? 'right' : 'left'};">
               <!-- Greeting -->
               <h1 style="font-size: 24px; font-weight: 900; color: #FFFFFF !important; margin: 0 0 16px 0; line-height: 1.4;">
-                ${isAr ? `مرحباً بك يا ${name} 👋` : `Bienvenue ${name} 👋`}
+                ${isAr ? `مرحباً بك يا ${escapeHtml(name)} 👋` : `Bienvenue ${escapeHtml(name)} 👋`}
               </h1>
               
               <!-- Lead Paragraph -->
@@ -209,7 +212,7 @@ export function buildActivationEmailTemplate({ name, activationUrl, locale = 'ar
                       </tr>
                       <tr>
                         <td style="padding: 6px 0; font-size: 14px; color: #FFFFFF !important; font-weight: 600;">
-                          🤖 <span style="color: #FFFFFF !important;">${isAr ? 'بوت الامتحانات والملخصات الذكي المخصص لجامعتك وتخصصك' : 'Bot intelligent guidant vers vos cours et examens'}</span>
+                          🤖 <span style="color: #FFFFFF !important;">${isAr ? 'مساعد الامتحانات والملخصات المخصص لجامعتك وتخصصك' : 'Assistant guidant vers vos cours et examens'}</span>
                         </td>
                       </tr>
                       <tr>
@@ -328,4 +331,35 @@ export async function sendActivationEmail({ to, name, token, locale = 'ar' }: Ac
     html,
     text,
   });
+}
+
+// Password reset link. Valid 30 minutes and for one use (enforced by /api/auth/reset-password).
+export async function sendPasswordResetEmail({ to, name, token, locale = 'ar' }: ActivationEmailParams) {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dzprimeacademy.live';
+  const lang = ['ar', 'fr', 'en'].includes(locale) ? locale : 'ar';
+  const resetUrl = `${baseUrl}/${lang}/reset-password?token=${token}`;
+  const isAr = lang === 'ar';
+  const subject = isAr ? 'إعادة تعيين كلمة المرور - DZ Prime Academy' : 'Réinitialisation du mot de passe - DZ Prime Academy';
+  const safeName = escapeHtml(name);
+
+  const html = `<!DOCTYPE html>
+<html lang="${isAr ? 'ar' : 'fr'}" dir="${isAr ? 'rtl' : 'ltr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:24px;background:#0B1021;font-family:Arial,Helvetica,sans-serif;color:#F8FAFC;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+    <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;background:#111936;border:1px solid #2A3355;border-radius:16px;">
+      <tr><td style="padding:32px;">
+        <h1 style="margin:0 0 12px;font-size:20px;color:#F5D061;">${isAr ? 'إعادة تعيين كلمة المرور' : 'Réinitialisation du mot de passe'}</h1>
+        <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#E2E8F0;">${isAr ? `مرحباً ${safeName}، طلبتَ إعادة تعيين كلمة المرور. الرابط صالح لمدة 30 دقيقة ويُستعمل مرة واحدة.` : `Bonjour ${safeName}, vous avez demandé la réinitialisation de votre mot de passe. Le lien est valable 30 minutes et ne s'utilise qu'une fois.`}</p>
+        <p style="margin:24px 0;"><a href="${resetUrl}" style="display:inline-block;padding:14px 24px;background:#F5D061;color:#0B1021;font-weight:bold;text-decoration:none;border-radius:12px;">${isAr ? 'اختيار كلمة مرور جديدة' : 'Choisir un nouveau mot de passe'}</a></p>
+        <p style="margin:0;font-size:13px;line-height:1.6;color:#94A3B8;">${isAr ? 'إن لم تطلب ذلك، تجاهل هذه الرسالة وستبقى كلمة مرورك كما هي.' : "Si vous n'êtes pas à l'origine de cette demande, ignorez ce message : votre mot de passe ne changera pas."}</p>
+      </td></tr>
+    </table>
+  </td></tr></table>
+</body></html>`;
+
+  const text = isAr
+    ? `مرحباً ${name}،\nلإعادة تعيين كلمة المرور افتح الرابط التالي (صالح 30 دقيقة، لمرة واحدة):\n${resetUrl}\nإن لم تطلب ذلك، تجاهل الرسالة.`
+    : `Bonjour ${name},\nPour réinitialiser votre mot de passe, ouvrez ce lien (valable 30 minutes, usage unique) :\n${resetUrl}\nSi vous n'êtes pas à l'origine de cette demande, ignorez ce message.`;
+
+  return sendEmail({ to, subject, html, text });
 }

@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDZD } from '@/lib/format';
+import { generateStrongPassword } from '@/lib/clientPassword';
 import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
 import { Locale } from '@/types';
 
@@ -89,9 +90,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
   }, []);
 
   const generateRandomPassword = () => {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
-    let pass = 'Prof' + Math.floor(1000 + Math.random() * 9000) + '!';
-    setForm((prev) => ({ ...prev, password: pass }));
+    setForm((prev) => ({ ...prev, password: generateStrongPassword() }));
   };
 
   const handleApprove = async (id: string) => {
@@ -168,8 +167,8 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
   const copyCredentialsText = () => {
     if (!createdCredentials) return;
     const text = locale === 'ar'
-      ? `🇩🇿 مرحباً بك أستاذنا الفاضل ${createdCredentials.name} في منصة DZ PRIME ACADEMY\n\nتم تفعيل حسابك كأستاذ معتمد:\n📧 البريد الإلكتروني: ${createdCredentials.email}\n🔑 كلمة المرور المؤقتة: ${createdCredentials.tempPassword}\n\nيرجى تسجيل الدخول وتغيير كلمة المرور من إعدادات حسابك.`
-      : `🇩🇿 Bienvenue Cher Enseignant ${createdCredentials.name} sur DZ PRIME ACADEMY\n\nVos identifiants :\n📧 Email : ${createdCredentials.email}\n🔑 Mot de passe : ${createdCredentials.tempPassword}\n\nConnectez-vous et modifiez votre mot de passe depuis vos paramètres.`;
+      ? `🇩🇿 مرحباً بك أستاذنا الفاضل ${createdCredentials.name} في منصة DZ PRIME ACADEMY\n\nتم تفعيل حسابك كأستاذ معتمد:\nالبريد الإلكتروني: ${createdCredentials.email}\nكلمة المرور المؤقتة: ${createdCredentials.tempPassword}\n\nيرجى تسجيل الدخول وتغيير كلمة المرور من إعدادات حسابك.`
+      : `🇩🇿 Bienvenue Cher Enseignant ${createdCredentials.name} sur DZ PRIME ACADEMY\n\nVos identifiants :\nEmail : ${createdCredentials.email}\nMot de passe : ${createdCredentials.tempPassword}\n\nConnectez-vous et modifiez votre mot de passe depuis vos paramètres.`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -219,7 +218,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
               setErrorMsg('');
               setShowModal(true);
             }}
-            className="px-4 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-lg shadow-lime-400/20 active:scale-95 transition-all"
+            className="px-4 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center gap-1.5 shadow-lg shadow-lime-400/20 active:scale-95 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>{locale === 'ar' ? 'إضافة أستاذ جديد' : 'Ajouter un Enseignant'}</span>
@@ -235,7 +234,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
               initial={{ scale: 0.94, opacity: 0, y: 16 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.94, opacity: 0, y: 16 }}
-              className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-lime-500/30 bg-[#0C1222] p-5 sm:p-7 text-white shadow-2xl space-y-4"
+              className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-lime-500/30 bg-[#111114] p-5 sm:p-7 text-white shadow-2xl space-y-4"
             >
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
@@ -317,7 +316,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
                     <div className="relative">
                       <input
                         type={showPassword ? 'text' : 'password'}
-                        placeholder={locale === 'ar' ? 'اترك فارغاً لتوليد كلمة مرور عشوائية أو اكتب كلمة مخصصة (6 أحرف+)' : 'Mot de passe personnalisé (min 6 car.)'}
+                        placeholder={locale === 'ar' ? 'اترك فارغاً لتوليد كلمة مرور عشوائية أو اكتب كلمة مخصصة (8 أحرف+)' : 'Mot de passe personnalisé (min 8 car.)'}
                         value={form.password}
                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                         className="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono placeholder-gray-500 focus:outline-none focus:border-lime-400"
@@ -359,7 +358,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
                     <select
                       value={form.wilayaCode}
                       onChange={(e) => setForm({ ...form, wilayaCode: Number(e.target.value) })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E1528] border border-white/10 text-white focus:outline-none focus:border-lime-400"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white focus:outline-none focus:border-lime-400"
                     >
                       {WILAYAS.map((w) => (
                         <option key={w.code} value={w.code}>
@@ -450,7 +449,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
                     type="submit"
                     data-testid="submit-teacher-btn"
                     disabled={submitting}
-                    className="px-6 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black flex items-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
+                    className="px-6 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black flex items-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
                   >
                     {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}
                     <span>{locale === 'ar' ? 'تأكيد وحفظ الأستاذ' : 'Créer le Compte'}</span>
@@ -470,7 +469,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-md rounded-3xl border border-lime-400/40 bg-gradient-to-b from-[#0D182E] to-[#080D1A] p-6 text-white shadow-2xl text-center space-y-4"
+              className="relative w-full max-w-md rounded-3xl border border-lime-400/40 bg-[#111114] p-6 text-white shadow-2xl text-center space-y-4"
             >
               <div className="w-12 h-12 rounded-2xl bg-lime-400/20 text-lime-400 mx-auto flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6" />
@@ -478,7 +477,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
 
               <div>
                 <h4 className="text-base font-black text-white">
-                  {locale === 'ar' ? 'تم إنشاء وتفعيل حساب الأستاذ بنجاح! 🎉' : 'Enseignant créé avec succès ! 🎉'}
+                  {locale === 'ar' ? 'تم إنشاء وتفعيل حساب الأستاذ بنجاح! ' : 'Enseignant créé avec succès ! '}
                 </h4>
                 <p className="text-xs text-gray-400 mt-1">
                   {locale === 'ar'
@@ -490,15 +489,15 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
               {/* Credentials Card */}
               <div className="bg-white/[0.04] p-4 rounded-2xl border border-white/10 text-left space-y-2.5 font-mono text-xs">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-400 text-[11px]">👤 {locale === 'ar' ? 'الاسم' : 'Nom'}:</span>
+                  <span className="text-gray-400 text-[11px]">{locale === 'ar' ? 'الاسم' : 'Nom'}:</span>
                   <span className="font-bold text-white font-sans">{createdCredentials.name}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-400 text-[11px]">📧 Email:</span>
+                  <span className="text-gray-400 text-[11px]">Email:</span>
                   <span className="text-lime-400 font-bold select-all">{createdCredentials.email}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-[11px]">🔑 Password:</span>
+                  <span className="text-gray-400 text-[11px]">Password:</span>
                   <span className="text-lime-300 font-bold bg-lime-400/10 px-2 py-0.5 rounded select-all">
                     {createdCredentials.tempPassword}
                   </span>
@@ -508,7 +507,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
               <div className="flex flex-col gap-2 pt-1">
                 <button
                   onClick={copyCredentialsText}
-                  className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-lime-400/20"
+                  className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-lime-400/20"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   <span>{copied ? (locale === 'ar' ? 'تم نسخ البيانات بنجاح ✓' : 'Copié ✓') : locale === 'ar' ? 'نسخ بيانات الدخول كاملة' : 'Copier les identifiants'}</span>
@@ -557,7 +556,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
                 <tr key={t.id} data-testid={`teacher-row-${t.id}`} className="hover:bg-white/[0.03] transition-colors">
                   <td className="py-3.5 px-4 font-bold text-white">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-lime-400/30 to-emerald-500/30 text-lime-300 flex items-center justify-center font-black border border-lime-400/30 shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-lime-400/30 text-lime-300 flex items-center justify-center font-black border border-lime-400/30 shrink-0">
                         {t.user?.name?.charAt(0) || '?'}
                       </div>
                       <div className="min-w-0">
@@ -599,7 +598,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
                         <button
                           data-testid={`approve-payout-${t.id}`}
                           onClick={() => handleApprove(t.id)}
-                          className="px-3 py-1.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 text-[11px] font-bold flex items-center gap-1 shadow-sm transition-all"
+                          className="px-3 py-1.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 text-[11px] font-bold flex items-center gap-1 shadow-sm transition-all"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>{locale === 'ar' ? 'صرف' : 'Payer'}</span>

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
-import { requireCommercialOrAdmin } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
+import { parseImageField } from '@/lib/safeUrl';
+import { guard } from '@/lib/http';
 
-export async function GET(request: NextRequest) {
+async function GETHandler(request: NextRequest) {
   await ensureSeeded();
   const { searchParams } = new URL(request.url);
   const includeInactive = searchParams.get('all') === 'true';
@@ -14,7 +16,7 @@ export async function GET(request: NextRequest) {
   });
 
   if (includeInactive) {
-    const counts = await prisma.bundlePurchase.groupBy({ by: ['bundleId'], _count: { id: true } });
+    const counts = await prisma.bundlePurchase.groupBy({ by: ['bundleId'], where: { paymentStatus: 'APPROVED_BY_ADMIN' }, _count: { id: true } });
     const countMap = new Map(counts.map((c) => [c.bundleId, c._count.id]));
     return NextResponse.json(bundles.map((b) => ({ ...b, purchasesCount: countMap.get(b.id) || 0 })));
   }
@@ -22,15 +24,22 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(bundles);
 }
 
-export async function POST(request: NextRequest) {
-  const authResult = await requireCommercialOrAdmin(request);
+async function POSTHandler(request: NextRequest) {
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
   await ensureSeeded();
-  const body = await request.json();
+  const body = (await request.json().catch(() => null)) ?? {};
+  if (!body.titleAr || ![body.originalPriceDzd, body.currentPriceDzd].every((n) => Number.isInteger(n) && n >= 0)) {
+    return NextResponse.json({ error: 'العنوان والأسعار (أعداد صحيحة غير سالبة) مطلوبة' }, { status: 400 });
+  }
+
+  const image = parseImageField(body.imageUrl, 'bundle');
+  if ('error' in image) return NextResponse.json({ error: image.error }, { status: 400 });
 
   const bundle = await prisma.bundle.create({
     data: {
+      imageUrl: image.value ?? null,
       titleAr: body.titleAr,
       titleFr: body.titleFr || null,
       descriptionAr: body.descriptionAr,
@@ -49,3 +58,6 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json(bundle, { status: 201 });
 }
+
+export const GET = guard(GETHandler);
+export const POST = guard(POSTHandler);

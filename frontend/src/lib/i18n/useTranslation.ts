@@ -19,24 +19,22 @@ const STORAGE_KEY = 'dz_prime_locale';
 let currentLocale: Locale = 'ar';
 const localeListeners = new Set<() => void>();
 
+function localeFromPath(pathname?: string | null): Locale | null {
+  const first = (pathname || '').split('/').filter(Boolean)[0];
+  return first === 'ar' || first === 'fr' || first === 'en' ? first : null;
+}
+
+// The URL prefix is the source of truth (the server renders from it too), so hydration matches the server.
 function getStoredLocale(): Locale {
   if (typeof window === 'undefined') return 'ar';
+  const fromUrl = localeFromPath(window.location?.pathname);
+  if (fromUrl) return fromUrl;
   try {
     const saved = localStorage.getItem(STORAGE_KEY) as Locale;
     if (saved === 'ar' || saved === 'fr' || saved === 'en') {
       return saved;
     }
   } catch (e) {}
-
-  if (typeof window !== 'undefined' && window.location) {
-    const segments = window.location.pathname.split('/').filter(Boolean);
-    if (segments.length > 0) {
-      const first = segments[0];
-      if (first === 'ar' || first === 'fr' || first === 'en') {
-        return first as Locale;
-      }
-    }
-  }
   return 'ar';
 }
 
@@ -54,10 +52,6 @@ function subscribeLocale(callback: () => void) {
 
 function getLocaleSnapshot(): Locale {
   return currentLocale;
-}
-
-function getLocaleServerSnapshot(): Locale {
-  return 'ar';
 }
 
 function notifyLocaleChange(newLocale: Locale) {
@@ -118,11 +112,9 @@ export function useTranslation() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const locale = useSyncExternalStore(
-    subscribeLocale,
-    getLocaleSnapshot,
-    getLocaleServerSnapshot
-  );
+  // Server snapshot comes from the URL, so French/English pages are rendered in their own language on the server.
+  const pathLocale = localeFromPath(pathname) || 'ar';
+  const locale = useSyncExternalStore(subscribeLocale, getLocaleSnapshot, () => pathLocale);
 
   // Sync with pathname if navigating directly to a different language prefix
   useEffect(() => {

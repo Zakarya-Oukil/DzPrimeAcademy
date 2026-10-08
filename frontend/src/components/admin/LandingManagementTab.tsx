@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { ImageUploader } from '@/components/shared/ImageUploader';
+import React,{ useState, useEffect, useRef } from 'react';
 import {
   Globe,
   Save,
@@ -46,10 +47,10 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
     wilayasCount: string;
     satisfactionRate: string;
   }>({
-    examsCount: '12,450+',
-    studentsCount: '52,300+',
-    wilayasCount: '58',
-    satisfactionRate: '99.8%',
+    examsCount: '',
+    studentsCount: '',
+    wilayasCount: '',
+    satisfactionRate: '',
   });
 
   const [loading, setLoading] = useState(true);
@@ -117,8 +118,15 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
       const data = await res.json();
       if (res.ok) {
-        setSaveSuccess(isAr ? 'تم حفظ وتحديث الواجهة الرئيسية للمنصة بنجاح ✓' : 'Page d\'accueil mise à jour avec succès ✓');
-        setTimeout(() => setSaveSuccess(''), 4000);
+        const removed = Number(data.removedInlineImages) || 0;
+        setSaveSuccess(
+          removed > 0
+            ? isAr
+              ? `تم الحفظ، لكن ${removed} صورة قديمة مضمنة في الإعدادات حُذفت. ارفعها من جديد بزر الرفع.`
+              : `Enregistré, mais ${removed} ancienne(s) image(s) intégrée(s) ont été retirée(s). Téléversez-les à nouveau.`
+            : isAr ? 'تم حفظ وتحديث الواجهة الرئيسية للمنصة بنجاح ✓' : 'Page d\'accueil mise à jour avec succès ✓'
+        );
+        setTimeout(() => setSaveSuccess(''), removed > 0 ? 12000 : 4000);
       } else {
         setSaveError(data.error || (isAr ? 'فشل حفظ الإعدادات' : 'Erreur de sauvegarde'));
       }
@@ -135,28 +143,6 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
       setConfig(DEFAULT_LANDING_CONFIG);
       setAmbassadorTelegram('MrK_ADMIN00');
     }
-  };
-
-  // Handle local file upload
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 2 * 1024 * 1024) {
-      alert(isAr ? 'حجم الصورة كبير جداً (الأقصى 2 ميغابايت)' : 'Image trop volumineuse (max 2MB)');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result && editingCourse) {
-        setEditingCourse({
-          ...editingCourse,
-          thumbnailUrl: reader.result as string,
-        });
-      }
-    };
-    reader.readAsDataURL(file);
   };
 
   // Save course item (Add or Edit)
@@ -212,7 +198,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
   return (
     <div className="space-y-6 font-arabic" data-testid="landing-management-tab">
       {/* ================= TOP CONTROL BAR ================= */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-[#0B1021] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+      <div className="p-4 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
         <div>
           <div className="flex items-center gap-2 text-gold-400 text-xs font-bold uppercase tracking-wider">
             <Globe className="w-4 h-4" />
@@ -250,7 +236,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           <button
             onClick={handleSaveAll}
             disabled={saving}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-lime-400 to-emerald-400 hover:from-lime-300 hover:to-emerald-300 text-slate-950 font-black text-xs shadow-lg shadow-lime-400/20 flex items-center gap-2 active:scale-95 transition-all disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs shadow-lg shadow-lime-400/20 flex items-center gap-2 active:scale-95 transition-all disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             <span>{isAr ? 'حفظ التعديلات فورياً' : 'Publier les modifications'}</span>
@@ -273,12 +259,12 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
       )}
 
       {/* ================= SUB-NAVIGATION TABS ================= */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#080D1D] border border-white/10 overflow-x-auto no-scrollbar shadow-md">
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#0b0b0d] border border-white/10 overflow-x-auto no-scrollbar shadow-md">
         <button
           onClick={() => setActiveSubTab('stats')}
           className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 whitespace-nowrap transition-all ${
             activeSubTab === 'stats'
-              ? 'bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 shadow-md'
+              ? 'bg-gold-500 text-navy-950 shadow-md'
               : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -290,7 +276,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           onClick={() => setActiveSubTab('courses')}
           className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 whitespace-nowrap transition-all ${
             activeSubTab === 'courses'
-              ? 'bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 shadow-md'
+              ? 'bg-gold-500 text-navy-950 shadow-md'
               : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -302,7 +288,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           onClick={() => setActiveSubTab('hero')}
           className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 whitespace-nowrap transition-all ${
             activeSubTab === 'hero'
-              ? 'bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 shadow-md'
+              ? 'bg-gold-500 text-navy-950 shadow-md'
               : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -314,7 +300,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           onClick={() => setActiveSubTab('ambassador')}
           className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 whitespace-nowrap transition-all ${
             activeSubTab === 'ambassador'
-              ? 'bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 shadow-md'
+              ? 'bg-gold-500 text-navy-950 shadow-md'
               : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -326,7 +312,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           onClick={() => setActiveSubTab('finalCta')}
           className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 whitespace-nowrap transition-all ${
             activeSubTab === 'finalCta'
-              ? 'bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 shadow-md'
+              ? 'bg-gold-500 text-navy-950 shadow-md'
               : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -339,7 +325,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
       {activeSubTab === 'stats' && (
         <div className="space-y-6">
           {/* Mode Switch Card */}
-          <div className="p-5 sm:p-6 rounded-3xl bg-[#090E20] border border-white/10 space-y-4">
+          <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-base font-black text-white flex items-center gap-2">
@@ -360,22 +346,22 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                   onClick={() => setConfig({ ...config, stats: { ...config.stats, mode: 'AUTO' } })}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                     config.stats.mode === 'AUTO'
-                      ? 'bg-lime-400 text-slate-950 font-black shadow-md'
+                      ? 'bg-lime-400 text-navy-950 font-black shadow-md'
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  ⚡ {isAr ? 'تلقائي (قاعدة البيانات)' : 'Automatique (Base de données)'}
+                  {isAr ? 'تلقائي (قاعدة البيانات)' : 'Automatique (Base de données)'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfig({ ...config, stats: { ...config.stats, mode: 'MANUAL' } })}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                     config.stats.mode === 'MANUAL'
-                      ? 'bg-gold-400 text-slate-950 font-black shadow-md'
+                      ? 'bg-gold-400 text-navy-950 font-black shadow-md'
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  ✏️ {isAr ? 'يدوي مخصص' : 'Manuel'}
+                  {isAr ? 'يدوي مخصص' : 'Manuel'}
                 </button>
               </div>
             </div>
@@ -403,7 +389,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           {/* 4 Stats Cards Editor */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Stat 1: Exams */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#0B1021] border border-white/10 space-y-3">
+            <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <span className="text-xs font-black text-gold-400">1. {isAr ? 'مواضيع الامتحانات' : 'Examens & Annales'}</span>
                 {config.stats.mode === 'AUTO' && (
@@ -414,7 +400,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               </div>
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'الرقم المعروض' : 'Valeur'}</label>
-                <input
+                <input aria-label={isAr ? 'الرقم المعروض' : 'Valeur'}
                   disabled={config.stats.mode === 'AUTO'}
                   value={config.stats.mode === 'AUTO' ? realStats.examsCount : config.stats.examsValue}
                   onChange={(e) =>
@@ -425,7 +411,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               </div>
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'النص التوضيحي (العربية)' : 'Label (Ar)'}</label>
-                <input
+                <input aria-label={isAr ? 'النص التوضيحي (العربية)' : 'Label (Ar)'}
                   value={config.stats.examsLabelAr}
                   onChange={(e) =>
                     setConfig({ ...config, stats: { ...config.stats, examsLabelAr: e.target.value } })
@@ -436,9 +422,9 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             </div>
 
             {/* Stat 2: Active Students */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#0B1021] border border-white/10 space-y-3">
+            <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-                <span className="text-xs font-black text-emerald-400">2. {isAr ? 'الطلبة النشطون' : 'Étudiants Actifs'}</span>
+                <span className="text-xs font-black text-emerald-400">2. {isAr ? 'المستخدمون' : 'Utilisateurs'}</span>
                 {config.stats.mode === 'AUTO' && (
                   <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full font-mono">
                     Live DB: {realStats.studentsCount}
@@ -447,7 +433,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               </div>
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'الرقم المعروض' : 'Valeur'}</label>
-                <input
+                <input aria-label={isAr ? 'الرقم المعروض' : 'Valeur'}
                   disabled={config.stats.mode === 'AUTO'}
                   value={config.stats.mode === 'AUTO' ? realStats.studentsCount : config.stats.studentsValue}
                   onChange={(e) =>
@@ -458,7 +444,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               </div>
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'النص التوضيحي (العربية)' : 'Label (Ar)'}</label>
-                <input
+                <input aria-label={isAr ? 'النص التوضيحي (العربية)' : 'Label (Ar)'}
                   value={config.stats.studentsLabelAr}
                   onChange={(e) =>
                     setConfig({ ...config, stats: { ...config.stats, studentsLabelAr: e.target.value } })
@@ -469,7 +455,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             </div>
 
             {/* Stat 3: Wilayas */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#0B1021] border border-white/10 space-y-3">
+            <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <span className="text-xs font-black text-sky-400">3. {isAr ? 'الولايات المغطاة' : 'Wilayas'}</span>
                 {config.stats.mode === 'AUTO' && (
@@ -480,7 +466,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               </div>
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'الرقم المعروض' : 'Valeur'}</label>
-                <input
+                <input aria-label={isAr ? 'الرقم المعروض' : 'Valeur'}
                   disabled={config.stats.mode === 'AUTO'}
                   value={config.stats.mode === 'AUTO' ? realStats.wilayasCount : config.stats.wilayasValue}
                   onChange={(e) =>
@@ -491,7 +477,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               </div>
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'النص التوضيحي (العربية)' : 'Label (Ar)'}</label>
-                <input
+                <input aria-label={isAr ? 'النص التوضيحي (العربية)' : 'Label (Ar)'}
                   value={config.stats.wilayasLabelAr}
                   onChange={(e) =>
                     setConfig({ ...config, stats: { ...config.stats, wilayasLabelAr: e.target.value } })
@@ -502,20 +488,20 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             </div>
 
             {/* Stat 4: Satisfaction Rate */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#0B1021] border border-white/10 space-y-3">
+            <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <span className="text-xs font-black text-purple-400">4. {isAr ? 'نسبة رضا الطلبة' : 'Satisfaction'}</span>
                 {config.stats.mode === 'AUTO' && (
                   <span className="text-[10px] text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full font-mono">
-                    Live: {realStats.satisfactionRate}
+                    Live: {realStats.satisfactionRate ?? '-'}
                   </span>
                 )}
               </div>
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'الرقم المعروض' : 'Valeur'}</label>
-                <input
+                <input aria-label={isAr ? 'الرقم المعروض' : 'Valeur'}
                   disabled={config.stats.mode === 'AUTO'}
-                  value={config.stats.mode === 'AUTO' ? realStats.satisfactionRate : config.stats.satisfactionValue}
+                  value={config.stats.mode === 'AUTO' ? realStats.satisfactionRate ?? '' : config.stats.satisfactionValue}
                   onChange={(e) =>
                     setConfig({ ...config, stats: { ...config.stats, satisfactionValue: e.target.value } })
                   }
@@ -524,7 +510,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               </div>
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'النص التوضيحي (العربية)' : 'Label (Ar)'}</label>
-                <input
+                <input aria-label={isAr ? 'النص التوضيحي (العربية)' : 'Label (Ar)'}
                   value={config.stats.satisfactionLabelAr}
                   onChange={(e) =>
                     setConfig({ ...config, stats: { ...config.stats, satisfactionLabelAr: e.target.value } })
@@ -541,7 +527,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
       {activeSubTab === 'courses' && (
         <div className="space-y-6">
           {/* Section Heading Settings */}
-          <div className="p-5 sm:p-6 rounded-3xl bg-[#090E20] border border-white/10 space-y-4">
+          <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-black text-white flex items-center gap-2">
                 <Layers className="w-4 h-4 text-gold-400" />
@@ -561,8 +547,8 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                     thumbnailUrl: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&auto=format&fit=crop&q=80',
                     durationHours: 30,
                     priceDzd: 4000,
-                    rating: 4.9,
-                    reviewsCount: 150,
+                    rating: 0,
+                    reviewsCount: 0,
                     badge: 'New',
                     badgeColor: 'bg-gold-500/20 text-gold-400 border-gold-500/30',
                     isPopular: true,
@@ -570,7 +556,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                   setImageInputMode('URL');
                   setIsCourseModalOpen(true);
                 }}
-                className="px-4 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md shadow-lime-400/20 active:scale-95 transition-all"
+                className="px-4 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center gap-1.5 shadow-md shadow-lime-400/20 active:scale-95 transition-all"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{isAr ? 'إضافة دورة / مقياس جديد' : 'Ajouter un cours'}</span>
@@ -580,7 +566,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'العنوان الرئيسي للقسم' : 'Titre principal'}</label>
-                <input
+                <input aria-label={isAr ? 'العنوان الرئيسي للقسم' : 'Titre principal'}
                   value={config.featuredCoursesSection.titleAr}
                   onChange={(e) =>
                     setConfig({
@@ -597,7 +583,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'العنوان الفرعي (البادج الصغير)' : 'Sous-titre / Badge'}</label>
-                <input
+                <input aria-label={isAr ? 'العنوان الفرعي (البادج الصغير)' : 'Sous-titre / Badge'}
                   value={config.featuredCoursesSection.subtitleAr}
                   onChange={(e) =>
                     setConfig({
@@ -619,7 +605,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             {config.featuredCoursesSection.courses.map((course) => (
               <div
                 key={course.id}
-                className="p-4 rounded-3xl bg-[#0B1021] border border-white/10 hover:border-gold-500/40 flex flex-col justify-between transition-all group"
+                className="p-4 rounded-3xl bg-[#111114] border border-white/10 hover:border-gold-500/40 flex flex-col justify-between transition-all group"
               >
                 <div>
                   {/* Thumbnail Image Preview */}
@@ -680,7 +666,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
       {/* ================= TAB 3: HERO SECTION ================= */}
       {activeSubTab === 'hero' && (
-        <div className="p-5 sm:p-6 rounded-3xl bg-[#090E20] border border-white/10 space-y-4">
+        <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
           <h3 className="text-base font-black text-white flex items-center gap-2 border-b border-white/10 pb-3">
             <Sparkles className="w-4 h-4 text-gold-400" />
             <span>{isAr ? 'نصوص واجهة الترحيب الرئيسية (Hero Section)' : 'Textes de l\'en-tête (Hero)'}</span>
@@ -689,7 +675,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           <div className="space-y-4">
             <div>
               <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'البادج الترويجي العلوي' : 'Badge d\'en-tête'}</label>
-              <input
+              <input aria-label={isAr ? 'البادج الترويجي العلوي' : 'Badge d\'en-tête'}
                 value={config.hero.badgeAr}
                 onChange={(e) => setConfig({ ...config, hero: { ...config.hero, badgeAr: e.target.value } })}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-gold-400"
@@ -699,7 +685,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'بداية العنوان الرئيسي' : 'Début Titre'}</label>
-                <input
+                <input aria-label={isAr ? 'بداية العنوان الرئيسي' : 'Début Titre'}
                   value={config.hero.titleLeadAr}
                   onChange={(e) => setConfig({ ...config, hero: { ...config.hero, titleLeadAr: e.target.value } })}
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-gold-400"
@@ -707,7 +693,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               </div>
               <div>
                 <label className="block text-gold-400 text-[11px] mb-1 font-semibold">{isAr ? 'الكلمة الذهبية المميزة' : 'Mot Clé Mis en avant'}</label>
-                <input
+                <input aria-label={isAr ? 'الكلمة الذهبية المميزة' : 'Mot Clé Mis en avant'}
                   value={config.hero.titleHighlightAr}
                   onChange={(e) => setConfig({ ...config, hero: { ...config.hero, titleHighlightAr: e.target.value } })}
                   className="w-full px-3 py-2 rounded-xl bg-gold-500/10 border border-gold-500/30 text-gold-300 text-xs font-bold focus:outline-none focus:border-gold-400"
@@ -715,7 +701,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               </div>
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'نهاية العنوان الرئيسي' : 'Fin Titre'}</label>
-                <input
+                <input aria-label={isAr ? 'نهاية العنوان الرئيسي' : 'Fin Titre'}
                   value={config.hero.titleEndAr}
                   onChange={(e) => setConfig({ ...config, hero: { ...config.hero, titleEndAr: e.target.value } })}
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-gold-400"
@@ -725,7 +711,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
             <div>
               <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'الوصف الترحيبي العام' : 'Description / Sous-titre'}</label>
-              <textarea
+              <textarea aria-label={isAr ? 'الوصف الترحيبي العام' : 'Description / Sous-titre'}
                 rows={3}
                 value={config.hero.subAr}
                 onChange={(e) => setConfig({ ...config, hero: { ...config.hero, subAr: e.target.value } })}
@@ -736,7 +722,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'زر الحث الأساسي (Primary CTA)' : 'Bouton Primaire'}</label>
-                <input
+                <input aria-label={isAr ? 'زر الحث الأساسي (Primary CTA)' : 'Bouton Primaire'}
                   value={config.hero.ctaPrimaryAr}
                   onChange={(e) => setConfig({ ...config, hero: { ...config.hero, ctaPrimaryAr: e.target.value } })}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-gold-400"
@@ -745,7 +731,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'زر العرض التوضيحي (Secondary CTA)' : 'Bouton Démo'}</label>
-                <input
+                <input aria-label={isAr ? 'زر العرض التوضيحي (Secondary CTA)' : 'Bouton Démo'}
                   value={config.hero.ctaSecondaryAr}
                   onChange={(e) => setConfig({ ...config, hero: { ...config.hero, ctaSecondaryAr: e.target.value } })}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-gold-400"
@@ -758,7 +744,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
       {/* ================= TAB 4: AMBASSADOR BANNER & TELEGRAM ================= */}
       {activeSubTab === 'ambassador' && (
-        <div className="p-5 sm:p-6 rounded-3xl bg-[#090E20] border border-white/10 space-y-5">
+        <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5">
           <div className="border-b border-white/10 pb-3">
             <h3 className="text-base font-black text-white flex items-center gap-2">
               <Award className="w-4 h-4 text-sky-400" />
@@ -772,7 +758,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           </div>
 
           {/* Telegram Destination Card */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-500/10 to-blue-500/10 border border-sky-500/30 space-y-3">
+          <div className="p-4 sm:p-5 rounded-2xl bg-sky-500/10 border border-sky-500/30 space-y-3">
             <div className="flex items-center gap-2 text-sky-400 text-xs font-bold">
               <Send className="w-4 h-4" />
               <span>{isAr ? 'معرّف تيليغرام المخصص لاستقبال طلبات السفراء (Ambassador Applications)' : 'Identifiant Telegram Responsable'}</span>
@@ -780,7 +766,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
             <div className="flex items-center gap-2">
               <span className="px-3 py-2.5 rounded-xl bg-white/10 text-gray-400 font-mono text-xs font-bold">t.me/</span>
-              <input
+              <input aria-label="MrK_ADMIN00"
                 value={ambassadorTelegram}
                 onChange={(e) => setAmbassadorTelegram(e.target.value)}
                 placeholder="MrK_ADMIN00"
@@ -798,7 +784,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           <div className="space-y-3.5">
             <div>
               <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'عنوان قسم السفراء' : 'Titre de la section'}</label>
-              <input
+              <input aria-label={isAr ? 'عنوان قسم السفراء' : 'Titre de la section'}
                 value={config.ambassadorBanner.titleAr}
                 onChange={(e) =>
                   setConfig({
@@ -812,7 +798,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
             <div>
               <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'نص الوصف' : 'Description'}</label>
-              <textarea
+              <textarea aria-label={isAr ? 'نص الوصف' : 'Description'}
                 rows={2}
                 value={config.ambassadorBanner.bodyAr}
                 onChange={(e) =>
@@ -828,7 +814,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'نص زر دليل السفراء (الأصفر)' : 'Bouton Annuaire'}</label>
-                <input
+                <input aria-label={isAr ? 'نص زر دليل السفراء (الأصفر)' : 'Bouton Annuaire'}
                   value={config.ambassadorBanner.ctaPrimaryAr}
                   onChange={(e) =>
                     setConfig({
@@ -842,7 +828,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'نص زر التقديم (كن سفيراً)' : 'Bouton Candidature'}</label>
-                <input
+                <input aria-label={isAr ? 'نص زر التقديم (كن سفيراً)' : 'Bouton Candidature'}
                   value={config.ambassadorBanner.ctaSecondaryAr}
                   onChange={(e) =>
                     setConfig({
@@ -860,7 +846,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
       {/* ================= TAB 5: FINAL CTA ================= */}
       {activeSubTab === 'finalCta' && (
-        <div className="p-5 sm:p-6 rounded-3xl bg-[#090E20] border border-white/10 space-y-4">
+        <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
           <h3 className="text-base font-black text-white flex items-center gap-2 border-b border-white/10 pb-3">
             <Crown className="w-4 h-4 text-lime-400" />
             <span>{isAr ? 'نصوص الصندوق الختامي (Final Call to Action)' : 'Appel à l\'action final'}</span>
@@ -869,7 +855,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           <div className="space-y-4">
             <div>
               <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'العنوان الكبير' : 'Titre'}</label>
-              <input
+              <input aria-label={isAr ? 'العنوان الكبير' : 'Titre'}
                 value={config.finalCta.titleAr}
                 onChange={(e) => setConfig({ ...config, finalCta: { ...config.finalCta, titleAr: e.target.value } })}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-lime-400"
@@ -878,7 +864,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
             <div>
               <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'نص الوصف' : 'Description'}</label>
-              <input
+              <input aria-label={isAr ? 'نص الوصف' : 'Description'}
                 value={config.finalCta.bodyAr}
                 onChange={(e) => setConfig({ ...config, finalCta: { ...config.finalCta, bodyAr: e.target.value } })}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-lime-400"
@@ -887,7 +873,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
             <div>
               <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'نص زر إنشاء الحساب (الأخضر)' : 'Texte du bouton'}</label>
-              <input
+              <input aria-label={isAr ? 'نص زر إنشاء الحساب (الأخضر)' : 'Texte du bouton'}
                 value={config.finalCta.buttonTextAr}
                 onChange={(e) => setConfig({ ...config, finalCta: { ...config.finalCta, buttonTextAr: e.target.value } })}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-lime-400 font-bold"
@@ -905,7 +891,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               initial={{ scale: 0.94, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.94, opacity: 0 }}
-              className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl bg-[#0D152A] border border-gold-500/40 p-5 sm:p-6 text-white shadow-2xl space-y-4"
+              className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl bg-[#111114] border border-gold-500/40 p-5 sm:p-6 text-white shadow-2xl space-y-4"
             >
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <h3 className="text-sm font-black text-gold-300">
@@ -928,7 +914,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               {/* Title & Level */}
               <div>
                 <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'عنوان الدورة (بالعربية)' : 'Titre du cours'}</label>
-                <input
+                <input aria-label="المراجعة الشاملة في الرياضيات..."
                   value={editingCourse.titleAr}
                   onChange={(e) => setEditingCourse({ ...editingCourse, titleAr: e.target.value })}
                   placeholder="المراجعة الشاملة في الرياضيات..."
@@ -939,10 +925,10 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'التصنيف (Category)' : 'Catégorie'}</label>
-                  <select
+                  <select aria-label={isAr ? 'التصنيف (Category)' : 'Catégorie'}
                     value={editingCourse.category}
                     onChange={(e) => setEditingCourse({ ...editingCourse, category: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#090E20] border border-white/10 text-white text-xs focus:outline-none focus:border-gold-400"
+                    className="w-full px-3 py-2 rounded-xl bg-[#111114] border border-white/10 text-white text-xs focus:outline-none focus:border-gold-400"
                   >
                     <option value="BAC">BAC 2026</option>
                     <option value="UNIVERSITY_LMD">جامعي LMD</option>
@@ -954,7 +940,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
                 <div>
                   <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'المستوى المستهدف' : 'Niveau'}</label>
-                  <input
+                  <input aria-label="جميع الشعب العلمية"
                     value={editingCourse.levelAr}
                     onChange={(e) => setEditingCourse({ ...editingCourse, levelAr: e.target.value })}
                     placeholder="جميع الشعب العلمية"
@@ -967,7 +953,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               <div className="grid grid-cols-3 gap-2.5">
                 <div>
                   <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'اسم الأستاذ' : 'Enseignant'}</label>
-                  <input
+                  <input aria-label="د. يوسف منصوري"
                     value={editingCourse.instructorNameAr}
                     onChange={(e) => setEditingCourse({ ...editingCourse, instructorNameAr: e.target.value })}
                     placeholder="د. يوسف منصوري"
@@ -976,7 +962,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                 </div>
                 <div>
                   <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'المدة (ساعات)' : 'Heures'}</label>
-                  <input
+                  <input aria-label={isAr ? 'المدة (ساعات)' : 'Heures'}
                     type="number"
                     value={editingCourse.durationHours}
                     onChange={(e) => setEditingCourse({ ...editingCourse, durationHours: Number(e.target.value) })}
@@ -985,7 +971,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                 </div>
                 <div>
                   <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'السعر (دج)' : 'Prix DZD'}</label>
-                  <input
+                  <input aria-label={isAr ? 'السعر (دج)' : 'Prix DZD'}
                     type="number"
                     value={editingCourse.priceDzd}
                     onChange={(e) => setEditingCourse({ ...editingCourse, priceDzd: Number(e.target.value) })}
@@ -1022,7 +1008,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                 {imageInputMode === 'URL' ? (
                   <div className="flex items-center gap-2">
                     <LinkIcon className="w-4 h-4 text-gray-400 shrink-0" />
-                    <input
+                    <input aria-label="https://images.unsplash.com/..."
                       value={editingCourse.thumbnailUrl}
                       onChange={(e) => setEditingCourse({ ...editingCourse, thumbnailUrl: e.target.value })}
                       placeholder="https://images.unsplash.com/..."
@@ -1031,23 +1017,12 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                     />
                   </div>
                 ) : (
-                  <div>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-full py-3 rounded-xl border-2 border-dashed border-gold-500/40 hover:border-gold-400 bg-gold-500/5 hover:bg-gold-500/10 text-gold-300 text-xs font-bold flex items-center justify-center gap-2 transition-all"
-                    >
-                      <Upload className="w-4 h-4" />
-                      <span>{isAr ? 'اختر صورة من جهاز الكمبيوتر أو الهاتف (Max 2MB)' : 'Choisir une image depuis l\'appareil'}</span>
-                    </button>
-                  </div>
+                  <ImageUploader
+                    kind="landing"
+                    locale={isAr ? 'ar' : 'fr'}
+                    value={editingCourse.thumbnailUrl || null}
+                    onChange={(url) => setEditingCourse({ ...editingCourse, thumbnailUrl: url || '' })}
+                  />
                 )}
 
                 {/* Preview */}
@@ -1065,7 +1040,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-gray-300 text-[11px] mb-1 font-semibold">{isAr ? 'نص البادج (Badge)' : 'Badge'}</label>
-                  <input
+                  <input aria-label="Bestseller / New / Popular"
                     value={editingCourse.badge || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, badge: e.target.value })}
                     placeholder="Bestseller / New / Popular"

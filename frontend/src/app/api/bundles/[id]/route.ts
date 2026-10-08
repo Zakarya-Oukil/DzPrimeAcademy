@@ -1,17 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { requireCommercialOrAdmin } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
+import { parseImageField } from '@/lib/safeUrl';
+import { guard } from '@/lib/http';
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await requireCommercialOrAdmin(request);
+async function PUTHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
   const { id } = await params;
-  const body = await request.json();
+  const body = (await request.json().catch(() => null)) ?? {};
+  if ([body.originalPriceDzd, body.currentPriceDzd].some((n) => n !== undefined && !(Number.isInteger(n) && n >= 0))) {
+    return NextResponse.json({ error: 'الأسعار يجب أن تكون أعداداً صحيحة غير سالبة' }, { status: 400 });
+  }
+
+  const image = parseImageField(body.imageUrl, 'bundle');
+  if ('error' in image) return NextResponse.json({ error: image.error }, { status: 400 });
 
   const bundle = await prisma.bundle.update({
     where: { id },
     data: {
+      imageUrl: image.value,
       titleAr: body.titleAr,
       titleFr: body.titleFr ?? null,
       descriptionAr: body.descriptionAr,
@@ -31,11 +40,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   return NextResponse.json(bundle);
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await requireCommercialOrAdmin(request);
+async function DELETEHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await requirePermission(request, 'catalog.manage');
   if ('error' in authResult) return authResult.error;
 
   const { id } = await params;
   await prisma.bundle.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }
+
+export const PUT = guard(PUTHandler);
+export const DELETE = guard(DELETEHandler);

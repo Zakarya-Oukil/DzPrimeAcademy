@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { OfficersEditor } from './OfficersEditor';
+import { readOfficers, type Officer } from '@/lib/officers';
 import {
   ShieldAlert,
   Sliders,
@@ -61,6 +63,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
   const [telegramUsername, setTelegramUsername] = useState('dzprime_academy');
   const [linkedinUrl, setLinkedinUrl] = useState('https://www.linkedin.com/company/dzprimeacademy');
   const [vipPriceDzd, setVipPriceDzd] = useState(10000);
+  const [officers, setOfficers] = useState<Officer[]>([]);
   const [systemSaving, setSystemSaving] = useState(false);
   const [systemSuccess, setSystemSuccess] = useState('');
   const [systemError, setSystemError] = useState('');
@@ -101,6 +104,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
           if (data.telegramUsername) setTelegramUsername(data.telegramUsername);
           if (data.linkedinUrl) setLinkedinUrl(data.linkedinUrl);
           if (data.vipPriceDzd !== undefined) setVipPriceDzd(data.vipPriceDzd);
+          setOfficers(readOfficers(data.officers));
         }
       })
       .catch(() => {});
@@ -149,6 +153,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
           whatsappNumber,
           telegramUsername,
           linkedinUrl,
+          officers,
           vipPriceDzd: Number(vipPriceDzd) || 10000,
         }),
       });
@@ -173,8 +178,8 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
     setPasswordSuccess('');
     setPasswordError('');
 
-    if (newPassword.length < 6) {
-      setPasswordError(locale === 'ar' ? 'كلمة المرور يجب أن تتكون من 6 أحرف على الأقل' : 'Le mot de passe doit contenir au moins 6 caractères');
+    if (newPassword.length < 8 || /^\d+$/.test(newPassword)) {
+      setPasswordError(locale === 'ar' ? 'كلمة المرور يجب أن تتكون من 8 أحرف على الأقل ولا تتكون من أرقام فقط' : 'Le mot de passe doit contenir au moins 8 caractères, pas uniquement des chiffres');
       setPasswordSaving(false);
       return;
     }
@@ -196,7 +201,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
       if (!res.ok) {
         setPasswordError(data.error || (locale === 'ar' ? 'فشل تغيير كلمة المرور' : 'Échec de la modification'));
       } else {
-        setPasswordSuccess(locale === 'ar' ? 'تم تحديث كلمة مرور الإدارة بنجاح! 🔒' : 'Mot de passe administrateur mis à jour ! 🔒');
+        setPasswordSuccess(locale === 'ar' ? 'تم تحديث كلمة مرور الإدارة بنجاح! ' : 'Mot de passe administrateur mis à jour ! ');
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
@@ -212,7 +217,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
   return (
     <div className="space-y-6 font-arabic" data-testid="admin-settings-tab">
       {/* Header Banner */}
-      <div className="p-5 rounded-3xl bg-gradient-to-r from-[#0C152E] via-[#101E42] to-[#0A1024] border border-lime-500/30 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-5 rounded-3xl bg-[#111114] border border-lime-500/30 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-2xl bg-lime-400/20 text-lime-400 flex items-center justify-center font-black shrink-0">
             <Sliders className="w-6 h-6" />
@@ -241,7 +246,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
       </div>
 
       {/* Quick Link Card to Dedicated Footer Management */}
-      <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-500/10 via-gold-500/10 to-yellow-500/10 border border-gold-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+      <div className="p-5 rounded-3xl bg-amber-500/10 border border-gold-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-2xl bg-gold-500/20 border border-gold-500/30 text-gold-400 flex items-center justify-center shrink-0">
             <Share2 className="w-5 h-5" />
@@ -264,7 +269,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
           onClick={() => {
             window.location.hash = '#footer';
           }}
-          className="px-4 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all whitespace-nowrap self-stretch sm:self-auto justify-center"
+          className="px-4 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all whitespace-nowrap self-stretch sm:self-auto justify-center"
         >
           <span>{locale === 'ar' ? 'فتح لوحة إدارة التذييل ←' : 'Ouvrir le panneau Footer →'}</span>
         </button>
@@ -336,7 +341,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
               <select
                 value={profileForm.wilayaCode}
                 onChange={(e) => setProfileForm({ ...profileForm, wilayaCode: Number(e.target.value) })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E1528] border border-white/10 text-white focus:outline-none focus:border-lime-400"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white focus:outline-none focus:border-lime-400"
               >
                 {WILAYAS.map((w) => (
                   <option key={w.code} value={w.code}>
@@ -361,7 +366,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
               <button
                 type="submit"
                 disabled={profileSaving}
-                className="w-full py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
+                className="w-full py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
               >
                 {profileSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 <span>{locale === 'ar' ? 'حفظ تعديل الاسم والبيانات' : 'Sauvegarder le profil'}</span>
@@ -460,7 +465,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
             {/* Contact & Support Channels for Activations & Payments */}
             <div className="space-y-2.5 pt-2 border-t border-white/10">
               <label className="block text-lime-400 font-bold text-xs">
-                {locale === 'ar' ? '📱 قنوات التواصل والدفع المباشر (تظهر للطلبة)' : 'Canaux Support & Paiements'}
+                {locale === 'ar' ? 'قنوات التواصل والدفع المباشر (تظهر للطلبة)' : 'Canaux Support & Paiements'}
               </label>
 
               <div>
@@ -519,6 +524,8 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-lime-400"
                 />
               </div>
+
+              <OfficersEditor value={officers} onChange={setOfficers} locale={locale} />
             </div>
 
             {/* Automation toggles */}
@@ -542,7 +549,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
               <button
                 type="submit"
                 disabled={systemSaving}
-                className="w-full py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
+                className="w-full py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
               >
                 {systemSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 <span>{locale === 'ar' ? 'حفظ إعدادات المنصة في DB' : 'Enregistrer les paramètres'}</span>
@@ -603,7 +610,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
                 <input
                   type={showNewPassword ? 'text' : 'password'}
                   required
-                  placeholder="•••••••• (6+ أحرف)"
+                  placeholder="•••••••• (8+ أحرف)"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-white/5 border border-white/10 font-mono text-white focus:outline-none focus:border-lime-400"
@@ -636,7 +643,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
               <button
                 type="submit"
                 disabled={passwordSaving}
-                className="w-full py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
+                className="w-full py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
               >
                 {passwordSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
                 <span>{locale === 'ar' ? 'تحديث كلمة مرور الإدارة' : 'Modifier mot de passe'}</span>

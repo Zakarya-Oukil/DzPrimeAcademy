@@ -1,34 +1,71 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateCardId } from '@/lib/cardId';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
-import { hashPassword, requireAdmin } from '@/lib/auth';
+import { hashPassword, requirePermission } from '@/lib/auth';
+import { generateTempPassword, passwordProblem } from '@/lib/passwords';
+import { hasAnyPermission } from '@/lib/rbac';
+import { guard } from '@/lib/http';
 
-export async function GET() {
+// Staff only. HR and finance see the full record; catalog managers (who only need a
+// teacher picker for courses and sessions) get no bank, rate or payout data.
+async function GETHandler(request: NextRequest) {
+  const authResult = await requirePermission(request, ['users.manage', 'finance.manage', 'catalog.manage']);
+  if ('error' in authResult) return authResult.error;
+  const canSeeMoney = hasAnyPermission(authResult.user, ['users.manage', 'finance.manage']);
+  const canSeeContact = hasAnyPermission(authResult.user, 'users.manage');
+
   await ensureSeeded();
 
   const profiles = await prisma.teacherProfile.findMany({
     include: { payouts: { orderBy: { createdAt: 'desc' }, take: 3 } },
     orderBy: { createdAt: 'asc' },
+    take: 500,
   });
 
   const userIds = profiles.map((p) => p.userId);
-  const users = await prisma.user.findMany({ where: { id: { in: userIds } } });
+  const users = await prisma.user.findMany({
+    where: { id: { in: userIds } },
+    select: {
+      id: true,
+      name: true,
+      avatar: true,
+      role: true,
+      email: canSeeContact,
+      phone: canSeeContact,
+      wilayaCode: true,
+      wilayaName: true,
+      institutionName: true,
+      specialty: true,
+      studentCardId: true,
+      isVerified: true,
+      createdAt: true,
+    },
+  });
   const usersMap = new Map(users.map((u) => [u.id, u]));
 
-  const result = profiles.map((p) => ({
-    ...p,
-    user: usersMap.get(p.userId) ? { ...usersMap.get(p.userId), passwordHash: undefined } : null,
-  }));
+  const result = profiles.map((p) => {
+    const user = usersMap.get(p.userId) ?? null;
+    if (canSeeMoney) return { ...p, user };
+    // Catalog managers only need a picker: no rate, bank, payout or share data.
+    return {
+      id: p.id,
+      userId: p.userId,
+      university: p.university,
+      specialty: p.specialty,
+      hoursTaught: p.hoursTaught,
+      studentsCount: p.studentsCount,
+      createdAt: p.createdAt,
+      payouts: [],
+      user,
+    };
+  });
 
   return NextResponse.json(result);
 }
 
-function generateTempPassword(): string {
-  return `Prof${Math.floor(1000 + Math.random() * 9000)}!`;
-}
-
-export async function POST(request: NextRequest) {
-  const authResult = await requireAdmin(request);
+async function POSTHandler(request: NextRequest) {
+  const authResult = await requirePermission(request, 'users.manage');
   if ('error' in authResult) return authResult.error;
 
   await ensureSeeded();
@@ -48,7 +85,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'هذا البريد الإلكتروني مسجل مسبقاً في المنصة' }, { status: 409 });
     }
 
-    const clearPassword = (password && String(password).trim().length >= 6)
+    if (password && passwordProblem(String(password).trim())) {
+
+      return NextResponse.json({ error: passwordProblem(String(password).trim()) }, { status: 400 });
+
+    }
+
+    const clearPassword = (password && !passwordProblem(String(password).trim()))
       ? String(password).trim()
       : generateTempPassword();
 
@@ -62,11 +105,12 @@ export async function POST(request: NextRequest) {
         phone: phone ? String(phone).trim() : null,
         role: 'TEACHER',
         passwordHash,
+        mustChangePassword: true,
         wilayaCode: parsedWilayaCode,
         wilayaName: wilayaName || null,
         institutionName: university || 'Université Algérienne',
         specialty: specialty || null,
-        studentCardId: `DZ-TCH-${parsedWilayaCode}-${Math.floor(1000 + Math.random() * 9000)}`,
+        studentCardId: generateCardId('TCH', parsedWilayaCode),
         isVerified: true,
       },
     });
@@ -82,10 +126,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const { passwordHash: _omit, ...safeUser } = user;
+    const { passwordHash: _omit, tokenVersion: _tv, ...safeUser } = user;
     return NextResponse.json({ ...profile, user: safeUser, tempPassword: clearPassword }, { status: 201 });
   } catch (error: any) {
+    if (error?.code?.startsWith?.('P2') || error instanceof SyntaxError) throw error; // guard() answers 404/409/400
     console.error('Error creating teacher:', error);
-    return NextResponse.json({ error: error?.message || 'فشل إضافة الأستاذ' }, { status: 500 });
+    return NextResponse.json({ error: 'فشل إضافة الأستاذ' }, { status: 500 });
   }
 }
+
+export const GET = guard(GETHandler);
+export const POST = guard(POSTHandler);

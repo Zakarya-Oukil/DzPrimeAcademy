@@ -23,12 +23,36 @@ import {
   Sparkles,
   Eye,
   EyeOff,
+  Pencil,
 } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
 import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
-import { isSuperAdmin, isHRManager, getUserHierarchyLevel, canManageUser } from '@/lib/rbac';
+import { isSuperAdmin, isHRManager, getUserHierarchyLevel, canManageUser, canAssignAdminRole } from '@/lib/rbac';
 import { HierarchyChart } from '@/components/dashboard/HierarchyChart';
 import { Locale, User } from '@/types';
+
+const ROLE_OPTIONS: { value: string; label: string; title: string }[] = [
+  { value: 'SUPER_ADMIN', label: 'Super Admin (صلاحية كاملة ومؤسس)', title: 'Directeur Général (المؤسس)' },
+  { value: 'GENERAL_ADMIN', label: 'Admin Général / المدير العام (صلاحية تنفيذية كاملة)', title: 'Admin Général (المدير العام التنفيذي)' },
+  { value: 'HR_MANAGER', label: 'Chargée RH / Responsable RH (مسؤولة الموارد البشرية وإدارة الأساتذة والسفراء والطلبة)', title: 'Chargée des Ressources Humaines' },
+  { value: 'COMMERCIAL', label: 'Chargée Commerciale / Responsable Commercial (مسؤولة الدورات، الحزم والعروض الترويجية)', title: 'Chargée Commerciale' },
+  { value: 'HR_EMPLOYEE', label: 'Employé RH / Collaborateur RH (إدارة وإضافة الأساتذة والطلبة والسفراء)', title: 'Collaborateur RH & Recrutement' },
+  { value: 'FINANCE', label: 'Responsable Financier (المركز المالي والمدفوعات)', title: 'Responsable Financier' },
+  { value: 'ADMIN', label: 'Administrateur Général (إدارة عامة)', title: 'Administrateur' },
+];
+
+const EMPTY_FORM = {
+  name: '',
+  email: '',
+  password: '',
+  role: 'ADMIN',
+  adminRole: '',
+  jobTitle: '',
+  phone: '',
+  wilayaCode: 16,
+  wilayaName: 'Alger',
+  bio: '',
+};
 
 interface StaffTabProps {
   locale: Locale | string;
@@ -49,21 +73,59 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   // New Staff Form
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'ADMIN',
-    adminRole: 'HR_MANAGER',
-    jobTitle: 'Chargée des Ressources Humaines',
-    phone: '',
-    wilayaCode: 16,
-    wilayaName: 'Alger',
-    bio: '',
-  });
+  const [form, setForm] = useState({ ...EMPTY_FORM });
 
   // Delete modal state
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Edit modal state
+  const [editTarget, setEditTarget] = useState<User | null>(null);
+  const [editForm, setEditForm] = useState({ jobTitle: '', adminRole: '', phone: '', bio: '' });
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState('');
+
+  // Only roles the signed-in actor may actually hand out (matches the server rule).
+  const assignable = ROLE_OPTIONS.filter((o) => currentUser && canAssignAdminRole(currentUser, o.value));
+
+  const openAdd = () => {
+    const first = assignable[0];
+    setErrorMessage('');
+    setForm({ ...EMPTY_FORM, adminRole: first?.value || '', jobTitle: first?.title || '' });
+    setIsAddModalOpen(true);
+  };
+
+  const openEdit = (s: User) => {
+    setEditError('');
+    setEditTarget(s);
+    setEditForm({ jobTitle: s.jobTitle || '', adminRole: s.adminRole || '', phone: s.phone || '', bio: s.bio || '' });
+  };
+
+  const handleEditStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editTarget) return;
+    setEditSaving(true);
+    setEditError('');
+    try {
+      const body: Record<string, string> = { jobTitle: editForm.jobTitle, phone: editForm.phone, bio: editForm.bio };
+      if (editForm.adminRole && editForm.adminRole !== (editTarget.adminRole || '')) body.adminRole = editForm.adminRole;
+      const res = await fetch(`/api/admin/staff/${editTarget.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setEditError(data.error || 'فشل التعديل');
+      } else {
+        setEditTarget(null);
+        fetchStaff();
+      }
+    } catch {
+      setEditError('خطأ في الاتصال');
+    } finally {
+      setEditSaving(false);
+    }
+  };
 
   const fetchStaff = async () => {
     setLoading(true);
@@ -113,18 +175,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
         setTimeout(() => {
           setIsAddModalOpen(false);
           setSuccessMessage('');
-          setForm({
-            name: '',
-            email: '',
-            password: '',
-            role: 'ADMIN',
-            adminRole: 'HR_MANAGER',
-            jobTitle: 'Chargée des Ressources Humaines',
-            phone: '',
-            wilayaCode: 16,
-            wilayaName: 'Alger',
-            bio: '',
-          });
+          setForm({ ...EMPTY_FORM });
         }, 1500);
       }
     } catch (err: any) {
@@ -182,9 +233,9 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
   return (
     <div className="space-y-6 font-arabic" data-testid="admin-staff-tab">
       {/* Header Banner */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-[#0C152E] via-[#101E42] to-[#0A1024] border border-gold-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-3xl bg-[#111114] border border-gold-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-gold-500 via-amber-400 to-yellow-300 text-slate-950 flex items-center justify-center font-black shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-gold-500 text-navy-950 flex items-center justify-center font-black shrink-0">
             <Users className="w-6 h-6" />
           </div>
           <div>
@@ -204,9 +255,9 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
 
         {canAddStaff && (
           <button
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={openAdd}
             data-testid="add-staff-btn"
-            className="px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 via-amber-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 font-black text-xs flex items-center gap-2 shadow-gold-glow active:scale-95 transition-all self-start sm:self-auto"
+            className="px-4 sm:px-5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs flex items-center gap-2 shadow-gold-glow active:scale-95 transition-all self-start sm:self-auto"
           >
             <UserPlus className="w-4 h-4" />
             <span>{locale === 'ar' ? 'إضافة إداري أو موظف جديد' : 'Ajouter un Membre'}</span>
@@ -241,7 +292,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
         <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
           <span className="text-gray-400">{locale === 'ar' ? 'المستوى الإداري الحالي:' : 'Votre niveau:'}</span>
           <p className="text-xs font-bold text-lime-400">
-            {actorIsSuper ? 'SUPER ADMIN (Lvl 100)' : actorIsHR ? 'HR MANAGER (Lvl 85)' : 'STAFF (Authorized)'}
+            {actorIsSuper ? (locale === 'ar' ? 'المالك والمدير العام' : 'Propriétaire') : actorIsHR ? (locale === 'ar' ? 'مسؤولة الموارد البشرية' : 'Responsable RH') : (locale === 'ar' ? 'فريق الإدارة' : 'Équipe administrative')}
           </p>
         </div>
       </div>
@@ -307,12 +358,12 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
             return (
               <div
                 key={staff.id}
-                className="p-5 rounded-3xl border border-white/10 bg-[#0A0E1A] hover:border-gold-500/40 transition-all space-y-3.5 shadow-lg relative overflow-hidden"
+                className="p-5 rounded-3xl border border-white/10 bg-[#0b0b0d] hover:border-gold-500/40 transition-all space-y-3.5 shadow-lg relative overflow-hidden"
               >
                 {/* Top Badge */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl border border-gold-400/60 bg-gradient-to-tr from-gold-500/20 to-amber-500/30 text-gold-300 flex items-center justify-center font-black text-lg shrink-0">
+                    <div className="w-12 h-12 rounded-2xl border border-gold-400/60 bg-gold-500/20 text-gold-300 flex items-center justify-center font-black text-lg shrink-0">
                       {staff.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
@@ -387,9 +438,19 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
 
                   {canDelete && (
                     <button
+                      onClick={() => openEdit(staff)}
+                      className="px-3 py-1.5 min-h-[44px] rounded-xl bg-white/5 hover:bg-white/10 text-gold-300 text-xs font-bold flex items-center gap-1.5 transition-all"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      <span>{locale === 'ar' ? 'تعديل' : 'Modifier'}</span>
+                    </button>
+                  )}
+
+                  {canDelete && (
+                    <button
                       onClick={() => handleDeleteStaff(staff.id)}
                       disabled={deletingId === staff.id}
-                      className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold flex items-center gap-1.5 transition-all disabled:opacity-50"
+                      className="px-3 py-1.5 min-h-[44px] rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold flex items-center gap-1.5 transition-all disabled:opacity-50"
                     >
                       {deletingId === staff.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                       <span>{locale === 'ar' ? 'حذف' : 'Supprimer'}</span>
@@ -405,7 +466,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
       {/* ================= ADD STAFF MODAL ================= */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md">
-          <div className="relative w-full max-w-lg rounded-3xl border border-gold-500/40 bg-[#0B0E1A] p-6 text-white shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+          <div className="relative w-full max-w-lg rounded-3xl border border-gold-500/40 bg-[#111114] p-6 text-white shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="font-black text-base flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-gold-400" />
@@ -413,7 +474,8 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
               </h3>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-gray-400 hover:text-white text-xs"
+                aria-label={locale === 'ar' ? 'إغلاق' : 'Fermer'}
+                className="text-gray-400 hover:text-white text-xs min-w-[44px] min-h-[44px]"
               >
                 ✕
               </button>
@@ -471,13 +533,14 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
                     required
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    placeholder="•••••••• (6+ أحرف)"
+                    placeholder="•••••••• (8+ أحرف)"
                     className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-white/5 border border-white/10 font-mono text-white focus:outline-none focus:border-gold-400"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    aria-label={locale === 'ar' ? 'إظهار/إخفاء كلمة المرور' : 'Afficher/masquer le mot de passe'}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-white"
                   >
                     {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   </button>
@@ -493,41 +556,14 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
                   value={form.adminRole}
                   onChange={(e) => {
                     const r = e.target.value;
-                    let defaultTitle = 'Chargée des Ressources Humaines';
-                    if (r === 'GENERAL_ADMIN') defaultTitle = 'Admin Général (المدير العام التنفيذي)';
-                    if (r === 'COMMERCIAL') defaultTitle = 'Chargée Commerciale';
-                    if (r === 'HR_EMPLOYEE') defaultTitle = 'Collaborateur RH & Recrutement';
-                    if (r === 'FINANCE') defaultTitle = 'Responsable Financier';
-                    if (r === 'SUPER_ADMIN') defaultTitle = 'Directeur Général (المؤسس)';
-                    if (r === 'ADMIN') defaultTitle = 'Administrateur';
+                    const defaultTitle = ROLE_OPTIONS.find((o) => o.value === r)?.title || '';
                     setForm({ ...form, adminRole: r, jobTitle: defaultTitle });
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F162B] border border-white/10 text-white font-bold focus:outline-none focus:border-gold-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white font-bold focus:outline-none focus:border-gold-400"
                 >
-                  {actorIsSuper && (
-                    <>
-                      <option value="SUPER_ADMIN">👑 Super Admin (Level 100 - صلاحية كاملة ومؤسس)</option>
-                      <option value="GENERAL_ADMIN">⚡ Admin Général / المدير العام (Level 95 - صلاحية تنفيذية كاملة)</option>
-                    </>
-                  )}
-                  <option value="HR_MANAGER">
-                    👩‍💼 Chargée RH / Responsable RH (Level 85 - مسؤولة الموارد البشرية وإدارة الأساتذة والسفراء والطلبة)
-                  </option>
-                  <option value="COMMERCIAL">
-                    💼 Chargée Commerciale / Responsable Commercial (Level 80 - مسؤولة الدورات، الحزم والعروض الترويجية)
-                  </option>
-                  <option value="HR_EMPLOYEE">
-                    🤝 Employé RH / Collaborateur RH (Level 75 - إدارة وإضافة الأساتذة والطلبة والسفراء)
-                  </option>
-                  <option value="FINANCE">
-                    💳 Responsable Financier (Level 65 - المركز المالي والمدفوعات)
-                  </option>
-                  <option value="ADMIN">
-                    🛡️ Administrateur Général (Level 65 - إدارة عامة)
-                  </option>
-                  <option value="MODERATOR">
-                    👁️ Modérateur de Contenu (Level 60 - الإشراف والمراجعة)
-                  </option>
+                  {assignable.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
                 </select>
               </div>
 
@@ -566,7 +602,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
                   <select
                     value={form.wilayaCode}
                     onChange={(e) => setForm({ ...form, wilayaCode: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#0F162B] border border-white/10 text-xs focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#111114] border border-white/10 text-xs focus:outline-none"
                   >
                     {WILAYAS.map((w) => (
                       <option key={w.code} value={w.code}>
@@ -601,7 +637,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 font-black text-xs flex items-center gap-1.5 shadow-gold-glow disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs flex items-center gap-1.5 shadow-gold-glow disabled:opacity-50"
                 >
                   {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>{locale === 'ar' ? 'تأكيد وإضافة المسؤول' : 'Confirmer l\'ajout'}</span>
@@ -609,6 +645,54 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {editTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md">
+          <form onSubmit={handleEditStaff} className="relative w-full max-w-lg rounded-3xl border border-gold-500/40 bg-[#111114] p-6 text-white shadow-2xl space-y-3.5 text-xs max-h-[92vh] overflow-y-auto">
+            <h3 className="font-black text-base">{locale === 'ar' ? 'تعديل بيانات' : 'Modifier'} {editTarget.name}</h3>
+            {editError && (
+              <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 font-bold">{editError}</div>
+            )}
+            {editTarget.role !== 'OWNER' && (
+              <div>
+                <label htmlFor="staff-edit-role" className="block text-gray-400 mb-1 font-semibold">{locale === 'ar' ? 'المستوى الإداري' : 'Rôle Hiérarchique'}</label>
+                <select
+                  id="staff-edit-role"
+                  value={editForm.adminRole}
+                  onChange={(e) => setEditForm({ ...editForm, adminRole: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white font-bold focus:outline-none focus:border-gold-400"
+                >
+                  {!assignable.some((o) => o.value === editForm.adminRole) && (
+                    <option value={editForm.adminRole}>{editForm.adminRole || '—'}</option>
+                  )}
+                  {assignable.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div>
+              <label htmlFor="staff-edit-title" className="block text-gray-400 mb-1 font-semibold">{locale === 'ar' ? 'المسمى الوظيفي' : 'Titre de Poste'}</label>
+              <input id="staff-edit-title" value={editForm.jobTitle} maxLength={120} onChange={(e) => setEditForm({ ...editForm, jobTitle: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-gold-400/40 text-gold-300 font-bold focus:outline-none focus:border-gold-400" />
+            </div>
+            <div>
+              <label htmlFor="staff-edit-phone" className="block text-gray-400 mb-1 font-semibold">{locale === 'ar' ? 'الهاتف' : 'Téléphone'}</label>
+              <input id="staff-edit-phone" dir="ltr" value={editForm.phone} maxLength={30} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 font-mono focus:outline-none" />
+            </div>
+            <div>
+              <label htmlFor="staff-edit-bio" className="block text-gray-400 mb-1 font-semibold">Bio</label>
+              <textarea id="staff-edit-bio" rows={2} value={editForm.bio} maxLength={1000} onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none" />
+            </div>
+            <div className="pt-3 flex items-center justify-end gap-2 border-t border-white/10">
+              <button type="button" onClick={() => setEditTarget(null)} className="px-4 py-2 min-h-[44px] rounded-xl bg-white/5 hover:bg-white/10 font-bold">{locale === 'ar' ? 'إلغاء' : 'Annuler'}</button>
+              <button type="submit" disabled={editSaving} className="px-5 py-2 min-h-[44px] rounded-xl bg-gold-500 text-navy-950 font-black flex items-center gap-1.5 disabled:opacity-50">
+                {editSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                <span>{locale === 'ar' ? 'حفظ' : 'Enregistrer'}</span>
+              </button>
+            </div>
+          </form>
         </div>
       )}
 

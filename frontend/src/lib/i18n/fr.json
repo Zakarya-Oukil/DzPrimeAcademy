@@ -17,7 +17,7 @@
   },
   "nav": {
     "home": "Accueil",
-    "bot": "Bot d'Examens",
+    "bot": "Assistant examens",
     "membershipCard": "Carte d'Adhérent",
     "ambassadors": "Réseau Ambassadeurs",
     "hierarchy": "Organigramme",
@@ -29,11 +29,11 @@
     "rolePreview": "Aperçu des Rôles"
   },
   "hero": {
-    "badge": "🇩🇿 La 1ère Plateforme Académique dans les 58 Wilayas d'Algérie",
+    "badge": "🇩🇿 La plateforme éducative et de services algérienne 2027",
     "titlePrefix": "Votre réussite académique commence ici avec",
     "titleHighlight": "DZ PRIME ACADEMY",
     "description": "Une plateforme nationale qui réunit l'élite des professeurs et ambassadeurs d'universités et lycées algériens pour vous offrir des annales d'examens corrigées et un bot d'orientation interactif.",
-    "ctaPrimary": "Tester le Bot Intelligent 🤖",
+    "ctaPrimary": "Essayer l'assistant examens 🤖",
     "ctaSecondary": "Générer ma Carte d'Adhérent 💳",
     "statsStudents": "+50,000 Étudiants",
     "statsWilayas": "58 Wilayas Couvertes",
@@ -53,15 +53,15 @@
     "studyHub": "Centre d'Excellence Académique"
   },
   "floatingBot": {
-    "launcherTitle": "Bot d'Examens DZ",
+    "launcherTitle": "Assistant examens",
     "launcherSubtitle": "Navigation guidée sans taper de texte",
     "badge": "Assistant Interactif",
     "online": "En ligne & disponible",
-    "close": "Fermer le Bot",
+    "close": "Fermer l'assistant",
     "openFull": "Plein écran"
   },
   "bot": {
-    "title": "Bot d'Orientation et d'Examens Intelligent",
+    "title": "Assistant d'orientation et d'examens",
     "subtitle": "Naviguez à travers les archives d'annales sans taper le moindre texte grâce à notre arbre de décision fluide",
     "step1_title": "Étape 1: Choisissez le Cycle d'Études",
     "step2_title": "Étape 2: Choisissez l'Université ou la Wilaya",
@@ -267,10 +267,10 @@
       "goldStatus": "Statut d'Adhésion",
       "savedExams": "Annales Enregistrées",
       "upcomingLocalSessions": "Événements & Séances dans votre Wilaya",
-      "quickBot": "Lancer le Bot d'Examens",
+      "quickBot": "Lancer l'assistant examens",
       "botPromptTitle": "Vous cherchez les annales d'un module spécifique ?",
-      "botPromptDesc": "Utilisez le bot interactif pour naviguer directement sans taper de texte et télécharger les PDF avec corrigés.",
-      "openBotBtn": "Ouvrir le Bot Maintenant 🤖",
+      "botPromptDesc": "Utilisez l'assistant interactif pour naviguer directement sans taper de texte et télécharger les PDF avec corrigés.",
+      "openBotBtn": "Ouvrir l'assistant 🤖",
       "enrolledModules": "Modules Inscrits",
       "downloadedExams": "Annales Téléchargées",
       "unlimited": "Illimité VIP",
@@ -337,6 +337,8 @@
     "STUDENT_FREE": "Étudiant (Compte Gratuit)"
   },
   "common": {
+    "copy": "Copier",
+    "copied": "Copié",
     "loading": "Chargement...",
     "error": "Une erreur est survenue, veuillez réessayer",
     "success": "Opération effectuée avec succès",

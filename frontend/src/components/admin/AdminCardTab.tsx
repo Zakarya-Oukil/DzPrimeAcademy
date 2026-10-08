@@ -31,9 +31,9 @@ export const AdminCardTab: React.FC<AdminCardTabProps> = ({ locale }) => {
   return (
     <div className="space-y-6 font-arabic" data-testid="admin-card-tab">
       {/* Header Banner */}
-      <div className="p-5 rounded-3xl bg-gradient-to-r from-[#0C152E] via-[#101E42] to-[#0A1024] border border-gold-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-5 rounded-3xl bg-[#111114] border border-gold-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-gold-500 via-amber-400 to-lime-400 text-slate-950 flex items-center justify-center font-black shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-gold-500 text-navy-950 flex items-center justify-center font-black shrink-0">
             <CreditCard className="w-6 h-6" />
           </div>
           <div>

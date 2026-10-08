@@ -37,8 +37,8 @@ export const DzPrimeLogo: React.FC<LogoProps> = ({
 
   const glowColor = isDarkEffective ? 'bg-amber-500/30' : 'bg-blue-500/30';
   const shadowFilter = isDarkEffective
-    ? 'drop-shadow-[0_3px_12px_rgba(212,175,55,0.45)]'
-    : 'drop-shadow-[0_3px_12px_rgba(37,99,235,0.45)]';
+    ? 'drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]'
+    : 'drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]';
 
   return (
     <div className={`inline-flex items-center gap-2.5 ${className}`}>
@@ -48,7 +48,7 @@ export const DzPrimeLogo: React.FC<LogoProps> = ({
       >
         {withGlow && (
           <div
-            className={`absolute inset-0 rounded-full ${glowColor} blur-md animate-pulse-slow pointer-events-none`}
+            className={`absolute inset-0 rounded-full ${glowColor} blur-md pointer-events-none`}
             style={{ transform: 'scale(1.15)' }}
           />
         )}
@@ -69,8 +69,8 @@ export const DzPrimeLogo: React.FC<LogoProps> = ({
           <span
             className={`font-black tracking-wider text-base sm:text-lg font-sans leading-tight ${
               isDarkEffective
-                ? 'bg-gradient-to-r from-[#FFF0A0] via-[#F5D061] to-[#D4AF37] bg-clip-text text-transparent drop-shadow-sm'
-                : 'bg-gradient-to-r from-blue-700 via-indigo-600 to-sky-600 dark:from-sky-300 dark:via-blue-300 dark:to-indigo-200 bg-clip-text text-transparent'
+                ? 'text-gold-300'
+                : 'text-navy-950 dark:text-gold-300'
             }`}
           >
             DZ PRIME
@@ -78,8 +78,8 @@ export const DzPrimeLogo: React.FC<LogoProps> = ({
           <span
             className={`text-[9px] sm:text-[10px] tracking-[0.25em] font-bold uppercase ${
               isDarkEffective
-                ? 'text-[#F5D061]/90'
-                : 'text-blue-600 dark:text-sky-300/90'
+                ? 'text-[#f4d58a]/90'
+                : 'text-gold-700 dark:text-gold-300/90'
             }`}
           >
             ACADEMY

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
 import { canManageUser } from '@/lib/rbac';
+import { guard } from '@/lib/http';
 
-export async function DELETE(
+async function DELETEHandler(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -16,11 +17,15 @@ export async function DELETE(
 
   const student = await prisma.user.findUnique({
     where: { id },
-    select: { id: true, role: true, name: true },
+    select: { id: true, role: true, adminRole: true, name: true },
   });
 
   if (!student) {
     return NextResponse.json({ error: 'الطالب غير موجود' }, { status: 404 });
+  }
+
+  if (student.role !== 'STUDENT_FREE' && student.role !== 'STUDENT_PAID') {
+    return NextResponse.json({ error: 'هذا الحساب ليس حساب طالب' }, { status: 400 });
   }
 
   const allowed = canManageUser(actor, student);
@@ -34,9 +39,10 @@ export async function DELETE(
   await prisma.sessionRegistration.deleteMany({ where: { studentId: id } });
   await prisma.enrollment.deleteMany({ where: { studentId: id } });
   await prisma.subscription.deleteMany({ where: { userId: id } });
-  await prisma.session.deleteMany({ where: { userId: id } });
   await prisma.passwordResetToken.deleteMany({ where: { userId: id } });
   await prisma.user.delete({ where: { id } });
 
   return NextResponse.json({ success: true, message: `تم حذف الطالب ${student.name} بنجاح` });
 }
+
+export const DELETE = guard(DELETEHandler);

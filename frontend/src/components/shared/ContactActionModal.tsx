@@ -35,6 +35,7 @@ export interface ContactModalOperation {
   title?: string;
   details?: string;
   amountDzd?: number;
+  promoCode?: string;
   targetId?: string;
   user?: {
     name?: string;
@@ -141,7 +142,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
           targetId: operation.targetId,
           title: operation.title,
           details: operation.details,
-          amountDzd: operation.amountDzd || 0,
+          promoCode: operation.promoCode,
           userName: operation.user?.name,
           userEmail: operation.user?.email,
           userPhone: operation.user?.phone,
@@ -232,7 +233,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.93, opacity: 0, y: 16 }}
           transition={{ type: 'spring', damping: 24, stiffness: 280 }}
-          className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl border border-slate-200 dark:border-gold-500/40 bg-white dark:bg-gradient-to-b dark:from-[#0D152A] dark:to-[#060913] p-5 sm:p-7 text-slate-900 dark:text-white shadow-2xl my-auto font-arabic"
+          className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl border border-slate-200 dark:border-gold-500/40 bg-white dark:bg-[#111114] p-5 sm:p-7 text-slate-900 dark:text-white shadow-2xl my-auto font-arabic"
         >
           {/* Close button */}
           <button
@@ -248,9 +249,9 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
             <div className="space-y-4">
               {/* Header Icon & Title */}
               <div className="text-center flex flex-col items-center pt-2">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-lime-500/20 via-emerald-500/20 to-lime-400/30 border border-lime-400/40 flex items-center justify-center mb-3 shadow-lg shadow-lime-500/10 relative">
-                  <Mail className="w-8 h-8 text-lime-400 animate-bounce" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-[#0D152A]" />
+                <div className="w-16 h-16 rounded-2xl bg-lime-500/20 border border-lime-400/40 flex items-center justify-center mb-3 shadow-lg shadow-lime-500/10 relative">
+                  <Mail className="w-8 h-8 text-lime-400 " />
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-[#111114]" />
                 </div>
 
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
@@ -273,7 +274,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
               {/* Instructions Card */}
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 space-y-2 text-xs">
                 <div className="flex items-start gap-2.5 text-slate-700 dark:text-gray-200">
-                  <span className="w-5 h-5 rounded-full bg-lime-400 text-slate-950 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-lime-400 text-navy-950 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                     1
                   </span>
                   <span>
@@ -283,7 +284,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                   </span>
                 </div>
                 <div className="flex items-start gap-2.5 text-slate-700 dark:text-gray-200">
-                  <span className="w-5 h-5 rounded-full bg-lime-400 text-slate-950 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-lime-400 text-navy-950 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                     2
                   </span>
                   <span>
@@ -293,7 +294,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                   </span>
                 </div>
                 <div className="flex items-start gap-2.5 text-slate-700 dark:text-gray-200">
-                  <span className="w-5 h-5 rounded-full bg-lime-400 text-slate-950 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-lime-400 text-navy-950 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                     3
                   </span>
                   <span className="text-slate-500 dark:text-gray-400 text-[11px]">
@@ -354,7 +355,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                   <button
                     data-testid="contact-modal-whatsapp-btn"
                     onClick={() => handleContact('WHATSAPP')}
-                    className="p-3.5 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/20 active:scale-95 transition-all"
+                    className="p-3.5 rounded-2xl bg-[#e8eaec] hover:bg-[#d6d9dc] text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#e8eaec]/20 active:scale-95 transition-all"
                   >
                     <MessageCircle className="w-4 h-4 fill-white" />
                     <span>{isAr ? 'تواصل عبر واتساب (WhatsApp)' : 'Contacter par WhatsApp'}</span>
@@ -364,7 +365,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                   <button
                     data-testid="contact-modal-telegram-btn"
                     onClick={() => handleContact('TELEGRAM')}
-                    className="p-3.5 rounded-2xl bg-[#229ED9] hover:bg-[#1e8bc0] text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#229ED9]/20 active:scale-95 transition-all"
+                    className="p-3.5 rounded-2xl bg-[#e8eaec] hover:bg-[#d6d9dc] text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#e8eaec]/20 active:scale-95 transition-all"
                   >
                     <Send className="w-4 h-4 fill-white" />
                     <span>{isAr ? 'تواصل عبر تيليغرام (Telegram)' : 'Contacter sur Telegram'}</span>
@@ -376,7 +377,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
             /* ================= CASE 3: AMBASSADOR APPLICATION (TELEGRAM ONLY) ================= */
             <div className="space-y-4">
               <div className="text-center flex flex-col items-center pt-2">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500/20 via-blue-500/20 to-sky-400/30 border border-sky-400/40 flex items-center justify-center mb-3 shadow-lg shadow-sky-500/10">
+                <div className="w-16 h-16 rounded-2xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center mb-3 shadow-lg shadow-sky-500/10">
                   <Award className="w-8 h-8 text-sky-400" />
                 </div>
 
@@ -391,7 +392,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
               </div>
 
               {/* Ambassador Info Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-b from-slate-50 to-white dark:from-[#0E1528] dark:to-[#080D1A] border border-slate-200 dark:border-sky-500/30 space-y-2.5 text-xs">
+              <div className="p-4 rounded-2xl bg-gradient-to-b from-slate-50 to-white dark:from-[#111114] dark:to-[#0b0b0d] border border-slate-200 dark:border-sky-500/30 space-y-2.5 text-xs">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-white/10">
                   <span className="font-bold text-slate-600 dark:text-gray-300">
                     {isAr ? 'المسؤول المعتمد:' : 'Responsable Officiel :'}
@@ -402,7 +403,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-gray-400 space-y-1">
                   <div>🇩🇿 {isAr ? 'تمثيل الأكاديمية في 58 ولاية وتنسيق العمليات الطلابية.' : 'Représentation dans les 58 wilayas.'}</div>
-                  <div>💰 {isAr ? 'عمولات مالية وبطاقة سفير رقمية مشفرة معتمدة.' : 'Commissions et carte officielle accréditée.'}</div>
+                  <div>{isAr ? 'عمولات مالية وبطاقة سفير رقمية مشفرة معتمدة.' : 'Commissions et carte officielle accréditée.'}</div>
                 </div>
               </div>
 
@@ -411,7 +412,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                 <button
                   data-testid="contact-modal-ambassador-telegram-btn"
                   onClick={() => handleContact('TELEGRAM')}
-                  className="w-full p-4 rounded-2xl bg-[#229ED9] hover:bg-[#1c8ec4] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-[#229ED9]/25 active:scale-95 transition-all"
+                  className="w-full p-4 rounded-2xl bg-[#e8eaec] hover:bg-[#1c8ec4] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-[#e8eaec]/25 active:scale-95 transition-all"
                 >
                   <Send className="w-5 h-5 fill-white shrink-0" />
                   <span>
@@ -427,11 +428,11 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
             <div className="space-y-4">
               {/* Header Icon & Title */}
               <div className="text-center flex flex-col items-center pt-2">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-gold-500/20 via-amber-500/20 to-yellow-400/30 border border-gold-400/40 flex items-center justify-center mb-3 shadow-lg shadow-gold-500/10">
+                <div className="w-16 h-16 rounded-2xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center mb-3 shadow-lg shadow-gold-500/10">
                   <Crown className="w-8 h-8 text-gold-400" />
                 </div>
 
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-transparent dark:bg-gradient-to-r dark:from-gold-300 dark:via-gold-400 dark:to-yellow-400 dark:bg-clip-text">
+                <h3 className="dark:text-gold-400 text-xl sm:text-2xl font-black text-slate-900      ">
                   {isAr ? 'إتمام الدفع وتفعيل الخدمة' : 'Paiement & Activation Immédiate'}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-300 mt-1 max-w-md">
@@ -442,7 +443,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
               </div>
 
               {/* Order Summary Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-b from-slate-50 to-white dark:from-[#0E1528] dark:to-[#080D1A] border border-slate-200 dark:border-gold-500/30 space-y-3 text-xs">
+              <div className="p-4 rounded-2xl bg-gradient-to-b from-slate-50 to-white dark:from-[#111114] dark:to-[#0b0b0d] border border-slate-200 dark:border-gold-500/30 space-y-3 text-xs">
                 <div className="flex items-center justify-between pb-2.5 border-b border-slate-200 dark:border-white/10">
                   <span className="font-bold text-slate-600 dark:text-gray-300">
                     {isAr ? 'الخدمة المطلوبة:' : 'Service demandé :'}
@@ -465,10 +466,10 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
 
                 <div className="text-[11px] text-slate-500 dark:text-gray-400 space-y-1">
                   <div>
-                    💳 {isAr ? 'طرق الدفع المعتمدة: بريدي موب (BaridiMob) • البطاقة الذهبية • CCP' : 'Modes acceptés : BaridiMob • Edahabia • CCP'}
+                    {isAr ? 'طرق الدفع المعتمدة: بريدي موب (BaridiMob) • البطاقة الذهبية • CCP' : 'Modes acceptés : BaridiMob • Edahabia • CCP'}
                   </div>
                   <div>
-                    ⚡ {isAr ? 'تفعيل فوري خلال دقائق بمجرد إرسال وصل التحويل للإدارة.' : 'Activation en quelques minutes après envoi du reçu.'}
+                    {isAr ? 'تفعيل فوري خلال دقائق بمجرد إرسال وصل التحويل للإدارة.' : 'Activation en quelques minutes après envoi du reçu.'}
                   </div>
                 </div>
               </div>
@@ -480,7 +481,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                   <button
                     data-testid="contact-modal-whatsapp-pay-btn"
                     onClick={() => handleContact('WHATSAPP')}
-                    className="p-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/25 active:scale-95 transition-all"
+                    className="p-4 rounded-2xl bg-[#e8eaec] hover:bg-[#d6d9dc] text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#e8eaec]/25 active:scale-95 transition-all"
                   >
                     <MessageCircle className="w-4 h-4 fill-white shrink-0" />
                     <span>{isAr ? 'الدفع والتفعيل عبر واتساب' : 'Payer via WhatsApp'}</span>
@@ -490,7 +491,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                   <button
                     data-testid="contact-modal-telegram-pay-btn"
                     onClick={() => handleContact('TELEGRAM')}
-                    className="p-4 rounded-2xl bg-[#229ED9] hover:bg-[#1e8bc0] text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#229ED9]/25 active:scale-95 transition-all"
+                    className="p-4 rounded-2xl bg-[#e8eaec] hover:bg-[#d6d9dc] text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#e8eaec]/25 active:scale-95 transition-all"
                   >
                     <Send className="w-4 h-4 fill-white shrink-0" />
                     <span>{isAr ? 'الدفع والتفعيل عبر تيليغرام' : 'Payer via Telegram'}</span>
