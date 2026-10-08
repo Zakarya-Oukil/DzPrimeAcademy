@@ -44,7 +44,7 @@ export const TeacherRosterPanel: React.FC<TeacherRosterPanelProps> = ({ locale }
   if (sessions.length === 0) {
     return (
       <div
-        className="p-8 rounded-2xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400"
+        className="p-8 rounded-2xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400"
         data-testid="teacher-roster-placeholder"
       >
         {locale === 'ar'
@@ -60,7 +60,7 @@ export const TeacherRosterPanel: React.FC<TeacherRosterPanelProps> = ({ locale }
         <div
           key={s.id}
           data-testid={`roster-session-${s.id}`}
-          className="p-4 rounded-2xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-slate-800"
+          className="p-4 rounded-2xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800"
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2 min-w-0">

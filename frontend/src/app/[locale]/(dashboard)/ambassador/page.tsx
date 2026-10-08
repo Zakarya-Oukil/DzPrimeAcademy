@@ -162,7 +162,7 @@ export default function AmbassadorDashboardPage() {
           particleCount: 25,
           spread: 45,
           origin: { y: 0.8 },
-          colors: ['#D4AF37', '#10B981', '#A3E635'],
+          colors: ['#f2aa34', '#6db1d8', '#f2aa34'],
         });
       } catch (e) {}
       setTimeout(() => setCopiedLink(false), 2500);
@@ -178,7 +178,7 @@ export default function AmbassadorDashboardPage() {
           particleCount: 25,
           spread: 45,
           origin: { y: 0.8 },
-          colors: ['#D4AF37', '#10B981', '#A3E635'],
+          colors: ['#f2aa34', '#6db1d8', '#f2aa34'],
         });
       } catch (e) {}
       setTimeout(() => setCopiedPromo(false), 2500);
@@ -237,7 +237,7 @@ export default function AmbassadorDashboardPage() {
       if (!res.ok) {
         setPasswordError(data.error || (locale === 'ar' ? 'فشل تغيير كلمة المرور' : 'Échec du changement'));
       } else {
-        setPasswordSuccess(locale === 'ar' ? 'تم تغيير كلمة المرور بنجاح! 🔒' : 'Mot de passe mis à jour avec succès ! 🔒');
+        setPasswordSuccess(locale === 'ar' ? 'تم تغيير كلمة المرور بنجاح! ' : 'Mot de passe mis à jour avec succès ! ');
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
@@ -325,10 +325,10 @@ export default function AmbassadorDashboardPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white font-arabic p-3 sm:p-6 lg:p-8 space-y-6 sm:space-y-8" data-testid="ambassador-slesforcess-dashboard">
       {/* ================= 1. SLESFORCESS STYLE TOP BAR WITH EMBEDDED CARD & ACTIONS ================= */}
-      <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
+      <div className="rounded-3xl bg-[#111114] border border-white/10 p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-gold-500 via-amber-400 to-yellow-300 p-0.5 shadow-md flex items-center justify-center shrink-0">
-            <div className="w-full h-full bg-[#090E1F] rounded-[14px] flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-gold-500 p-0.5 shadow-md flex items-center justify-center shrink-0">
+            <div className="w-full h-full bg-[#111114] rounded-[14px] flex items-center justify-center">
               <Award className="w-6 h-6 text-gold-400" />
             </div>
           </div>
@@ -375,7 +375,7 @@ export default function AmbassadorDashboardPage() {
           <button
             onClick={() => setIsCardModalOpen(true)}
             data-testid="ambassador-header-card-btn"
-            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-gold-500 via-amber-400 to-yellow-400 hover:from-gold-400 hover:to-yellow-300 text-navy-950 font-black text-xs transition-all shadow-md flex items-center gap-2 shrink-0 group"
+            className="px-3.5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs transition-all shadow-md flex items-center gap-2 shrink-0 group"
           >
             <CreditCard className="w-4 h-4 text-navy-950 group-hover:scale-110 transition-transform" />
             <span className="font-mono">{currentUser?.studentCardId || 'DZ-AMB-16'}</span>
@@ -395,7 +395,7 @@ export default function AmbassadorDashboardPage() {
           <Link
             href={`/${locale}/bot`}
             className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-lime-400 hover:text-lime-300 text-xs transition-colors"
-            title={locale === 'ar' ? 'بوت الامتحانات' : 'Smart Bot'}
+            title={locale === 'ar' ? 'مساعد الامتحانات' : 'Assistant examens'}
           >
             <Sparkles className="w-4 h-4" />
           </Link>
@@ -405,7 +405,7 @@ export default function AmbassadorDashboardPage() {
       {/* Embedded Membership Card Modal */}
       {isCardModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-          <div className="w-full max-w-xl rounded-3xl bg-[#090E1F] border border-gold-500/30 p-6 space-y-4 shadow-2xl relative text-white">
+          <div className="w-full max-w-xl rounded-3xl bg-[#111114] border border-gold-500/30 p-6 space-y-4 shadow-2xl relative text-white">
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-gold-400" />
@@ -433,7 +433,7 @@ export default function AmbassadorDashboardPage() {
         <div className="space-y-6">
           {/* KPI Cards: real values from the ambassador record only */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 space-y-4 shadow-md">
+            <div className="rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between text-xs font-bold text-slate-400">
                 <span>{locale === 'ar' ? 'عدد الإحالات' : 'Referrals'}</span>
                 <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300">
@@ -443,7 +443,7 @@ export default function AmbassadorDashboardPage() {
               <div className="text-3xl font-black text-white font-mono tracking-tight">{currentReferrals}</div>
             </div>
 
-            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 space-y-4 shadow-md">
+            <div className="rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between text-xs font-bold text-slate-400">
                 <span>{locale === 'ar' ? 'إجمالي عوائد الإحالات' : 'Commission earned'}</span>
                 <div className="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400">
@@ -453,7 +453,7 @@ export default function AmbassadorDashboardPage() {
               <div className="text-3xl font-black text-gold-400 font-mono tracking-tight">{formatDZD(currentCommission)}</div>
             </div>
 
-            <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 space-y-4 shadow-md">
+            <div className="rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between text-xs font-bold text-slate-400">
                 <span>{locale === 'ar' ? 'كود الخصم' : 'Promo code'}</span>
                 <div className="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-400">
@@ -466,7 +466,7 @@ export default function AmbassadorDashboardPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
             {/* Right: Quick Action Toolkit & Promo Code ("Your Activity" Image 1) */}
-            <div className="lg:col-span-5 rounded-3xl bg-[#090E1F] border border-white/10 p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
+            <div className="lg:col-span-5 rounded-3xl bg-[#111114] border border-white/10 p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
               <div>
                 <h3 className="text-base font-black text-white">
                   {locale === 'ar' ? 'أدواتك التسويقية السريعة' : 'Your Activity & Toolkit'}
@@ -522,7 +522,7 @@ export default function AmbassadorDashboardPage() {
       {activeTab === 'workshops' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Create Workshop Form */}
-          <div className="lg:col-span-5 rounded-3xl bg-[#090E1F] border border-white/10 p-6 space-y-4 shadow-xl h-fit">
+          <div className="lg:col-span-5 rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl h-fit">
             <div className="flex items-center gap-2">
               <PlusCircle className="w-5 h-5 text-gold-400" />
               <h3 className="text-lg font-black text-white">
@@ -538,7 +538,7 @@ export default function AmbassadorDashboardPage() {
                 <label className="text-xs font-bold text-slate-300 block mb-1">
                   {locale === 'ar' ? 'عنوان الورشة / الحصة' : 'Titre de la session'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'مثال: ورشة التحضير لامتحان الرياضيات EMD1' : 'Ex: Atelier de préparation EMD1'}
                   type="text"
                   required
                   value={title}
@@ -553,7 +553,7 @@ export default function AmbassadorDashboardPage() {
                   <label className="text-xs font-bold text-slate-300 block mb-1">
                     {locale === 'ar' ? 'نوع الفعالية' : 'Type'}
                   </label>
-                  <select
+                  <select aria-label={locale === 'ar' ? 'نوع الفعالية' : 'Type'}
                     value={postType}
                     onChange={(e) => setPostType(e.target.value as PostType)}
                     className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none font-arabic"
@@ -569,13 +569,13 @@ export default function AmbassadorDashboardPage() {
                   <label className="text-xs font-bold text-slate-300 block mb-1">
                     {locale === 'ar' ? 'طريقة البث' : 'Format'}
                   </label>
-                  <select
+                  <select aria-label={locale === 'ar' ? 'طريقة البث' : 'Format'}
                     value={isOnline ? 'ONLINE' : 'IN_PERSON'}
                     onChange={(e) => setIsOnline(e.target.value === 'ONLINE')}
                     className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none font-arabic"
                   >
-                    <option value="ONLINE">🌐 {locale === 'ar' ? 'أونلاين (Google Meet)' : 'En ligne'}</option>
-                    <option value="IN_PERSON">🏫 {locale === 'ar' ? 'حضوري بالجامعة' : 'Présentiel'}</option>
+                    <option value="ONLINE">{locale === 'ar' ? 'أونلاين (Google Meet)' : 'En ligne'}</option>
+                    <option value="IN_PERSON">{locale === 'ar' ? 'حضوري بالجامعة' : 'Présentiel'}</option>
                   </select>
                 </div>
               </div>
@@ -585,7 +585,7 @@ export default function AmbassadorDashboardPage() {
                   <label className="text-xs font-bold text-slate-300 block mb-1">
                     {locale === 'ar' ? 'المدرج أو القاعة' : 'Lieu / Salle'}
                   </label>
-                  <input
+                  <input aria-label={locale === 'ar' ? 'مثال: مدرج C - كلية العلوم' : 'Ex: Amphithéâtre C'}
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
@@ -599,7 +599,7 @@ export default function AmbassadorDashboardPage() {
                 <label className="text-xs font-bold text-slate-300 block mb-1">
                   {locale === 'ar' ? 'تفاصيل ومحاور الحصة' : 'Détails & Programme'}
                 </label>
-                <textarea
+                <textarea aria-label={locale === 'ar' ? 'اكتب محاور المراجعة ورابط المطبوعات...' : 'Détails de la séance...'}
                   rows={3}
                   required
                   value={content}
@@ -612,7 +612,7 @@ export default function AmbassadorDashboardPage() {
               <button
                 type="submit"
                 disabled={posting}
-                className="w-full py-3 disabled:opacity-60 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 hover:from-gold-400 hover:to-amber-400 text-navy-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-2"
+                className="w-full py-3 disabled:opacity-60 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" />
                 <span>{locale === 'ar' ? 'نشر الإعلان للطلبة فوراً' : 'Publier la session'}</span>
@@ -646,7 +646,7 @@ export default function AmbassadorDashboardPage() {
               {posts.map((post) => (
                 <div
                   key={post.id}
-                  className="rounded-3xl bg-[#090E1F] border border-white/10 p-5 space-y-3.5 hover:border-gold-500/30 transition-all shadow-md"
+                  className="rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-3.5 hover:border-gold-500/30 transition-all shadow-md"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -662,7 +662,7 @@ export default function AmbassadorDashboardPage() {
                     </div>
 
                     <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono font-bold text-gold-300 shrink-0">
-                      {post.isOnline ? '🌐 Live Meet' : `🏫 ${post.location || 'Campus'}`}
+                      {post.isOnline ? 'Live Meet' : `${post.location || 'Campus'}`}
                     </span>
                   </div>
 
@@ -685,7 +685,7 @@ export default function AmbassadorDashboardPage() {
 
                     {activeCommentPostId === post.id ? (
                       <div className="flex gap-2 pt-2">
-                        <input
+                        <input aria-label={locale === 'ar' ? 'اكتب رداً أو سؤالاً...' : 'Écrire une réponse...'}
                           type="text"
                           value={commentText}
                           onChange={(e) => setCommentText(e.target.value)}
@@ -739,7 +739,7 @@ export default function AmbassadorDashboardPage() {
             </h3>
           </div>
 
-          <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-8 text-center text-xs text-slate-400 font-arabic">
+          <div className="rounded-3xl bg-[#111114] border border-white/10 p-8 text-center text-xs text-slate-400 font-arabic">
             {locale === 'ar' ? 'لا توجد تقييمات بعد.' : 'Aucun avis pour le moment.'}
           </div>
         </div>
@@ -749,7 +749,7 @@ export default function AmbassadorDashboardPage() {
       {activeTab === 'profile' && (
         <div className="space-y-6">
           {/* Ambassador Card Presentation */}
-          <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-6 shadow-xl flex flex-col items-center space-y-4">
+          <div className="rounded-3xl bg-[#111114] border border-white/10 p-6 shadow-xl flex flex-col items-center space-y-4">
             <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Award className="w-5 h-5 text-gold-400" />
@@ -770,7 +770,7 @@ export default function AmbassadorDashboardPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Profile Form */}
-          <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-6 space-y-4 shadow-xl">
+          <div className="rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl">
             <div className="flex items-center gap-2">
               <UserCheck className="w-5 h-5 text-gold-400" />
               <h3 className="text-lg font-black text-white">
@@ -783,7 +783,7 @@ export default function AmbassadorDashboardPage() {
                 <label className="text-xs font-bold text-slate-300 block mb-1">
                   {locale === 'ar' ? 'الاسم واللقب' : 'Nom Complet'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'الاسم واللقب' : 'Nom Complet'}
                   type="text"
                   value={profileForm.name}
                   onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
@@ -796,7 +796,7 @@ export default function AmbassadorDashboardPage() {
                   <label className="text-xs font-bold text-slate-300 block mb-1">
                     {locale === 'ar' ? 'رقم الهاتف' : 'Téléphone'}
                   </label>
-                  <input
+                  <input aria-label={locale === 'ar' ? 'رقم الهاتف' : 'Téléphone'}
                     type="text"
                     value={profileForm.phone}
                     onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
@@ -808,7 +808,7 @@ export default function AmbassadorDashboardPage() {
                   <label className="text-xs font-bold text-slate-300 block mb-1">
                     {locale === 'ar' ? 'الولاية' : 'Wilaya'}
                   </label>
-                  <select
+                  <select aria-label={locale === 'ar' ? 'الولاية' : 'Wilaya'}
                     value={profileForm.wilayaCode}
                     onChange={(e) => setProfileForm({ ...profileForm, wilayaCode: Number(e.target.value) })}
                     className="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none font-arabic"
@@ -826,7 +826,7 @@ export default function AmbassadorDashboardPage() {
                 <label className="text-xs font-bold text-slate-300 block mb-1">
                   {locale === 'ar' ? 'الجامعة أو المعهد' : 'Université / Établissement'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'الجامعة أو المعهد' : 'Université / Établissement'}
                   type="text"
                   value={profileForm.institutionName}
                   onChange={(e) => setProfileForm({ ...profileForm, institutionName: e.target.value })}
@@ -838,7 +838,7 @@ export default function AmbassadorDashboardPage() {
                 <label className="text-xs font-bold text-slate-300 block mb-1">
                   {locale === 'ar' ? 'حساب تيليجرام للتواصل' : 'Handle Telegram'}
                 </label>
-                <input
+                <input aria-label="@username"
                   type="text"
                   value={profileForm.telegramHandle}
                   onChange={(e) => setProfileForm({ ...profileForm, telegramHandle: e.target.value })}
@@ -851,7 +851,7 @@ export default function AmbassadorDashboardPage() {
                 <label className="text-xs font-bold text-slate-300 block mb-1">
                   {locale === 'ar' ? 'نبذة تعريفية (Bio)' : 'Biographie'}
                 </label>
-                <textarea
+                <textarea aria-label={locale === 'ar' ? 'نبذة تعريفية (Bio)' : 'Biographie'}
                   rows={2}
                   value={profileForm.bioAr}
                   onChange={(e) => setProfileForm({ ...profileForm, bioAr: e.target.value })}
@@ -877,7 +877,7 @@ export default function AmbassadorDashboardPage() {
           </div>
 
           {/* Password & Security Form */}
-          <div className="rounded-3xl bg-[#090E1F] border border-white/10 p-6 space-y-4 shadow-xl">
+          <div className="rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl">
             <div className="flex items-center gap-2">
               <Lock className="w-5 h-5 text-purple-400" />
               <h3 className="text-lg font-black text-white">
@@ -891,7 +891,7 @@ export default function AmbassadorDashboardPage() {
                   {locale === 'ar' ? 'كلمة المرور الحالية' : 'Mot de passe actuel'}
                 </label>
                 <div className="relative">
-                  <input
+                  <input aria-label={locale === 'ar' ? 'كلمة المرور الحالية' : 'Mot de passe actuel'}
                     type={showCurrentPassword ? 'text' : 'password'}
                     required
                     value={currentPassword}
@@ -913,7 +913,7 @@ export default function AmbassadorDashboardPage() {
                   {locale === 'ar' ? 'كلمة المرور الجديدة' : 'Nouveau mot de passe'}
                 </label>
                 <div className="relative">
-                  <input
+                  <input aria-label={locale === 'ar' ? 'كلمة المرور الجديدة' : 'Nouveau mot de passe'}
                     type={showNewPassword ? 'text' : 'password'}
                     required
                     value={newPassword}
@@ -934,7 +934,7 @@ export default function AmbassadorDashboardPage() {
                 <label className="text-xs font-bold text-slate-300 block mb-1">
                   {locale === 'ar' ? 'تأكيد كلمة المرور الجديدة' : 'Confirmer le mot de passe'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'تأكيد كلمة المرور الجديدة' : 'Confirmer le mot de passe'}
                   type="password"
                   required
                   value={confirmPassword}

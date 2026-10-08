@@ -52,12 +52,12 @@ function ResetContent() {
     }
   };
 
-  const card = 'w-full max-w-[424px] rounded-3xl bg-[#0B1021] border border-white/10 p-8 space-y-4 shadow-2xl';
+  const card = 'w-full max-w-[424px] rounded-3xl bg-[#111114] border border-white/10 p-8 space-y-4 shadow-2xl';
   const primary = 'w-full min-h-11 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-sm flex items-center justify-center gap-2 disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400';
   const input = 'w-full min-h-11 rounded-xl bg-white/5 border border-white/20 px-3.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-gold-400';
 
   return (
-    <main className="min-h-screen bg-[#05070D] text-white flex items-center justify-center p-4 font-arabic" dir={ar ? 'rtl' : 'ltr'}>
+    <main className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-4 font-arabic" dir={ar ? 'rtl' : 'ltr'}>
       {view === 'form' && (
         <form onSubmit={submit} className={card} data-testid="reset-password-form">
           <h1 className="text-xl font-black">{t('اختر كلمة مرور جديدة', 'Choisissez un nouveau mot de passe')}</h1>

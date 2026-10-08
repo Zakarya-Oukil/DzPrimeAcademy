@@ -170,7 +170,7 @@ async function run() {
   r = await call('teacher', 'POST', '/api/courses', { titleAr: 'P3PROBE own', priceDzd: 5000, teacherId: S.teacher2.id, teacherName: 'Someone Else', rating: 1 });
   const c1 = r.json;
   check('D1 teacher creates a course owned by themselves', r.status === 201 && c1.teacherId === S.teacher.id && c1.teacherName === S.teacher.name, JSON.stringify(r.json));
-  check('D1 teacher cannot set a price (starts free)', c1.priceDzd === 0 && c1.rating === 5);
+  check('D1 teacher cannot set a price (starts free)', c1.priceDzd === 0 && !('rating' in c1));
   for (const who of ['free', 'paid', 'moderator', 'finance', 'ambassador']) {
     r = await call(who, 'POST', '/api/courses', { titleAr: 'P3PROBE nope' });
     check(`D1 ${who} cannot create a course (403)`, r.status === 403, r.status);
@@ -243,9 +243,9 @@ async function run() {
   r = await call('teacher', 'POST', '/api/posts', { title: 'P3 private', content: 'members only', isPrivate: true });
   const priv = r.json?.post;
   check('POST private post saved', r.status === 200 && priv?.isPrivate === true);
-  r = await call('ambassador', 'POST', '/api/posts', { title: 'P3 amb', content: 'c', type: 'EVENT', videoUrl: 'https://www.youtube.com/watch?v=abc', linkUrl: 'https://example.org/x' });
+  r = await call('ambassador', 'POST', '/api/posts', { title: 'P3 amb', content: 'c', type: 'EVENT', videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', linkUrl: 'https://example.org/x' });
   check('POST ambassador publishes with https links', r.status === 200 && r.json.post.videoUrl.startsWith('https://'), JSON.stringify(r.json));
-  for (const [label, body] of [['missing title', { content: 'c' }], ['missing content', { title: 't' }], ['bad type', { title: 't', content: 'c', type: 'HACK' }], ['javascript: video', { title: 't', content: 'c', videoUrl: 'javascript:alert(1)' }], ['http link', { title: 't', content: 'c', linkUrl: 'http://x.example' }], ['foreign image', { title: 't', content: 'c', imageUrl: 'https://evil.example/a.png' }], ['wilaya 99', { title: 't', content: 'c', wilayaCode: 99 }], ['data: image', { title: 't', content: 'c', imageUrl: 'data:image/png;base64,AA' }]]) {
+  for (const [label, body] of [['missing title', { content: 'c' }], ['missing content', { title: 't' }], ['bad type', { title: 't', content: 'c', type: 'HACK' }], ['javascript: video', { title: 't', content: 'c', videoUrl: 'javascript:alert(1)' }], ['http link', { title: 't', content: 'c', linkUrl: 'http://x.example' }], ['foreign image', { title: 't', content: 'c', imageUrls: ['https://evil.example/a.png'] }], ['wilaya 99', { title: 't', content: 'c', wilayaCode: 99 }], ['data: image', { title: 't', content: 'c', imageUrls: ['data:image/png;base64,AA'] }]]) {
     r = await call('teacher', 'POST', '/api/posts', body);
     check(`POST rejects ${label} (400)`, r.status === 400, r.status);
   }
@@ -373,8 +373,8 @@ async function run() {
   r = await call('finance', 'PUT', '/api/settings/landing', { landingConfig: {} });
   check('LAND finance still cannot edit the landing (403)', r.status === 403, r.status);
   r = await call(null, 'GET', '/api/settings/landing');
-  const students = await prisma.user.count({ where: { role: { in: ['STUDENT_FREE', 'STUDENT_PAID'] } } });
-  check('LAND public student count is the real count (no +50,000)', r.json?.realStats?.studentsCount === String(students), `${r.json?.realStats?.studentsCount} vs ${students}`);
+  const students = await prisma.user.count(); // the landing shows "N مستخدم": every account, nothing invented
+  check('LAND public user count is the real count (no +50,000)', r.json?.realStats?.studentsCount === String(students), `${r.json?.realStats?.studentsCount} vs ${students}`);
   check('LAND no invented satisfaction rate (null, nothing measures it)', r.json?.realStats && r.json.realStats.satisfactionRate === null);
 }
 

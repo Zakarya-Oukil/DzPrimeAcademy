@@ -17,7 +17,7 @@
   },
   "nav": {
     "home": "Home",
-    "bot": "Exam Bot",
+    "bot": "Exam Assistant",
     "membershipCard": "Membership Card",
     "ambassadors": "Ambassador Network",
     "hierarchy": "Leadership Hierarchy",
@@ -29,11 +29,11 @@
     "rolePreview": "Role Preview Mode"
   },
   "hero": {
-    "badge": "🇩🇿 #1 Academic Platform Across all 58 Algerian Wilayas",
+    "badge": "🇩🇿 The Algerian education and services platform 2027",
     "titlePrefix": "Your Academic Success Begins With",
     "titleHighlight": "DZ PRIME ACADEMY",
     "description": "A comprehensive national ecosystem connecting top Algerian professors, university ambassadors, and high-school leaders to deliver curated past exams, model solutions, and an interactive decision-tree study bot.",
-    "ctaPrimary": "Launch Smart Exam Bot 🤖",
+    "ctaPrimary": "Open the Exam Assistant 🤖",
     "ctaSecondary": "Generate Membership Card 💳",
     "statsStudents": "50,000+ Students",
     "statsWilayas": "58 Wilayas Covered",
@@ -53,15 +53,15 @@
     "studyHub": "Academic Excellence Hub"
   },
   "floatingBot": {
-    "launcherTitle": "Smart Exam Bot",
+    "launcherTitle": "Exam Assistant",
     "launcherSubtitle": "Click-guided archive navigator",
     "badge": "AI Assistant",
     "online": "Online & Ready",
-    "close": "Close Bot",
+    "close": "Close Assistant",
     "openFull": "Full Screen"
   },
   "bot": {
-    "title": "Smart Decision-Tree Exam Bot",
+    "title": "Exam Assistant",
     "subtitle": "Seamlessly navigate past exam archives with zero typing required via our guided step-by-step tree",
     "step1_title": "Step 1: Select Academic Cycle",
     "step2_title": "Step 2: Select University or Wilaya",
@@ -267,10 +267,10 @@
       "goldStatus": "Membership Tier",
       "savedExams": "Saved Exams",
       "upcomingLocalSessions": "Upcoming Sessions in Your Wilaya",
-      "quickBot": "Open Exam Bot",
+      "quickBot": "Open Exam Assistant",
       "botPromptTitle": "Looking for specific module exams?",
-      "botPromptDesc": "Use the smart bot to navigate directly without typing and download PDFs with complete model solutions.",
-      "openBotBtn": "Open Bot Now 🤖",
+      "botPromptDesc": "Use the assistant to navigate directly without typing and download PDFs with complete model solutions.",
+      "openBotBtn": "Open Assistant Now 🤖",
       "enrolledModules": "Enrolled Modules",
       "downloadedExams": "Downloaded Exams",
       "unlimited": "Unlimited VIP",
@@ -337,6 +337,8 @@
     "STUDENT_FREE": "Free Student Tier"
   },
   "common": {
+    "copy": "Copy",
+    "copied": "Copied",
     "loading": "Loading...",
     "error": "An error occurred, please try again",
     "success": "Operation completed successfully",

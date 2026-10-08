@@ -25,7 +25,7 @@ export const LanguageSwitcher: React.FC = () => {
             type="button"
             className={`px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 text-[11px] font-semibold select-none cursor-pointer ${
               isActive
-                ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-navy-950 shadow-gold-glow font-bold'
+                ? 'bg-gold-500 text-navy-950 shadow-gold-glow font-bold'
                 : 'text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-navy-800'
             }`}
           >

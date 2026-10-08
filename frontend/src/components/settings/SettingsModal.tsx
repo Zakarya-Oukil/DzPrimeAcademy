@@ -233,7 +233,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
       if (!res.ok) {
         setPasswordError(data.error || (locale === 'ar' ? 'فشل تغيير كلمة المرور' : 'Échec du changement'));
       } else {
-        setPasswordSuccess(locale === 'ar' ? 'تم تغيير كلمة المرور بنجاح! 🔒' : 'Mot de passe mis à jour avec succès ! 🔒');
+        setPasswordSuccess(locale === 'ar' ? 'تم تغيير كلمة المرور بنجاح! ' : 'Mot de passe mis à jour avec succès ! ');
         if (currentUser?.mustChangePassword) setCurrentUser({ ...currentUser, mustChangePassword: false });
         setCurrentPassword('');
         setNewPassword('');
@@ -290,7 +290,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.92, opacity: 0, y: 16 }}
           transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-          className="relative w-full max-w-2xl max-h-[92vh] overflow-hidden rounded-3xl border border-slate-200 dark:border-lime-500/30 bg-white dark:bg-[#0A0F1E] text-slate-900 dark:text-white shadow-2xl flex flex-col font-arabic"
+          className="relative w-full max-w-2xl max-h-[92vh] overflow-hidden rounded-3xl border border-slate-200 dark:border-lime-500/30 bg-white dark:bg-[#111114] text-slate-900 dark:text-white shadow-2xl flex flex-col font-arabic"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200 dark:border-white/10 shrink-0">
@@ -324,7 +324,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
                     onClick={() => setTab(tItem.id)}
                     className={`w-full flex items-center gap-2 px-2.5 sm:px-3 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all text-left ${
                       active
-                        ? 'bg-lime-400 text-slate-950 shadow-md'
+                        ? 'bg-lime-400 text-navy-950 shadow-md'
                         : 'text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5'
                     }`}
                   >
@@ -355,7 +355,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
 
                   {/* Avatar & Photo */}
                   <div className="flex items-center gap-4 p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-lime-400 to-emerald-500 text-slate-950 flex items-center justify-center font-black text-xl shadow-md shrink-0 overflow-hidden">
+                    <div className="w-14 h-14 rounded-2xl bg-lime-400 text-navy-950 flex items-center justify-center font-black text-xl shadow-md shrink-0 overflow-hidden">
                       {profileForm.avatar ? (
                         <img src={profileForm.avatar} alt={profileForm.name} className="w-full h-full object-cover" />
                       ) : (
@@ -418,7 +418,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
                     <select
                       value={profileForm.wilayaCode}
                       onChange={(e) => setProfileForm({ ...profileForm, wilayaCode: Number(e.target.value) })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111114] border border-slate-200 dark:border-white/10 focus:outline-none"
                     >
                       {WILAYAS.map((w) => (
                         <option key={w.code} value={w.code}>
@@ -644,7 +644,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
                       type="submit"
                       disabled={profileSaving}
                       data-testid="settings-save-profile-btn"
-                      className="px-5 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all disabled:opacity-60"
+                      className="px-5 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all disabled:opacity-60"
                     >
                       {profileSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                       <span>{locale === 'ar' ? 'حفظ تعديلات الملف' : 'Sauvegarder'}</span>
@@ -745,7 +745,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
                           type="submit"
                           disabled={passwordSaving}
                           data-testid="settings-change-password-btn"
-                          className="px-5 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all disabled:opacity-60"
+                          className="px-5 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all disabled:opacity-60"
                         >
                           {passwordSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Lock className="w-3.5 h-3.5" />}
                           <span>{locale === 'ar' ? 'تحديث كلمة المرور' : 'Mettre à jour'}</span>
@@ -796,7 +796,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
                           onClick={() => setLocale(l)}
                           className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
                             locale === l
-                              ? 'bg-lime-400 text-slate-950 border-lime-400'
+                              ? 'bg-lime-400 text-navy-950 border-lime-400'
                               : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
                           }`}
                         >
@@ -815,7 +815,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
                         data-testid="settings-theme-light"
                         onClick={() => setTheme('light')}
                         className={`flex-1 py-2 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 transition-all ${
-                          theme === 'light' ? 'bg-lime-400 text-slate-950 border-lime-400' : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
+                          theme === 'light' ? 'bg-lime-400 text-navy-950 border-lime-400' : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
                         }`}
                       >
                         <Sun className="w-3.5 h-3.5" />
@@ -825,7 +825,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
                         data-testid="settings-theme-dark"
                         onClick={() => setTheme('dark')}
                         className={`flex-1 py-2 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 transition-all ${
-                          theme === 'dark' ? 'bg-lime-400 text-slate-950 border-lime-400' : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
+                          theme === 'dark' ? 'bg-lime-400 text-navy-950 border-lime-400' : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
                         }`}
                       >
                         <Moon className="w-3.5 h-3.5" />
@@ -926,7 +926,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, d
                     <button
                       type="submit"
                       disabled={systemSaving}
-                      className="w-full py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
+                      className="w-full py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
                     >
                       {systemSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                       <span>{locale === 'ar' ? 'حفظ إعدادات النظام في قاعدة البيانات' : 'Sauvegarder les paramètres'}</span>

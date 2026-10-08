@@ -5,6 +5,7 @@ import { getUserFromRequest, requirePermission } from '@/lib/auth';
 import { hasAnyPermission } from '@/lib/rbac';
 import { guard } from '@/lib/http';
 import { isUnsafeUrlString, stripUnsafeUrls } from '@/lib/safeUrl';
+import { parseOfficers, readOfficers, type Officer } from '@/lib/officers';
 
 // Public readers (checkout, contact buttons, upgrade modal) get only what they display. The rest (commission
 // rate, landing and footer JSON, auto-verify) is for staff with settings.manage. A read never writes.
@@ -24,6 +25,7 @@ async function GETHandler(request: NextRequest) {
     linkedinUrl: null,
     landingConfig: null,
     footerConfig: null,
+    officers: null,
     vipPriceDzd: 10000,
   };
 
@@ -37,6 +39,7 @@ async function GETHandler(request: NextRequest) {
   return NextResponse.json({
     academicYear, baridiMobEnabled, edahabiaEnabled, ccpReceiptsEnabled,
     whatsappNumber, telegramUsername, ambassadorTelegram, linkedinUrl, vipPriceDzd,
+    officers: readOfficers(settings.officers).filter((o) => o.active),
   });
 }
 
@@ -53,6 +56,12 @@ async function PUTHandler(request: NextRequest) {
     if (body[k] !== undefined && (typeof body[k] !== 'string' || isUnsafeUrlString(body[k]))) {
       return NextResponse.json({ error: 'رابط غير صالح' }, { status: 400 });
     }
+  }
+  let officers: Officer[] | undefined;
+  if (body.officers !== undefined) {
+    const parsed = parseOfficers(body.officers);
+    if ('error' in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
+    officers = parsed.value;
   }
   if (body.landingConfig !== undefined) body.landingConfig = stripUnsafeUrls(body.landingConfig).value;
   if (body.footerConfig !== undefined) body.footerConfig = stripUnsafeUrls(body.footerConfig).value;
@@ -78,6 +87,7 @@ async function PUTHandler(request: NextRequest) {
       linkedinUrl: body.linkedinUrl !== undefined ? String(body.linkedinUrl) : undefined,
       landingConfig: body.landingConfig !== undefined ? body.landingConfig : undefined,
       footerConfig: body.footerConfig !== undefined ? body.footerConfig : undefined,
+      officers,
       vipPriceDzd: body.vipPriceDzd !== undefined ? Number(body.vipPriceDzd) : undefined,
     },
     create: {
@@ -94,6 +104,7 @@ async function PUTHandler(request: NextRequest) {
       linkedinUrl: body.linkedinUrl || 'https://www.linkedin.com/company/dzprimeacademy',
       landingConfig: body.landingConfig || {},
       footerConfig: body.footerConfig || {},
+      officers: officers ?? [],
       vipPriceDzd: body.vipPriceDzd !== undefined ? Number(body.vipPriceDzd) : 10000,
     },
   });

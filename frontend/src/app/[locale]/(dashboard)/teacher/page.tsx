@@ -1,5 +1,6 @@
 'use client';
 
+import { trackLabel } from '@/lib/courseDisplay';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
@@ -196,7 +197,7 @@ export default function TeacherStudioPage() {
       if (!res.ok) {
         setPasswordError(data.error || (locale === 'ar' ? 'فشل تغيير كلمة المرور' : 'Échec du changement'));
       } else {
-        setPasswordSuccess(locale === 'ar' ? 'تم تغيير كلمة المرور بنجاح! 🔒' : 'Mot de passe mis à jour avec succès ! 🔒');
+        setPasswordSuccess(locale === 'ar' ? 'تم تغيير كلمة المرور بنجاح! ' : 'Mot de passe mis à jour avec succès ! ');
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
@@ -210,7 +211,7 @@ export default function TeacherStudioPage() {
   };
 
   const tabs: { id: TeacherTab; icon: any; labelAr: string; labelFr: string }[] = [
-    { id: 'studio', icon: Sparkles, labelAr: 'استوديو التدريس (Bento)', labelFr: 'Studio Bento' },
+    { id: 'studio', icon: Sparkles, labelAr: 'استوديو التدريس', labelFr: "Studio d'enseignement" },
     { id: 'community', icon: Video, labelAr: 'فيديوهاتي ومنشوراتي', labelFr: 'Mes Vidéos & Posts' },
     { id: 'courses', icon: BookOpen, labelAr: 'مقرراتي ومقاييسي', labelFr: 'Mes Modules' },
     { id: 'sessions', icon: Video, labelAr: 'الحصص المباشرة', labelFr: 'Sessions Live' },
@@ -219,21 +220,21 @@ export default function TeacherStudioPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] dark:bg-[#070B18] text-slate-900 dark:text-white font-arabic p-3 sm:p-6 lg:p-8 space-y-6 sm:space-y-8" data-testid="teacher-crextio-studio">
+    <div className="min-h-screen bg-[#f4f5f6] dark:bg-[#0b0b0d] text-slate-900 dark:text-white font-arabic p-3 sm:p-6 lg:p-8 space-y-6 sm:space-y-8" data-testid="teacher-crextio-studio">
       {/* ================= 1. CREXTIO STYLE TOP BAR ================= */}
-      <div className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-7 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div className="rounded-3xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-7 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-gold-500 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-widest text-gold-700 dark:text-gold-400">
-              CREXTIO ACADEMIC WORKSPACE
-            </span>
-          </div>
+          {currentUser?.institutionName && (
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-gold-500 " />
+              <span className="text-xs font-bold tracking-wide text-gold-700 dark:text-gold-400">{currentUser.institutionName}</span>
+            </div>
+          )}
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
             {locale === 'ar' ? `مرحباً، أستاذ ${currentUser?.name || ''}` : `Bonjour, Prof. ${currentUser?.name || ''}`}
           </h1>
           <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
-            {[currentUser?.institutionName, currentUser?.specialty].filter(Boolean).join(' • ')}
+            {currentUser?.specialty || ''}
           </p>
         </div>
 
@@ -259,7 +260,7 @@ export default function TeacherStudioPage() {
       {/* Top Pill Navigation Bar & Quick Action Tools */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 overflow-x-auto no-scrollbar shadow-sm">
+        <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/20 overflow-x-auto no-scrollbar shadow-sm">
           {tabs.map((tItem) => {
             const Icon = tItem.icon;
             const active = tab === tItem.id;
@@ -288,7 +289,7 @@ export default function TeacherStudioPage() {
           <button
             onClick={() => setIsCardModalOpen(true)}
             data-testid="teacher-header-card-btn"
-            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-gold-500 via-amber-400 to-yellow-400 hover:from-gold-400 hover:to-yellow-300 text-navy-950 font-black text-xs transition-all shadow-md flex items-center gap-2 shrink-0 group"
+            className="px-3.5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs transition-all shadow-md flex items-center gap-2 shrink-0 group"
           >
             <CreditCard className="w-4 h-4 text-navy-950 group-hover:scale-110 transition-transform" />
             <span className="font-mono">{currentUser?.studentCardId || 'DZ-TCH-16'}</span>
@@ -297,7 +298,7 @@ export default function TeacherStudioPage() {
 
           <Link
             href={`/${locale}/leaderboard`}
-            className="p-2 rounded-xl bg-white dark:bg-[#0D1429] hover:bg-slate-100 dark:hover:bg-white/10 border border-amber-200/60 dark:border-gold-500/20 text-gold-600 dark:text-gold-400 text-xs transition-colors"
+            className="p-2 rounded-xl bg-white dark:bg-[#111114] hover:bg-slate-100 dark:hover:bg-white/10 border border-amber-200/60 dark:border-gold-500/20 text-gold-600 dark:text-gold-400 text-xs transition-colors"
             title={locale === 'ar' ? 'لوحة الصدارة' : 'Leaderboard'}
           >
             <Award className="w-4 h-4" />
@@ -305,8 +306,8 @@ export default function TeacherStudioPage() {
 
           <Link
             href={`/${locale}/bot`}
-            className="p-2 rounded-xl bg-white dark:bg-[#0D1429] hover:bg-slate-100 dark:hover:bg-white/10 border border-amber-200/60 dark:border-gold-500/20 text-emerald-600 dark:text-emerald-400 text-xs transition-colors"
-            title={locale === 'ar' ? 'بوت الامتحانات والملخصات' : 'Smart Bot'}
+            className="p-2 rounded-xl bg-white dark:bg-[#111114] hover:bg-slate-100 dark:hover:bg-white/10 border border-amber-200/60 dark:border-gold-500/20 text-emerald-600 dark:text-emerald-400 text-xs transition-colors"
+            title={locale === 'ar' ? 'مساعد الامتحانات' : 'Assistant examens'}
           >
             <Sparkles className="w-4 h-4" />
           </Link>
@@ -316,7 +317,7 @@ export default function TeacherStudioPage() {
       {/* Embedded Membership Card Modal */}
       {isCardModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-          <div className="w-full max-w-xl rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/30 p-6 space-y-4 shadow-2xl relative text-slate-900 dark:text-white">
+          <div className="w-full max-w-xl rounded-3xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/30 p-6 space-y-4 shadow-2xl relative text-slate-900 dark:text-white">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-gray-800">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-gold-500" />
@@ -343,13 +344,13 @@ export default function TeacherStudioPage() {
       {tab === 'studio' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* LEFT COLUMN: Vertical Schedule Timeline (Image 2 Style) */}
-          <div className="lg:col-span-4 rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-5 shadow-sm">
+          <div className="lg:col-span-4 rounded-3xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white">
-                  {locale === 'ar' ? 'الجدول الزمني للحصص' : 'Schedule Timeline'}
+                  {locale === 'ar' ? 'الجدول الزمني للحصص' : 'Calendrier des sessions'}
                 </h3>
-                <span className="text-xs text-slate-400 font-mono">LIVE MEET SESSIONS</span>
+                <span className="text-xs text-slate-400">{locale === 'ar' ? 'حصص البث المباشر' : 'Sessions en direct'}</span>
               </div>
               <span className="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-600 dark:text-gold-300 text-[10px] font-bold">
                 {locale === 'ar' ? 'جدولة الإدارة المركزية' : 'Programmé Admin'}
@@ -357,17 +358,24 @@ export default function TeacherStudioPage() {
             </div>
 
             {/* Calendar Mini Header: current week */}
-            <div className="flex items-center justify-between p-2.5 rounded-2xl bg-amber-500/10 dark:bg-navy-950 border border-amber-500/20 text-xs font-mono">
-              {weekDays.map((d) => (
-                <span
-                  key={d.toDateString()}
-                  className={d.toDateString() === new Date().toDateString()
-                    ? 'font-black px-2 py-0.5 rounded-lg bg-slate-950 dark:bg-gold-500 text-white dark:text-navy-950 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400'}
-                >
-                  {d.toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-FR', { weekday: 'short', day: 'numeric' })}
-                </span>
-              ))}
+            <div className="grid grid-cols-7 gap-1 sm:gap-1.5" data-testid="teacher-week-strip">
+              {weekDays.map((d) => {
+                const today = d.toDateString() === new Date().toDateString();
+                const loc = locale === 'ar' ? 'ar-DZ' : 'fr-FR';
+                return (
+                  <div
+                    key={d.toDateString()}
+                    className={`flex flex-col items-center justify-center rounded-xl py-1.5 sm:py-2 border ${
+                      today
+                        ? 'bg-slate-950 dark:bg-gold-500 text-white dark:text-navy-950 border-transparent shadow-sm'
+                        : 'bg-amber-500/10 dark:bg-navy-950 border-amber-500/20 text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    <span className="text-[10px] sm:text-[11px] font-bold leading-tight">{d.toLocaleDateString(loc, { weekday: 'short' })}</span>
+                    <span className="text-sm sm:text-base font-black leading-tight">{d.getDate()}</span>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Vertical Timeline Nodes */}
@@ -418,13 +426,13 @@ export default function TeacherStudioPage() {
           {/* CENTER COLUMN: Salary & Payout Ledger + Courses Bento (Image 2 Center) */}
           <div className="lg:col-span-8 space-y-6">
             {/* Salary & CCP Payouts Table Card */}
-            <div className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="rounded-3xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-black text-slate-900 dark:text-white">
-                    {locale === 'ar' ? 'مستحقات وأرباح المقاييس' : 'Salary & Module Earnings'}
+                    {locale === 'ar' ? 'مستحقات وأرباح المقاييس' : 'Revenus des modules'}
                   </h3>
-                  <span className="text-xs text-slate-400 font-mono">CCP PAYOUT LEDGER</span>
+                  <span className="text-xs text-slate-400">{locale === 'ar' ? 'سجل الدفعات (CCP)' : 'Registre des versements CCP'}</span>
                 </div>
                 <span className="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-600 dark:text-gold-300 text-[10px] font-bold">
                   {locale === 'ar' ? 'إدارة المقاييس المركزية' : 'Gestion Admin'}
@@ -452,7 +460,7 @@ export default function TeacherStudioPage() {
                             {locale === 'ar' ? c.titleAr : c.titleFr}
                           </h4>
                           <span className="text-[10px] text-slate-400 font-mono">
-                            {c.lessonsCount} {locale === 'ar' ? 'درس' : 'Leçons'} • {c.category}
+                            {c.lessonsCount} {locale === 'ar' ? 'درس' : 'Leçons'} • {trackLabel(c.category, locale)}
                           </span>
                         </div>
                       </div>
@@ -472,7 +480,7 @@ export default function TeacherStudioPage() {
             </div>
 
             {/* Teaching Statistics Waves & Output Bento */}
-            <div className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="rounded-3xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-black text-slate-900 dark:text-white">
                   {locale === 'ar' ? 'الحصص المباشرة حسب الشهر' : 'Live sessions per month'}
@@ -506,7 +514,7 @@ export default function TeacherStudioPage() {
       {tab === 'profile' && (
         <div className="space-y-6">
           {/* Teacher Card Presentation */}
-          <div className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-6 shadow-sm flex flex-col items-center space-y-4">
+          <div className="rounded-3xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/20 p-6 shadow-sm flex flex-col items-center space-y-4">
             <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Award className="w-5 h-5 text-gold-500" />
@@ -527,7 +535,7 @@ export default function TeacherStudioPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* CCP & University Profile */}
-          <div className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-6 space-y-4 shadow-sm">
+          <div className="rounded-3xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/20 p-6 space-y-4 shadow-sm">
             <div className="flex items-center gap-2">
               <CreditCard className="w-5 h-5 text-gold-500" />
               <h3 className="text-lg font-black text-slate-900 dark:text-white">
@@ -540,7 +548,7 @@ export default function TeacherStudioPage() {
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                   {locale === 'ar' ? 'الاسم واللقب' : 'Nom Complet'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'الاسم واللقب' : 'Nom Complet'}
                   type="text"
                   value={profileForm.name}
                   onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
@@ -553,7 +561,7 @@ export default function TeacherStudioPage() {
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                     {locale === 'ar' ? 'رقم حساب CCP' : 'Numéro de Compte CCP'}
                   </label>
-                  <input
+                  <input aria-label="0012345678"
                     type="text"
                     value={profileForm.ccpAccount}
                     onChange={(e) => setProfileForm({ ...profileForm, ccpAccount: e.target.value })}
@@ -565,7 +573,7 @@ export default function TeacherStudioPage() {
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                     {locale === 'ar' ? 'المفتاح (Clé)' : 'Clé CCP'}
                   </label>
-                  <input
+                  <input aria-label="45"
                     type="text"
                     value={profileForm.ccpCle}
                     onChange={(e) => setProfileForm({ ...profileForm, ccpCle: e.target.value })}
@@ -579,7 +587,7 @@ export default function TeacherStudioPage() {
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                   {locale === 'ar' ? 'الجامعة / الكلية' : 'Université / Faculté'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'الجامعة / الكلية' : 'Université / Faculté'}
                   type="text"
                   value={profileForm.university}
                   onChange={(e) => setProfileForm({ ...profileForm, university: e.target.value })}
@@ -591,7 +599,7 @@ export default function TeacherStudioPage() {
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                   {locale === 'ar' ? 'التخصص والمادة' : 'Spécialité & Matière'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'التخصص والمادة' : 'Spécialité & Matière'}
                   type="text"
                   value={profileForm.specialty}
                   onChange={(e) => setProfileForm({ ...profileForm, specialty: e.target.value })}
@@ -617,7 +625,7 @@ export default function TeacherStudioPage() {
           </div>
 
           {/* Password Security Form */}
-          <div className="rounded-3xl bg-white dark:bg-[#0D1429] border border-amber-200/60 dark:border-gold-500/20 p-6 space-y-4 shadow-sm">
+          <div className="rounded-3xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/20 p-6 space-y-4 shadow-sm">
             <div className="flex items-center gap-2">
               <Lock className="w-5 h-5 text-purple-500" />
               <h3 className="text-lg font-black text-slate-900 dark:text-white">
@@ -630,7 +638,7 @@ export default function TeacherStudioPage() {
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                   {locale === 'ar' ? 'كلمة المرور الحالية' : 'Mot de passe actuel'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'كلمة المرور الحالية' : 'Mot de passe actuel'}
                   type="password"
                   required
                   value={currentPassword}
@@ -643,7 +651,7 @@ export default function TeacherStudioPage() {
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                   {locale === 'ar' ? 'كلمة المرور الجديدة' : 'Nouveau mot de passe'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'كلمة المرور الجديدة' : 'Nouveau mot de passe'}
                   type="password"
                   required
                   value={newPassword}
@@ -656,7 +664,7 @@ export default function TeacherStudioPage() {
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                   {locale === 'ar' ? 'تأكيد كلمة المرور' : 'Confirmer le mot de passe'}
                 </label>
-                <input
+                <input aria-label={locale === 'ar' ? 'تأكيد كلمة المرور' : 'Confirmer le mot de passe'}
                   type="password"
                   required
                   value={confirmPassword}

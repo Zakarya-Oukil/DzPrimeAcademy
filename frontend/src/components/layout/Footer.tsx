@@ -70,12 +70,12 @@ export const Footer: React.FC = () => {
   const isTeacher = pathname.includes('/teacher');
 
   const footerBgClass = isAdmin
-    ? 'bg-[#05070D] border-white/10 text-white'
+    ? 'bg-[#050505] border-white/10 text-white'
     : isAmbassador
-    ? 'bg-[#060A17] border-white/10 text-white'
+    ? 'bg-[#0b0b0d] border-white/10 text-white'
     : isTeacher
-    ? 'bg-[#FDFBF7] dark:bg-[#070B18] border-amber-200/60 dark:border-gold-500/20 text-slate-800 dark:text-white'
-    : 'bg-slate-100 dark:bg-[#040817] border-slate-200 dark:border-gold-500/30 text-slate-800 dark:text-white';
+    ? 'bg-[#f4f5f6] dark:bg-[#0b0b0d] border-amber-200/60 dark:border-gold-500/20 text-slate-800 dark:text-white'
+    : 'bg-slate-100 dark:bg-[#0b0b0d] border-slate-200 dark:border-gold-500/30 text-slate-800 dark:text-white';
 
   const isAr = locale === 'ar';
   const isFr = locale === 'fr';

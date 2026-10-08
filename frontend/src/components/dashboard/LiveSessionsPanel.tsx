@@ -73,7 +73,7 @@ export const LiveSessionsPanel: React.FC<LiveSessionsPanelProps> = ({ sessions, 
             <div
               key={s.id}
               data-testid={`live-session-item-${s.id}`}
-              className="p-4 rounded-3xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-slate-800 shadow-sm space-y-2.5"
+              className="p-4 rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 shadow-sm space-y-2.5"
             >
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
@@ -98,7 +98,7 @@ export const LiveSessionsPanel: React.FC<LiveSessionsPanelProps> = ({ sessions, 
                 className={`w-full py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all active:scale-95 disabled:opacity-60 ${
                   isRegistered
                     ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40'
-                    : 'bg-lime-400 text-slate-950 hover:bg-lime-300'
+                    : 'bg-lime-400 text-navy-950 hover:bg-lime-300'
                 }`}
               >
                 {pendingId === s.id ? (

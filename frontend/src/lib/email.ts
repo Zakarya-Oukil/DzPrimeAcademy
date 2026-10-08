@@ -170,7 +170,7 @@ export function buildActivationEmailTemplate({ name, activationUrl, locale = 'ar
                 DZ <span style="color: #F5D061 !important;">PRIME</span> ACADEMY
               </div>
               <div style="font-size: 11px; font-weight: 800; color: #F5D061 !important; letter-spacing: 2px; text-transform: uppercase;">
-                ${isAr ? 'المنصة الأكاديمية الأولى في الجزائر • 58 ولاية' : 'Plateforme Nationale d\'Excellence • 58 Wilayas'}
+                ${isAr ? 'المنصة الأكاديمية الجزائرية • 58 ولاية' : 'Plateforme Nationale d\'Excellence • 58 Wilayas'}
               </div>
             </td>
           </tr>
@@ -212,7 +212,7 @@ export function buildActivationEmailTemplate({ name, activationUrl, locale = 'ar
                       </tr>
                       <tr>
                         <td style="padding: 6px 0; font-size: 14px; color: #FFFFFF !important; font-weight: 600;">
-                          🤖 <span style="color: #FFFFFF !important;">${isAr ? 'بوت الامتحانات والملخصات الذكي المخصص لجامعتك وتخصصك' : 'Bot intelligent guidant vers vos cours et examens'}</span>
+                          🤖 <span style="color: #FFFFFF !important;">${isAr ? 'مساعد الامتحانات والملخصات المخصص لجامعتك وتخصصك' : 'Assistant guidant vers vos cours et examens'}</span>
                         </td>
                       </tr>
                       <tr>

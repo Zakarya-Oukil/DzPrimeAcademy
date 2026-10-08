@@ -30,7 +30,7 @@ export const DailySchedule: React.FC<DailyScheduleProps> = ({ sessions, locale }
     <>
       <div
         data-testid="daily-schedule"
-        className="p-5 rounded-3xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-slate-800 shadow-sm font-arabic"
+        className="p-5 rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 shadow-sm font-arabic"
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-black text-slate-900 dark:text-white">
@@ -68,7 +68,7 @@ export const DailySchedule: React.FC<DailyScheduleProps> = ({ sessions, locale }
                 <div className="flex-1 min-w-0">
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{s.title}</h4>
                   <p className="text-[10px] text-slate-400 font-mono">
-                    {date.toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-DZ', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })} &bull; {s.teacherName}
+                    {date.toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-DZ', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })} {s.teacherName?.trim().length > 1 && <> &bull; {s.teacherName}</>}
                   </p>
                 </div>
                 {s.platform === 'ONSITE' ? (
@@ -90,7 +90,7 @@ export const DailySchedule: React.FC<DailyScheduleProps> = ({ sessions, locale }
       {/* Session Details Modal */}
       {selectedSession && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm font-arabic">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-2xl relative text-slate-900 dark:text-white">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-2xl relative text-slate-900 dark:text-white">
             <button
               onClick={() => setSelectedSession(null)}
               className="absolute top-4 right-4 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400"
@@ -112,7 +112,7 @@ export const DailySchedule: React.FC<DailyScheduleProps> = ({ sessions, locale }
             <div className="space-y-2 text-xs text-slate-600 dark:text-gray-300 pt-2 border-t border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-gold-500 shrink-0" />
-                <span>{locale === 'ar' ? 'الأستاذ:' : 'Enseignant:'} {selectedSession.teacherName}</span>
+                {selectedSession.teacherName?.trim().length > 1 && <span>{locale === 'ar' ? 'الأستاذ:' : 'Enseignant:'} {selectedSession.teacherName}</span>}
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-3.5 h-3.5 text-gold-500 shrink-0" />
@@ -139,7 +139,7 @@ export const DailySchedule: React.FC<DailyScheduleProps> = ({ sessions, locale }
                 <Link
                   href={`/${locale}/dawarat`}
                   onClick={() => setSelectedSession(null)}
-                  className="flex-1 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-sm"
+                  className="flex-1 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span>{locale === 'ar' ? 'الانتقال إلى دليل الدورات' : 'Voir dans le catalogue'}</span>
                 </Link>

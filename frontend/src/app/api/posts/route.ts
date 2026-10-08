@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   if (authorId) filters.push({ authorId });
   if (type && (POST_TYPES as readonly string[]).includes(type)) filters.push({ type });
   if (mediaType === 'video') filters.push({ videoUrl: { not: null } });
-  if (mediaType === 'image') filters.push({ imageUrl: { not: null } });
+  if (mediaType === 'image') filters.push({ imageUrls: { isEmpty: false } });
   if (Number.isInteger(wilayaCode) && wilayaCode > 0) filters.push({ wilayaCode });
 
   const limit = Math.min(Math.max(Number(searchParams.get('limit')) || 50, 1), 100);
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       location: f.location ?? null,
       meetUrl: f.meetUrl ?? null,
       videoUrl: f.videoUrl ?? null,
-      imageUrl: f.imageUrl ?? null,
+      imageUrls: f.imageUrls ?? [],
       linkUrl: f.linkUrl ?? null,
       isPrivate: Boolean(f.isPrivate),
       isApproved: true,

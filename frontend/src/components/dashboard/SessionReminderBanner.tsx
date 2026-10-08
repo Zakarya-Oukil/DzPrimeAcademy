@@ -48,11 +48,11 @@ export const SessionReminderBanner: React.FC = () => {
           <div
             key={s.id}
             data-testid={`session-reminder-${s.id}`}
-            className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-lime-400/15 to-emerald-400/10 border border-lime-400/40 text-slate-900 dark:text-white"
+            className="flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl bg-lime-400/15 border border-lime-400/40 text-slate-900 dark:text-white"
           >
             <div className="w-8 h-8 rounded-xl bg-lime-400/20 border border-lime-400/40 flex items-center justify-center shrink-0">
               {isLive ? (
-                <Video className="w-4 h-4 text-lime-600 dark:text-lime-300 animate-pulse" />
+                <Video className="w-4 h-4 text-lime-600 dark:text-lime-300 " />
               ) : (
                 <Bell className="w-4 h-4 text-lime-600 dark:text-lime-300" />
               )}
@@ -72,7 +72,7 @@ export const SessionReminderBanner: React.FC = () => {
                 target="_blank"
                 rel="noreferrer"
                 data-testid={`session-reminder-join-${s.id}`}
-                className="px-3 py-1.5 rounded-xl bg-lime-400 text-slate-950 text-[11px] font-black shrink-0"
+                className="px-3 py-1.5 rounded-xl bg-lime-400 text-navy-950 text-[11px] font-black shrink-0"
               >
                 {locale === 'ar' ? 'انضم' : 'Rejoindre'}
               </a>

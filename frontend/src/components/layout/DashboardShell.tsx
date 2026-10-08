@@ -79,7 +79,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
 
   if (isGuestLanding) {
     return (
-      <div className="flex min-h-screen w-full flex-col bg-[#F4F6FA] dark:bg-[#040817] text-slate-900 dark:text-white transition-colors" data-testid="guest-landing-shell">
+      <div className="flex min-h-screen w-full flex-col bg-[#f4f5f6] dark:bg-[#0b0b0d] text-slate-900 dark:text-white transition-colors" data-testid="guest-landing-shell">
         <Navbar onToggleSidebar={() => setIsMobileSidebarOpen(true)} onOpenAuth={(tab) => setAuthModal({ open: true, tab })} />
         <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
           <main className="flex-1 w-full">{children}</main>
@@ -95,7 +95,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
 
   return (
     <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-      <div className="flex min-h-screen w-full bg-[#F4F6FA] dark:bg-[#040817] text-slate-900 dark:text-white transition-colors" data-testid="app-dashboard-shell">
+      <div className={`flex min-h-screen w-full bg-[#f4f5f6] dark:bg-[#0b0b0d] text-slate-900 dark:text-white transition-colors${routeSegment === 'admin' || routeSegment === 'ambassador' ? ' dark' : ''}`} data-testid="app-dashboard-shell">
 
         {currentUser && !isNoSidebarPage && (
           <AppSidebar

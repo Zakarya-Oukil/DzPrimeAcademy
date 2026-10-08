@@ -86,8 +86,9 @@ async function runSeed(): Promise<void> {
     });
   }
 
+  // First run only: otherwise deleting every bundle in the admin would bring the samples back on the next restart.
   const bundleCount = await prisma.bundle.count();
-  if (bundleCount === 0) {
+  if (wilayaCount === 0 && bundleCount === 0) {
     await prisma.bundle.createMany({
       data: [
         {

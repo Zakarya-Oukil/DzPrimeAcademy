@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 import { requireAuth, type SafeUser } from '@/lib/auth';
 import { hasAnyPermission } from '@/lib/rbac';
 import { POST_AUTHOR_ROLES } from '@/lib/posts';
-import { MAX_IMAGE_BYTES, STORAGE_BUCKET, storageConfig, storagePublicBase, type UploadKind } from '@/lib/safeUrl';
+import { MAX_IMAGE_BYTES, MAX_VIDEO_BYTES, VIDEO_EXT, STORAGE_BUCKET, storageConfig, storagePublicBase, type UploadKind } from '@/lib/safeUrl';
 import { rateLimit } from '@/lib/rateLimit';
 
 const KINDS: UploadKind[] = ['course', 'bundle', 'post', 'landing'];
@@ -27,10 +27,15 @@ export async function POST(request: NextRequest) {
   const kind = body.kind as UploadKind;
   if (!KINDS.includes(kind)) return NextResponse.json({ error: 'نوع غير صالح' }, { status: 400 });
   if (!allowed(kind, user)) return NextResponse.json({ error: 'غير مصرح لك برفع هذه الصورة' }, { status: 403 });
-  if (body.contentType !== 'image/webp') return NextResponse.json({ error: 'الصيغة المقبولة: WebP' }, { status: 400 });
+  // Images are WebP up to 2 MB. Videos (courses and posts only) are MP4/WebM up to 50 MB and live under video/<kind>/.
+  const isVideo = typeof body.contentType === 'string' && Object.hasOwn(VIDEO_EXT, body.contentType);
+  if (isVideo ? kind !== 'course' && kind !== 'post' : body.contentType !== 'image/webp') {
+    return NextResponse.json({ error: isVideo ? 'الفيديو متاح للمقررات والمنشورات فقط' : 'الصيغة المقبولة: WebP' }, { status: 400 });
+  }
   const size = Number(body.size);
-  if (!Number.isInteger(size) || size < 1 || size > MAX_IMAGE_BYTES) {
-    return NextResponse.json({ error: 'حجم الصورة يجب ألا يتجاوز 2 ميغابايت' }, { status: 400 });
+  const maxBytes = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+  if (!Number.isInteger(size) || size < 1 || size > maxBytes) {
+    return NextResponse.json({ error: isVideo ? 'حجم الفيديو يجب ألا يتجاوز 50 ميغابايت' : 'حجم الصورة يجب ألا يتجاوز 2 ميغابايت' }, { status: 400 });
   }
   if (!rateLimit(`upload:${user.id}`, 30, 60 * 60 * 1000)) {
     return NextResponse.json({ error: 'عدد كبير من عمليات الرفع، حاول لاحقاً' }, { status: 429 });
@@ -40,7 +45,7 @@ export async function POST(request: NextRequest) {
   const publicBase = storagePublicBase();
   if (!cfg || !publicBase) return NextResponse.json({ error: 'تخزين الصور غير مُعدّ بعد' }, { status: 503 });
 
-  const path = `${kind}/${user.id}/${randomUUID()}.webp`;
+  const path = isVideo ? `video/${kind}/${user.id}/${randomUUID()}.${VIDEO_EXT[body.contentType]}` : `${kind}/${user.id}/${randomUUID()}.webp`;
   try {
     const res = await fetch(`${cfg.url}/storage/v1/object/upload/sign/${STORAGE_BUCKET}/${path}`, {
       method: 'POST',
@@ -56,7 +61,7 @@ export async function POST(request: NextRequest) {
       uploadUrl: `${cfg.url}/storage/v1${signed.url}`,
       publicUrl: `${publicBase}${path}`,
       path,
-      maxBytes: MAX_IMAGE_BYTES,
+      maxBytes,
     });
   } catch (e) {
     console.error('Storage sign error', e);

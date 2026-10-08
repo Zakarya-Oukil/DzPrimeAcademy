@@ -11,7 +11,7 @@ interface MiniCalendarProps {
 
 const MONTHS_AR = ['جانفي', 'فيفري', 'مارس', 'أفريل', 'ماي', 'جوان', 'جويلية', 'أوت', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 const MONTHS_FR = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-const DOW_AR = ['أ', 'إ', 'ث', 'أ', 'خ', 'ج', 'س'];
+const DOW_AR = ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'];
 const DOW_FR = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
 
 export const MiniCalendar: React.FC<MiniCalendarProps> = ({ sessions, locale }) => {
@@ -35,26 +35,26 @@ export const MiniCalendar: React.FC<MiniCalendarProps> = ({ sessions, locale }) 
   const cells: (number | null)[] = [...Array(firstDay).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
 
   return (
-    <div data-testid="mini-calendar" className="p-5 rounded-3xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-slate-800 shadow-sm">
+    <div data-testid="mini-calendar" dir={locale === 'ar' ? 'rtl' : 'ltr'} className="p-5 rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <button
           data-testid="calendar-prev-month"
-          aria-label="Previous month"
+          aria-label={locale === 'ar' ? 'الشهر السابق' : 'Mois précédent'}
           onClick={() => setCursor(new Date(year, month - 1, 1))}
           className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400"
         >
-          <ChevronLeft className="w-4 h-4" />
+          {locale === 'ar' ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
         <h4 className="text-xs font-black text-slate-900 dark:text-white">
           {months[month]}, {year}
         </h4>
         <button
           data-testid="calendar-next-month"
-          aria-label="Next month"
+          aria-label={locale === 'ar' ? 'الشهر التالي' : 'Mois suivant'}
           onClick={() => setCursor(new Date(year, month + 1, 1))}
           className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400"
         >
-          <ChevronRight className="w-4 h-4" />
+          {locale === 'ar' ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
         </button>
       </div>
 
@@ -74,7 +74,7 @@ export const MiniCalendar: React.FC<MiniCalendarProps> = ({ sessions, locale }) 
               key={idx}
               data-testid={`calendar-day-${day}`}
               className={`aspect-square flex flex-col items-center justify-center rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
-                isToday ? 'bg-lime-400 text-slate-950' : 'text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5'
+                isToday ? 'bg-lime-400 text-navy-950' : 'text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5'
               }`}
             >
               <span>{day}</span>

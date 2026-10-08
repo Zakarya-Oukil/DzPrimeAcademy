@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { Play, ExternalLink } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Play, ExternalLink, VideoOff } from 'lucide-react';
 
 interface VideoPlayerProps {
   url: string;
@@ -25,8 +25,34 @@ export function parseYouTubeId(url: string): string | null {
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, title = 'Video Player', className = '' }) => {
   const youtubeId = useMemo(() => parseYouTubeId(url), [url]);
+  const [unavailable, setUnavailable] = useState(false);
+
+  // YouTube's oEmbed answers 400/404 for ids that do not exist. Any other outcome (offline, blocked) keeps the player.
+  useEffect(() => {
+    setUnavailable(false);
+    if (!youtubeId) return;
+    let live = true;
+    fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(`https://www.youtube.com/watch?v=${youtubeId}`)}`)
+      .then((r) => { if (live && (r.status === 400 || r.status === 404)) setUnavailable(true); })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [youtubeId]);
 
   if (!url) return null;
+
+  if (youtubeId && unavailable) {
+    return (
+      <div role="status" className={`p-4 rounded-2xl bg-[#111114] border border-white/10 flex items-center gap-3 text-xs ${className}`}>
+        <div className="w-9 h-9 rounded-xl bg-white/5 text-gray-400 flex items-center justify-center shrink-0">
+          <VideoOff className="w-4 h-4" />
+        </div>
+        <div className="min-w-0">
+          <p className="font-bold text-white">الفيديو غير متاح</p>
+          <p className="text-[11px] text-gray-400">الرابط لا يشير إلى فيديو موجود على يوتيوب. يمكن لصاحب المنشور تصحيحه.</p>
+        </div>
+      </div>
+    );
+  }
 
   // If it's a valid YouTube video:
   if (youtubeId) {
@@ -36,6 +62,22 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, title = 'Video Pl
           src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1`}
           title={title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          className="absolute inset-0 w-full h-full border-0"
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+
+  const vimeoId = /^https:\/\/(?:www\.)?vimeo\.com\/(\d{6,12})(?:[/?#].*)?$/.exec(url.trim())?.[1];
+  if (vimeoId) {
+    return (
+      <div className={`relative w-full rounded-2xl overflow-hidden bg-black/90 border border-gold-500/30 shadow-2xl aspect-video ${className}`}>
+        <iframe
+          src={`https://player.vimeo.com/video/${vimeoId}?dnt=1`}
+          title={title}
+          allow="autoplay; fullscreen; picture-in-picture"
           allowFullScreen
           className="absolute inset-0 w-full h-full border-0"
           loading="lazy"
@@ -63,7 +105,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, title = 'Video Pl
 
   // Fallback for external video links (Vimeo, Dailymotion, custom platform):
   return (
-    <div className={`p-4 rounded-2xl bg-[#090E1F] border border-gold-500/30 flex items-center justify-between gap-3 text-xs ${className}`}>
+    <div className={`p-4 rounded-2xl bg-[#111114] border border-gold-500/30 flex items-center justify-between gap-3 text-xs ${className}`}>
       <div className="flex items-center gap-2.5 min-w-0">
         <div className="w-9 h-9 rounded-xl bg-gold-500/20 text-gold-400 flex items-center justify-center shrink-0">
           <Play className="w-4 h-4 fill-current" />

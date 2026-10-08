@@ -68,11 +68,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
 
   return (
     <>
-      <header className="sticky top-0 z-30 w-full bg-white/95 dark:bg-[#070D1F]/95 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800/80 shadow-sm transition-colors select-none font-arabic">
+      <header className="sticky top-0 z-30 w-full bg-white/95 dark:bg-[#111114]/95 border-b border-slate-200 dark:border-slate-800/80 shadow-sm transition-colors select-none font-arabic">
         {/* Status & Preference Bar */}
-        <div className="bg-slate-100/90 dark:bg-[#0B1224] border-b border-slate-200 dark:border-slate-800/60 px-3 sm:px-6 py-1.5 flex items-center justify-between gap-2 text-xs">
+        <div className="bg-slate-100/90 dark:bg-[#111114] border-b border-slate-200 dark:border-slate-800/60 px-3 sm:px-6 py-1.5 flex items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500  shrink-0" />
             <span className="text-[10px] sm:text-[11px] font-bold text-slate-600 dark:text-gray-300 truncate">
               {t('hero.badge')}
             </span>
@@ -103,7 +103,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
               {currentUser ? (
                 <h1 className="text-sm sm:text-xl font-black font-arabic text-slate-900 dark:text-white flex items-center gap-1.5 truncate">
                   <span>{t('dashboard.welcomeBack')}, {displayName.split(' ')[0]}</span>
-                  <span className="text-base sm:text-lg">👋</span>
                 </h1>
               ) : (
                 <h1 className="text-sm sm:text-xl font-black font-arabic text-slate-900 dark:text-white truncate">
@@ -122,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
           <div className="hidden md:flex flex-1 max-w-md mx-2 relative">
             <div className="relative w-full">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
+              <input aria-label={t('dashboard.searchPlaceholder')}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -141,7 +140,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
 
             {/* Live Search Quick Results Dropdown */}
             {searchQuery.trim().length > 1 && (
-              <div className="absolute top-full left-0 right-0 mt-2 p-3 rounded-2xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-gold-500/40 shadow-2xl z-50 text-left font-arabic space-y-2">
+              <div className="absolute top-full left-0 right-0 mt-2 p-3 rounded-2xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/40 shadow-2xl z-50 text-left font-arabic space-y-2">
                 <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-1.5">
                   <span>{locale === 'ar' ? 'نتائج سريعة مقترحة' : 'Résultats instantanés'}</span>
                   <Link
@@ -192,7 +191,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
             {!isGold ? (
               <button
                 onClick={() => setUpgradeModalOpen(true)}
-                className="px-3 sm:px-4 py-2 rounded-2xl bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 font-black text-xs font-arabic flex items-center gap-1.5 shadow-gold-glow active:scale-95 transition-all touch-target"
+                aria-label={t('nav.upgrade')}
+                className="px-3 sm:px-4 py-2 rounded-2xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs font-arabic flex items-center gap-1.5 shadow-gold-glow active:scale-95 transition-all touch-target"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span className="hidden xs:inline">{t('nav.upgrade')}</span>
@@ -213,7 +213,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
                   title={locale === 'ar' ? 'معاينة ملفي الشخصي وبطاقتي الرقمية' : 'Mon profil et carte'}
                   className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-2xl bg-slate-100 dark:bg-navy-850 hover:bg-gold-500/15 dark:hover:bg-gold-500/20 border border-slate-300 dark:border-gray-700 hover:border-gold-500/50 text-slate-800 dark:text-gray-200 transition-all group"
                 >
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-gold-500 to-amber-400 text-slate-950 font-bold flex items-center justify-center text-xs shadow-sm overflow-hidden shrink-0">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gold-500 text-navy-950 font-bold flex items-center justify-center text-xs shadow-sm overflow-hidden shrink-0">
                     {currentUser.avatar ? (
                       <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
                     ) : (

@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { isGeneralAdmin } from '@/lib/rbac';
 import type { SafeUser } from '@/lib/auth';
-import { isHttpsUrl, parseImageField } from '@/lib/safeUrl';
+import { isHttpsUrl, parseImageList, parseVideoField } from '@/lib/safeUrl';
 
 export const POST_AUTHOR_ROLES = ['TEACHER', 'AMBASSADOR', 'OWNER', 'ADMIN', 'MODERATOR'];
 export const POST_TYPES = ['EVENT', 'STUDY_TIP', 'SESSION_SCHEDULE', 'ANNOUNCEMENT'] as const;
@@ -57,7 +57,7 @@ export function toApiPost(p: PostRow, viewerId: string | null, likedByViewer: bo
     authorName: p.authorName,
     authorAvatar: p.authorAvatar ?? undefined,
     authorRole: p.authorRole,
-    imageUrl: p.imageUrl ?? undefined,
+    imageUrls: p.imageUrls,
     videoUrl: p.videoUrl ?? undefined,
     linkUrl: p.linkUrl ?? undefined,
     isPrivate: p.isPrivate,
@@ -102,15 +102,18 @@ export function parsePostFields(body: Record<string, unknown>, partial: boolean)
     if (!(POST_TYPES as readonly string[]).includes(body.type as string)) return { error: 'نوع المنشور غير صالح' };
     data.type = body.type as (typeof POST_TYPES)[number];
   }
-  for (const f of ['videoUrl', 'linkUrl', 'meetUrl'] as const) {
+  for (const f of ['linkUrl', 'meetUrl'] as const) {
     if (body[f] === undefined) continue;
     if (body[f] === null || body[f] === '') data[f] = null;
     else if (isHttpsUrl(body[f])) data[f] = body[f] as string;
     else return { error: 'الروابط يجب أن تبدأ بـ https://' };
   }
-  const image = parseImageField(body.imageUrl, 'post');
-  if ('error' in image) return { error: image.error };
-  if (image.value !== undefined) data.imageUrl = image.value;
+  const video = parseVideoField(body.videoUrl, 'post');
+  if ('error' in video) return { error: video.error };
+  if (video.value !== undefined) data.videoUrl = video.value;
+  const images = parseImageList(body.imageUrls, 'post');
+  if ('error' in images) return { error: images.error };
+  if (images.value !== undefined) data.imageUrls = images.value;
 
   if (body.eventDate !== undefined) {
     const d = body.eventDate ? new Date(String(body.eventDate)) : null;

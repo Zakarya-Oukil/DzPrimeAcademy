@@ -80,7 +80,7 @@ export const MockCheckoutModal: React.FC<MockCheckoutModalProps> = ({ bundle, on
           exit={{ opacity: 0, y: 12, scale: 0.97 }}
           onClick={(e) => e.stopPropagation()}
           data-testid="mock-checkout-modal"
-          className="w-full max-w-md rounded-3xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-white/10 p-6 relative font-arabic shadow-2xl"
+          className="w-full max-w-md rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 p-6 relative font-arabic shadow-2xl"
         >
           <button
             data-testid="mock-checkout-close-btn"
@@ -136,7 +136,7 @@ export const MockCheckoutModal: React.FC<MockCheckoutModalProps> = ({ bundle, on
                     placeholder={locale === 'ar' ? 'كود التخفيض (مثال: BAC20)' : 'Code promo (ex: BAC20)'}
                     value={promoCodeInput}
                     onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
-                    className="w-full pr-8 pl-3 py-1.5 rounded-xl bg-white dark:bg-[#070B16] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-gold-400 uppercase"
+                    className="w-full pr-8 pl-3 py-1.5 rounded-xl bg-white dark:bg-[#0b0b0d] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-gold-400 uppercase"
                   />
                 </div>
                 <button
@@ -176,7 +176,7 @@ export const MockCheckoutModal: React.FC<MockCheckoutModalProps> = ({ bundle, on
                 onClose();
                 openAuth('register');
               }}
-              className="mt-5 w-full py-3.5 rounded-2xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2"
+              className="mt-5 w-full py-3.5 rounded-2xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2"
             >
               <LogIn className="w-4 h-4" />
               {locale === 'ar' ? 'سجّل مجاناً لإكمال الشراء' : "S'inscrire pour continuer"}
@@ -185,7 +185,7 @@ export const MockCheckoutModal: React.FC<MockCheckoutModalProps> = ({ bundle, on
             <button
               data-testid="mock-checkout-confirm-btn"
               onClick={handleConfirm}
-              className="mt-5 w-full py-3.5 rounded-2xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all"
+              className="mt-5 w-full py-3.5 rounded-2xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all"
             >
               <Sparkles className="w-4 h-4" />
               <span>{locale === 'ar' ? 'إتمام الشراء وتأكيد الدفع (واتساب / تيليغرام)' : 'Payer via WhatsApp / Telegram'}</span>

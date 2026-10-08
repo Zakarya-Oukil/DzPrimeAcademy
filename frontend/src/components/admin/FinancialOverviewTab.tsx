@@ -107,7 +107,7 @@ export const FinancialOverviewTab: React.FC<FinancialOverviewTabProps> = ({ loca
   const mix = [...kinds, { type: 'OTHER', ar: 'أخرى', en: 'Other', bar: 'bg-slate-400', stroke: 'text-slate-400', amount: otherRevenue }];
   let offset = 0;
 
-  const card = 'rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl flex flex-col justify-between';
+  const card = 'rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl flex flex-col justify-between';
 
   return (
     <div className="space-y-6 font-arabic" data-testid="financial-overview-tab">
@@ -317,7 +317,7 @@ export const FinancialOverviewTab: React.FC<FinancialOverviewTabProps> = ({ loca
       </div>
 
       {/* Transaction stream */}
-      <div className="rounded-3xl bg-[#0B1021] border border-white/10 p-6 space-y-4 shadow-xl">
+      <div className="rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl">
         <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/10">
           <div>
             <h3 className="text-base font-black text-white">{t('آخر العمليات المالية', 'Recent transactions')}</h3>

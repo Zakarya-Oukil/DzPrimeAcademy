@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ImageUploader } from '@/components/shared/ImageUploader';
+import { ImageListField } from '@/components/shared/ImageListField';
+import { VideoField } from '@/components/shared/VideoField';
 import {
   Video,
   Image as ImageIcon,
@@ -14,7 +15,6 @@ import {
   CheckCircle2,
   Sparkles,
 } from 'lucide-react';
-import { VideoPlayer } from './VideoPlayer';
 import { Post, PostType } from '@/types';
 
 interface PostStudioModalProps {
@@ -36,7 +36,7 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
   const [content, setContent] = useState('');
   const [type, setType] = useState<PostType>(defaultType);
   const [videoUrl, setVideoUrl] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [linkUrl, setLinkUrl] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,7 +65,7 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
           content,
           type,
           videoUrl: videoUrl.trim() || undefined,
-          imageUrl: imageUrl.trim() || undefined,
+          imageUrls,
           linkUrl: linkUrl.trim() || undefined,
           isPrivate,
         }),
@@ -84,7 +84,7 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
           setTitle('');
           setContent('');
           setVideoUrl('');
-          setImageUrl('');
+          setImageUrls([]);
           setLinkUrl('');
           setIsPrivate(false);
           setSuccessMessage('');
@@ -99,11 +99,11 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md font-arabic">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-gold-500/40 bg-[#0A0E1A] p-5 sm:p-7 text-white shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+      <div className="relative w-full max-w-2xl rounded-3xl border border-gold-500/40 bg-[#0b0b0d] p-5 sm:p-7 text-white shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-gold-500 to-amber-400 text-navy-950 flex items-center justify-center font-black shadow-gold-glow">
+            <div className="w-10 h-10 rounded-2xl bg-gold-500 text-navy-950 flex items-center justify-center font-black shadow-gold-glow">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -197,40 +197,19 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
             />
           </div>
 
-          {/* Video URL (YouTube or Direct) */}
-          <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-gray-300 font-bold flex items-center gap-1.5">
-                <Video className="w-4 h-4 text-red-400" />
-                <span>{locale === 'ar' ? 'رابط مقطع الفيديو (YouTube / MP4)' : 'Lien Vidéo (YouTube / MP4)'}</span>
-              </label>
-              <span className="text-[10px] text-gray-400 font-mono">مشغل فيديو مدمج</span>
-            </div>
-            <input
-              type="url"
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder="https://www.youtube.com/watch?v=... أو https://youtu.be/..."
-              className="w-full px-3.5 py-2 rounded-xl bg-black/40 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-gold-400 placeholder:text-gray-600"
-            />
-            {videoUrl && (
-              <div className="pt-2">
-                <p className="text-[10px] text-gold-300 font-bold mb-1.5 flex items-center gap-1">
-                  <span>معاينة فورية لمشغل الفيديو:</span>
-                </p>
-                <VideoPlayer url={videoUrl} title="معاينة الفيديو" />
-              </div>
-            )}
+          {/* Video: YouTube / Vimeo link or an uploaded MP4 / WebM */}
+          <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10">
+            <VideoField kind="post" locale={locale} value={videoUrl || null} onChange={(url) => setVideoUrl(url || '')} label={locale === 'ar' ? 'فيديو (اختياري)' : 'Vidéo (optionnel)'} />
           </div>
 
-          {/* Image & External Link */}
+          {/* Images & External Link */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-gray-300 font-bold mb-1.5 flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-sky-400" />
-                <span>{locale === 'ar' ? 'صورة توضيحية' : 'Image'}</span>
+                <span>{locale === 'ar' ? 'صور توضيحية (حتى 4)' : 'Images (jusqu’à 4)'}</span>
               </label>
-              <ImageUploader kind="post" locale={locale} value={imageUrl || null} onChange={(url) => setImageUrl(url || '')} />
+              <ImageListField locale={locale} value={imageUrls} onChange={setImageUrls} />
             </div>
 
             <div>
@@ -297,7 +276,7 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 via-amber-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 font-black text-xs flex items-center gap-2 shadow-gold-glow active:scale-95 transition-all disabled:opacity-50"
+              className="px-6 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs flex items-center gap-2 shadow-gold-glow active:scale-95 transition-all disabled:opacity-50"
             >
               <Send className="w-4 h-4" />
               <span>{isSubmitting ? (locale === 'ar' ? 'جاري النشر...' : 'Publication...') : (locale === 'ar' ? 'نشر المحتوى الآن' : 'Publier')}</span>

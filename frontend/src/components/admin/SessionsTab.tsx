@@ -130,7 +130,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
   return (
     <div className="space-y-6" data-testid="sessions-tab">
       {/* Top Banner */}
-      <div className="p-5 rounded-3xl bg-gradient-to-r from-[#0C152E] via-[#0E1B3D] to-[#0A1024] border border-gold-500/30 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-5 rounded-3xl bg-[#111114] border border-gold-500/30 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-lime-500/20 border border-lime-400/40 text-lime-400 flex items-center justify-center shrink-0">
             <Video className="w-5 h-5" />
@@ -169,7 +169,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
             });
             setShowForm(!showForm);
           }}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-lime-400 to-emerald-400 hover:from-lime-300 hover:to-emerald-300 text-slate-950 font-black text-xs flex items-center gap-2 shadow-md active:scale-95 transition-all self-start sm:self-auto shrink-0"
+          className="px-4 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center gap-2 shadow-md active:scale-95 transition-all self-start sm:self-auto shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
           <span>{locale === 'ar' ? 'جدولة حصة جديدة' : 'Planifier une Session'}</span>
@@ -264,7 +264,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
             <select
               value={form.platform}
               onChange={(e) => setForm({ ...form, platform: e.target.value as any })}
-              className="w-full px-3.5 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-lime-400"
+              className="w-full px-3.5 py-2 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-lime-400"
             >
               <option value="GOOGLE_MEET">Google Meet</option>
               <option value="CLASSROOM">Classroom</option>
@@ -286,7 +286,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value as any })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0A0E1A] border border-white/10 text-xs font-bold text-lime-400 focus:outline-none focus:border-lime-400"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs font-bold text-lime-400 focus:outline-none focus:border-lime-400"
               >
                 <option value="UPCOMING">UPCOMING (قادمة)</option>
                 <option value="LIVE">LIVE (مباشرة الآن)</option>
@@ -300,7 +300,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
             <button
               type="submit"
               data-testid="submit-session-btn"
-              className="px-6 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs shadow-md active:scale-95 transition-all"
+              className="px-6 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs shadow-md active:scale-95 transition-all"
             >
               {editingSession
                 ? (locale === 'ar' ? 'حفظ تعديلات الحصة ✓' : 'Enregistrer les modifications')
@@ -320,13 +320,13 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
             <div
               key={s.id}
               data-testid={`session-row-${s.id}`}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-3xl bg-[#0A0E1A] border border-white/10 hover:border-gold-500/30 transition-all shadow-sm"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-3xl bg-[#0b0b0d] border border-white/10 hover:border-gold-500/30 transition-all shadow-sm"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div
                   className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
                     isLive
-                      ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40 animate-pulse'
+                      ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40 '
                       : 'bg-lime-400/10 border border-lime-400/30 text-lime-400'
                   }`}
                 >
@@ -336,13 +336,13 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="text-xs font-bold text-white truncate">{s.title}</h4>
                     {isLive && (
-                      <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-[9px] font-black animate-pulse border border-rose-500/30">
-                        🔴 LIVE NOW
+                      <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-[9px] font-black  border border-rose-500/30">
+                        LIVE NOW
                       </span>
                     )}
                   </div>
                   <p className="text-[10px] text-gray-400 font-mono mt-0.5">
-                    {new Date(s.scheduledAt).toLocaleString(locale === 'ar' ? 'ar-DZ' : 'fr-DZ')} &bull; 👨‍🏫 {s.teacherName} &bull; {s.durationMinutes} min
+                    {new Date(s.scheduledAt).toLocaleString(locale === 'ar' ? 'ar-DZ' : 'fr-DZ')} &bull; {s.teacherName} &bull; {s.durationMinutes} min
                   </p>
                 </div>
               </div>

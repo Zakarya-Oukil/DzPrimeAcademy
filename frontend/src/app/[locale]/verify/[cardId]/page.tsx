@@ -54,7 +54,7 @@ export default function VerifyCardPage({
     return (
       <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div
-          className="w-full max-w-lg rounded-3xl border border-rose-300 dark:border-rose-500/40 bg-white dark:bg-[#0B0F1C] p-6 sm:p-10 text-center shadow-xl"
+          className="w-full max-w-lg rounded-3xl border border-rose-300 dark:border-rose-500/40 bg-white dark:bg-[#111114] p-6 sm:p-10 text-center shadow-xl"
           data-testid="verify-invalid-card"
         >
           <XCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
@@ -93,7 +93,7 @@ export default function VerifyCardPage({
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div
         data-testid="verify-valid-card"
-        className="w-full max-w-lg rounded-3xl border border-slate-200 dark:border-gold-500/50 bg-white dark:bg-gradient-to-b dark:from-[#0B132B] dark:via-[#060913] dark:to-[#03060E] p-6 sm:p-10 text-slate-900 dark:text-white shadow-xl dark:shadow-gold-glow-lg text-center relative overflow-hidden transition-colors"
+        className="w-full max-w-lg rounded-3xl border border-slate-200 dark:border-gold-500/50 bg-white dark:bg-[#111114] p-6 sm:p-10 text-slate-900 dark:text-white shadow-xl dark:shadow-gold-glow-lg text-center relative overflow-hidden transition-colors"
       >
         {/* Background Aura */}
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-gold-500/15 rounded-full blur-3xl pointer-events-none" />

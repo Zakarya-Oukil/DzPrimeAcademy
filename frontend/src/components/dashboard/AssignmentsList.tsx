@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Check, Trash2, X, Calendar } from 'lucide-react';
+import { useAuthStore } from '@/lib/store';
 
 interface AssignmentItem {
   id: string;
@@ -24,6 +25,9 @@ const STATUS_LABEL_AR: Record<string, string> = { IN_PROGRESS: 'قيد التق�
 const STATUS_LABEL_FR: Record<string, string> = { IN_PROGRESS: 'En cours', COMPLETED: 'Terminé ✓', UPCOMING: 'À venir' };
 
 export const AssignmentsList: React.FC<AssignmentsListProps> = ({ locale }) => {
+  const { currentUser } = useAuthStore();
+  // Personal checklist kept on this device only, one list per account so a shared browser never shows another student's tasks.
+  const storageKey = `dz_student_assignments:${currentUser?.id ?? 'anon'}`;
   const [items, setItems] = useState<AssignmentItem[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -31,15 +35,15 @@ export const AssignmentsList: React.FC<AssignmentsListProps> = ({ locale }) => {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('dz_student_assignments');
-      if (saved) setItems(JSON.parse(saved));
+      const saved = localStorage.getItem(storageKey);
+      setItems(saved ? JSON.parse(saved) : []);
     } catch {}
-  }, []);
+  }, [storageKey]);
 
   const saveItems = (updated: AssignmentItem[]) => {
     setItems(updated);
     try {
-      localStorage.setItem('dz_student_assignments', JSON.stringify(updated));
+      localStorage.setItem(storageKey, JSON.stringify(updated));
     } catch {}
   };
 
@@ -74,7 +78,7 @@ export const AssignmentsList: React.FC<AssignmentsListProps> = ({ locale }) => {
   };
 
   return (
-    <div data-testid="assignments-list" className="p-5 rounded-3xl bg-white dark:bg-[#0C1428] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 font-arabic">
+    <div data-testid="assignments-list" className="p-5 rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 font-arabic">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-black text-slate-900 dark:text-white">
           {locale === 'ar' ? 'الواجبات والمهام الدراسية' : 'Assignments & Tâches'}
@@ -82,7 +86,7 @@ export const AssignmentsList: React.FC<AssignmentsListProps> = ({ locale }) => {
         <button
           onClick={() => setIsAdding(!isAdding)}
           data-testid="add-assignment-btn"
-          className="w-7 h-7 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 flex items-center justify-center shadow-sm active:scale-95 transition-all"
+          className="w-7 h-7 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 flex items-center justify-center shadow-sm active:scale-95 transition-all"
           title={locale === 'ar' ? 'إضافة مهمة جديدة' : 'Ajouter une tâche'}
         >
           {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -110,7 +114,7 @@ export const AssignmentsList: React.FC<AssignmentsListProps> = ({ locale }) => {
             />
             <button
               type="submit"
-              className="px-4 py-1.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center gap-1 shrink-0"
+              className="px-4 py-1.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center gap-1 shrink-0"
             >
               <Check className="w-3.5 h-3.5" />
               <span>{locale === 'ar' ? 'حفظ' : 'Ajouter'}</span>

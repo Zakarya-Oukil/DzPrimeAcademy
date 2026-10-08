@@ -204,7 +204,7 @@ export interface Post {
   authorRole: Role;
   assignedTeacherId?: string;
   assignedTeacherName?: string;
-  imageUrl?: string;
+  imageUrls?: string[];
   videoUrl?: string;
   linkUrl?: string;
   isPrivate?: boolean;

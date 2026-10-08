@@ -155,11 +155,11 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
         particleCount: 30,
         spread: 50,
         origin: { y: 0.8 },
-        colors: ['#D4AF37', '#10B981', '#F59E0B'],
+        colors: ['#f2aa34', '#6db1d8', '#f2aa34'],
       });
     } catch (e) {}
 
-    showToast(locale === 'ar' ? 'شكراً لك! تم نشر تقييمك للسفير بنجاح ⭐' : 'Merci! Votre avis a été publié avec succès ⭐');
+    showToast(locale === 'ar' ? 'شكراً لك! تم نشر تقييمك للسفير بنجاح ' : 'Merci! Votre avis a été publié avec succès ');
     setRatingComment('');
     setRateModalAmbassador(null);
   };
@@ -173,7 +173,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
         particleCount: 35,
         spread: 60,
         origin: { y: 0.75 },
-        colors: ['#10B981', '#D4AF37', '#3B82F6'],
+        colors: ['#6db1d8', '#f2aa34', '#0880f0'],
       });
     } catch (e) {}
 
@@ -199,7 +199,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
   return (
     <div className="w-full space-y-6 select-none font-arabic">
       {/* ================= AMBASSADOR DIRECTORY HEADER BANNER ================= */}
-      <div className="relative p-5 sm:p-8 rounded-3xl bg-gradient-to-br from-[#060D1F] via-[#0B1530] to-[#040813] border border-gold-500/35 text-white shadow-2xl overflow-hidden">
+      <div className="relative p-5 sm:p-8 rounded-3xl bg-[#0b0b0d] border border-gold-500/35 text-white shadow-2xl overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-gold-500/15 via-emerald-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
@@ -222,7 +222,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
           </div>
 
           {/* Quick Stats Pill */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-3 bg-white/5 dark:bg-black/40 p-3 sm:p-4 rounded-2xl border border-white/10 backdrop-blur-md text-center shrink-0">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 bg-white/5 dark:bg-black/40 p-3 sm:p-4 rounded-2xl border border-white/10 text-center shrink-0">
             <div>
               <span className="block text-lg sm:text-2xl font-black text-gold-400 font-mono">
                 {ambassadorsList.length}
@@ -262,7 +262,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                 ? 'ابحث بالاسم، الولاية (الجزائر، وهران، قسنطينة، سطيف...)، الجامعة (USTHB, USTO...)، أو التخصص...'
                 : 'Rechercher par nom, wilaya (Alger, Oran, Constantine...), université ou spécialité...'
             }
-            className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white/10 dark:bg-black/50 border border-white/20 focus:border-gold-400 text-sm text-white placeholder-gray-400 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-gold-500/20 transition-all font-arabic"
+            className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white/10 dark:bg-black/50 border border-white/20 focus:border-gold-400 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/20 transition-all font-arabic"
           />
           {searchQuery && (
             <button
@@ -284,7 +284,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                 onClick={() => setSelectedRegion(r.id as any)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 ${
                   active
-                    ? 'bg-gradient-to-r from-gold-500 to-amber-400 text-navy-950 font-black shadow-md'
+                    ? 'bg-gold-500 text-navy-950 font-black shadow-md'
                     : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 hover:border-gold-500/40'
                 }`}
               >
@@ -313,14 +313,14 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
               key={amb.id}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              className="group relative p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#0B132B] border border-slate-200/90 dark:border-slate-800/90 hover:border-gold-500/60 dark:hover:border-gold-500/60 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="group relative p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#111114] border border-slate-200/90 dark:border-slate-800/90 hover:border-gold-500/60 dark:hover:border-gold-500/60 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 {/* Header: Avatar, Name & Verification */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="relative">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-gold-500 via-amber-400 to-lime-400 p-0.5 shadow-md">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gold-500 p-0.5 shadow-md">
                         <div className="w-full h-full rounded-[14px] bg-slate-900 text-gold-300 font-black flex items-center justify-center text-lg sm:text-xl font-sans">
                           {amb.user.name.charAt(0)}
                         </div>
@@ -428,7 +428,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => setBookModalAmbassador(amb)}
-                    className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 dark:from-gold-500 dark:to-amber-400 text-navy-950 font-black text-xs shadow-sm hover:scale-105 transition-all"
+                    className="px-3 py-1.5 rounded-xl bg-lime-400 dark:bg-gold-500 text-navy-950 font-black text-xs shadow-sm hover:scale-105 transition-all"
                   >
                     <Calendar className="w-3.5 h-3.5 inline mr-1" />
                     <span>{locale === 'ar' ? 'حجز حصة' : 'Réserver'}</span>
@@ -463,12 +463,12 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#070D1F] border border-slate-200 dark:border-gold-500/40 p-5 sm:p-7 shadow-2xl text-left font-arabic z-10 space-y-6"
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/40 p-5 sm:p-7 shadow-2xl text-left font-arabic z-10 space-y-6"
             >
               {/* Header */}
               <div className="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-gold-500 to-amber-400 p-0.5 shadow-md">
+                  <div className="w-14 h-14 rounded-2xl bg-gold-500 p-0.5 shadow-md">
                     <div className="w-full h-full rounded-[14px] bg-slate-900 text-gold-300 font-black flex items-center justify-center text-xl font-sans">
                       {activeProfileAmbassador.user.name.charAt(0)}
                     </div>
@@ -597,7 +597,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                   onClick={() => {
                     setBookModalAmbassador(activeProfileAmbassador);
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 font-black text-xs shadow-gold-glow flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-gold-500 text-navy-950 font-black text-xs shadow-gold-glow flex items-center gap-2"
                 >
                   <Calendar className="w-4 h-4" />
                   <span>{locale === 'ar' ? 'حجز مقعد في الورشة القادمة' : 'Réserver une Séance'}</span>
@@ -625,7 +625,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md rounded-3xl bg-white dark:bg-[#070D1F] border border-slate-200 dark:border-gold-500/40 p-5 sm:p-6 shadow-2xl text-left font-arabic z-10 space-y-4"
+              className="relative w-full max-w-md rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/40 p-5 sm:p-6 shadow-2xl text-left font-arabic z-10 space-y-4"
             >
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
@@ -710,7 +710,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 text-navy-950 font-black text-xs shadow-gold-glow"
+                    className="px-5 py-2 rounded-xl bg-gold-500 text-navy-950 font-black text-xs shadow-gold-glow"
                   >
                     {locale === 'ar' ? 'نشر التقييم' : 'Envoyer mon avis'}
                   </button>
@@ -738,7 +738,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md rounded-3xl bg-white dark:bg-[#070D1F] border border-slate-200 dark:border-gold-500/40 p-5 sm:p-6 shadow-2xl text-left font-arabic z-10 space-y-4"
+              className="relative w-full max-w-md rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/40 p-5 sm:p-6 shadow-2xl text-left font-arabic z-10 space-y-4"
             >
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
@@ -774,7 +774,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                       {bookModalAmbassador.user.name} ({bookModalAmbassador.institutionNameAr})
                     </p>
                     <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5">
-                      📅 {locale === 'ar' ? 'الورشة القادمة: الخميس القادم 10:00 صباحاً' : 'Prochaine session: Jeudi 10h00'}
+                      {locale === 'ar' ? 'الورشة القادمة: الخميس القادم 10:00 صباحاً' : 'Prochaine session: Jeudi 10h00'}
                     </p>
                   </div>
 
@@ -792,7 +792,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                             : 'bg-slate-50 dark:bg-navy-900 border-slate-200 dark:border-gray-800 text-slate-600'
                         }`}
                       >
-                        🏛️ {locale === 'ar' ? 'حضوري بالجامعة' : 'Présentiel (Amphi)'}
+                        {locale === 'ar' ? 'حضوري بالجامعة' : 'Présentiel (Amphi)'}
                       </button>
                       <button
                         type="button"
@@ -803,7 +803,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                             : 'bg-slate-50 dark:bg-navy-900 border-slate-200 dark:border-gray-800 text-slate-600'
                         }`}
                       >
-                        💻 {locale === 'ar' ? 'أونلاين (زووم / ميت)' : 'En ligne (Google Meet)'}
+                        {locale === 'ar' ? 'أونلاين (زووم / ميت)' : 'En ligne (Google Meet)'}
                       </button>
                     </div>
                   </div>
@@ -832,7 +832,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-xl bg-gradient-to-r from-lime-400 to-emerald-400 text-navy-950 font-black text-xs shadow-md"
+                      className="px-5 py-2 rounded-xl bg-lime-400 text-navy-950 font-black text-xs shadow-md"
                     >
                       {locale === 'ar' ? 'تأكيد الحجز المجاني' : 'Confirmer la Réservation'}
                     </button>
@@ -851,7 +851,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.9 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-950 text-xs font-bold font-arabic shadow-2xl backdrop-blur-md flex items-center gap-2 border border-gold-500/30"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-950 text-xs font-bold font-arabic shadow-2xl flex items-center gap-2 border border-gold-500/30"
           >
             <Sparkles className="w-4 h-4 text-gold-400 dark:text-gold-600" />
             <span>{toastMessage}</span>

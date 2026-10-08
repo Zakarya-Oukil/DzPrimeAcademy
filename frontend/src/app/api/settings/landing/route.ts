@@ -22,9 +22,7 @@ export async function GET() {
   try {
     const [examCount, studentCount, distinctWilayas] = await Promise.all([
       prisma.exam.count(),
-      prisma.user.count({
-        where: { role: { in: ['STUDENT_FREE', 'STUDENT_PAID'] } },
-      }),
+      prisma.user.count(),
       prisma.user.findMany({
         select: { wilayaCode: true },
         distinct: ['wilayaCode'],

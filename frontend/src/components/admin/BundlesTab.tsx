@@ -184,9 +184,9 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
   return (
     <div className="space-y-8 font-arabic" data-testid="bundles-tab">
       {/* Top Banner */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-[#0C152E] via-[#101E42] to-[#0A1024] border border-amber-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-3xl bg-[#111114] border border-amber-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 text-slate-950 flex items-center justify-center font-black shrink-0 shadow-lg shadow-amber-500/20">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500 text-navy-950 flex items-center justify-center font-black shrink-0 shadow-lg shadow-amber-500/20">
             <Gift className="w-6 h-6" />
           </div>
           <div>
@@ -214,7 +214,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
               setEditingId(null);
               setShowForm(!showForm);
             }}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all"
+            className="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-navy-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>{locale === 'ar' ? 'إضافة حزمة أو عرض' : 'Créer un Pack'}</span>
@@ -247,7 +247,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
           <form
             onSubmit={handleSubmit}
             data-testid="add-bundle-form"
-            className="p-5 rounded-3xl bg-[#0B1021] border border-amber-400/40 grid grid-cols-1 sm:grid-cols-3 gap-3.5 shadow-2xl relative"
+            className="p-5 rounded-3xl bg-[#111114] border border-amber-400/40 grid grid-cols-1 sm:grid-cols-3 gap-3.5 shadow-2xl relative"
           >
             <div className="sm:col-span-3 flex items-center justify-between pb-2 border-b border-white/10">
               <span className="text-xs font-black text-amber-300 flex items-center gap-1.5">
@@ -295,7 +295,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
             <select
               value={form.track}
               onChange={(e) => setForm({ ...form, track: e.target.value as any })}
-              className="px-3.5 py-2.5 rounded-xl bg-[#0A0E1A] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-amber-400"
+              className="px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-amber-400"
             >
               <option value="BAC">BAC (البكالوريا)</option>
               <option value="UNIVERSITY_LMD">University LMD</option>
@@ -367,7 +367,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
               <button
                 type="submit"
                 data-testid="submit-bundle-btn"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs shadow-md active:scale-95 transition-all"
+                className="px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-navy-950 font-black text-xs shadow-md active:scale-95 transition-all"
               >
                 {editingId
                   ? (locale === 'ar' ? 'حفظ تعديلات العرض ✓' : 'Enregistrer')
@@ -390,7 +390,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
                 <div
                   key={b.id}
                   data-testid={`bundle-card-${b.id}`}
-                  className={`p-5 rounded-3xl bg-[#0A0E1A] border space-y-3 shadow-md transition-all ${
+                  className={`p-5 rounded-3xl bg-[#0b0b0d] border space-y-3 shadow-md transition-all ${
                     b.isActive ? 'border-white/10 hover:border-amber-500/40' : 'border-rose-500/30 opacity-60'
                   }`}
                 >
@@ -489,7 +489,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
         {showPromoForm && (
           <form
             onSubmit={handleCreatePromo}
-            className="p-5 rounded-3xl bg-[#0C1224] border border-gold-400/40 grid grid-cols-1 sm:grid-cols-4 gap-3 shadow-xl relative"
+            className="p-5 rounded-3xl bg-[#111114] border border-gold-400/40 grid grid-cols-1 sm:grid-cols-4 gap-3 shadow-xl relative"
           >
             <div className="sm:col-span-4 flex items-center justify-between pb-2 border-b border-white/10">
               <span className="text-xs font-black text-gold-300 flex items-center gap-1.5">

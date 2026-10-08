@@ -183,8 +183,8 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
 
   const quickPresets = [
     {
-      nameAr: '⚡ تحليل 1 (USTHB L1 MI)',
-      nameFr: '⚡ Analyse 1 (USTHB)',
+      nameAr: 'تحليل 1 (USTHB L1 MI)',
+      nameFr: 'Analyse 1 (USTHB)',
       track: 'UNIVERSITY_LMD' as TrackType,
       instId: 'inst-usthb',
       instName: 'Université USTHB',
@@ -200,8 +200,8 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
       modName: 'Analyse 1',
     },
     {
-      nameAr: '⚡ خوارزميات ALSD 1 (USTHB)',
-      nameFr: '⚡ Algo 1 (ALSD USTHB)',
+      nameAr: 'خوارزميات ALSD 1 (USTHB)',
+      nameFr: 'Algo 1 (ALSD USTHB)',
       track: 'UNIVERSITY_LMD' as TrackType,
       instId: 'inst-usthb',
       instName: 'Université USTHB',
@@ -217,8 +217,8 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
       modName: 'Algorithmique 1',
     },
     {
-      nameAr: '⚡ بكالوريا رياضيات (3AS BAC)',
-      nameFr: '⚡ Maths BAC (3AS)',
+      nameAr: 'بكالوريا رياضيات (3AS BAC)',
+      nameFr: 'Maths BAC (3AS)',
       track: 'BAC' as TrackType,
       instId: 'inst-bac-national',
       instName: 'BAC National',
@@ -234,8 +234,8 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
       modName: 'Mathématiques BAC',
     },
     {
-      nameAr: '⚡ تشريح طب 1 (Médecine Alger)',
-      nameFr: '⚡ Anatomie 1 (Médecine Alger)',
+      nameAr: 'تشريح طب 1 (Médecine Alger)',
+      nameFr: 'Anatomie 1 (Médecine Alger)',
       track: 'MEDICAL' as TrackType,
       instId: 'inst-alger1',
       instName: 'Université d\'Alger 1',
@@ -256,7 +256,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
     <div
       className={`w-full ${
         isFloating ? 'max-w-full p-2.5 sm:p-4' : 'max-w-5xl mx-auto p-3.5 sm:p-6 md:p-8 rounded-3xl'
-      } border border-slate-200 dark:border-gold-500/30 bg-white/95 dark:bg-gradient-to-b dark:from-navy-900/95 dark:via-navy-950 dark:to-[#050811] shadow-xl text-slate-900 dark:text-white transition-colors duration-300 relative overflow-hidden`}
+      } border border-slate-200 dark:border-gold-500/30 bg-white/95 dark:bg-navy-900/95 shadow-xl text-slate-900 dark:text-white transition-colors duration-300 relative overflow-hidden`}
     >
       {/* Background highlight */}
       <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-gold-500/10 dark:bg-gold-500/10 blur-3xl pointer-events-none" />
@@ -269,7 +269,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
               <span className="p-1.5 sm:p-2 rounded-xl bg-gold-500/15 border border-gold-500/40 text-gold-600 dark:text-gold-400">
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
               </span>
-              <h2 className="text-lg sm:text-2xl font-extrabold font-arabic text-slate-900 dark:text-transparent dark:bg-gradient-to-r dark:from-white dark:via-gold-200 dark:to-gold-400 dark:bg-clip-text">
+              <h2 className="dark:text-gold-400 text-lg sm:text-2xl font-extrabold font-arabic text-slate-900      ">
                 {t('bot.title')}
               </h2>
             </div>
@@ -297,7 +297,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
             ) : (
               <button
                 onClick={() => setIsUpgradeModalOpen(true)}
-                className="px-3.5 sm:px-4 py-1.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 text-xs font-extrabold flex items-center gap-1.5 shadow-gold-glow transition-all active:scale-95 touch-target"
+                className="px-3.5 sm:px-4 py-1.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 text-xs font-extrabold flex items-center gap-1.5 shadow-gold-glow transition-all active:scale-95 touch-target"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>{t('nav.upgrade')}</span>
@@ -310,7 +310,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
       {/* 1-Click Fast Presets Bar */}
       <div className="relative z-10 my-3 p-3 rounded-2xl bg-slate-50 dark:bg-navy-950/70 border border-slate-200 dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 shrink-0">
-          🚀 {locale === 'ar' ? 'اختصارات سريعة بنقرة واحدة:' : 'Raccourcis 1-Clic:'}
+          {locale === 'ar' ? 'اختصارات سريعة بنقرة واحدة:' : 'Raccourcis 1-Clic:'}
         </span>
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           {quickPresets.map((preset, pIdx) => (
@@ -471,7 +471,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <button
                 onClick={() => handleSelectTrack('UNIVERSITY_LMD')}
-                className="group p-5 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-gradient-to-br dark:from-navy-850 dark:to-navy-900 hover:bg-amber-50/50 dark:hover:from-navy-800 dark:hover:to-navy-850 flex flex-col items-center text-center transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.98]"
+                className="group p-5 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-navy-850 hover:bg-amber-50/50 dark:hover:from-navy-800 dark:hover:to-navy-850 flex flex-col items-center text-center transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.98]"
               >
                 <div className="w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/40 text-gold-600 dark:text-gold-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <GraduationCap className="w-8 h-8" />
@@ -490,7 +490,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
 
               <button
                 onClick={() => handleSelectTrack('BAC')}
-                className="group p-5 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-gradient-to-br dark:from-navy-850 dark:to-navy-900 hover:bg-amber-50/50 dark:hover:from-navy-800 dark:hover:to-navy-850 flex flex-col items-center text-center transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.98]"
+                className="group p-5 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-navy-850 hover:bg-amber-50/50 dark:hover:from-navy-800 dark:hover:to-navy-850 flex flex-col items-center text-center transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.98]"
               >
                 <div className="w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/40 text-gold-600 dark:text-gold-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <BookOpen className="w-8 h-8" />
@@ -841,7 +841,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                           CHEAT-SHEET • 6 Pages
                         </span>
                         <span className="text-[11px] text-gold-600 dark:text-gold-400 font-bold">
-                          ⚡ {t('bot.keyFormulas')}
+                          {t('bot.keyFormulas')}
                         </span>
                       </div>
                       <h4 className="text-sm font-black text-slate-900 dark:text-white mt-2">
@@ -886,7 +886,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                           METHODOLOGY GUIDE
                         </span>
                         <span className="text-[11px] text-amber-600 dark:text-amber-400 font-bold">
-                          🎯 {locale === 'ar' ? 'فخاخ وأخطاء الامتحانات' : 'Pièges Classiques'}
+                          {locale === 'ar' ? 'فخاخ وأخطاء الامتحانات' : 'Pièges Classiques'}
                         </span>
                       </div>
                       <h4 className="text-sm font-black text-slate-900 dark:text-white mt-2">
@@ -931,7 +931,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                           PRACTICE SET • 15 EXERCISES
                         </span>
                         <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
-                          ⭐ {locale === 'ar' ? 'تمارين نموذجية' : 'Exercices Types'}
+                          {locale === 'ar' ? 'تمارين نموذجية' : 'Exercices Types'}
                         </span>
                       </div>
                       <h4 className="text-sm font-black text-slate-900 dark:text-white mt-2">
@@ -1029,7 +1029,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                     </div>
                     <button
                       onClick={() => setIsUpgradeModalOpen(true)}
-                      className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 text-navy-950 text-xs font-extrabold font-arabic shadow-gold-glow shrink-0 active:scale-95 transition-all touch-target"
+                      className="px-3.5 py-1.5 rounded-xl bg-gold-500 text-navy-950 text-xs font-extrabold font-arabic shadow-gold-glow shrink-0 active:scale-95 transition-all touch-target"
                     >
                       {t('bot.upgradeBtn')}
                     </button>
@@ -1190,7 +1190,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                 <a
                   href={activePdfPreview.fileUrl}
                   download
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 text-navy-950 font-bold text-xs font-arabic flex items-center gap-2 shadow-gold-glow"
+                  className="px-4 py-2 rounded-xl bg-gold-500 text-navy-950 font-bold text-xs font-arabic flex items-center gap-2 shadow-gold-glow"
                 >
                   <Download className="w-4 h-4" />
                   <span>{t('bot.downloadPdf')}</span>

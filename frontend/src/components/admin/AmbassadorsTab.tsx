@@ -155,8 +155,8 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
   const copyCredentialsText = () => {
     if (!createdCred) return;
     const text = locale === 'ar'
-      ? `🇩🇿 مرحباً بك سفيرنا المعتمد ${createdCred.name} في منصة DZ PRIME ACADEMY\n\nتم تفعيل حسابك كسفير رسمي:\n📧 البريد الإلكتروني: ${createdCred.email}\n🔑 كلمة المرور المؤقتة: ${createdCred.tempPassword}\n🏷️ كود الترويج الخاص بك: ${createdCred.promoCode || 'مفعل'}\n\nيرجى تسجيل الدخول وتغيير كلمة المرور من إعدادات حسابك.`
-      : `🇩🇿 Bienvenue Cher Ambassadeur ${createdCred.name} sur DZ PRIME ACADEMY\n\nVos identifiants officiels :\n📧 Email : ${createdCred.email}\n🔑 Mot de passe : ${createdCred.tempPassword}\n🏷️ Code Promo : ${createdCred.promoCode || 'Actif'}\n\nConnectez-vous et modifiez votre mot de passe depuis vos paramètres.`;
+      ? `🇩🇿 مرحباً بك سفيرنا المعتمد ${createdCred.name} في منصة DZ PRIME ACADEMY\n\nتم تفعيل حسابك كسفير رسمي:\nالبريد الإلكتروني: ${createdCred.email}\nكلمة المرور المؤقتة: ${createdCred.tempPassword}\nكود الترويج الخاص بك: ${createdCred.promoCode || 'مفعل'}\n\nيرجى تسجيل الدخول وتغيير كلمة المرور من إعدادات حسابك.`
+      : `🇩🇿 Bienvenue Cher Ambassadeur ${createdCred.name} sur DZ PRIME ACADEMY\n\nVos identifiants officiels :\nEmail : ${createdCred.email}\nMot de passe : ${createdCred.tempPassword}\nCode Promo : ${createdCred.promoCode || 'Actif'}\n\nConnectez-vous et modifiez votre mot de passe depuis vos paramètres.`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -211,7 +211,7 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
               setErrorMsg('');
               setShowModal(true);
             }}
-            className="px-4 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-lg shadow-lime-400/20 active:scale-95 transition-all"
+            className="px-4 py-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center gap-1.5 shadow-lg shadow-lime-400/20 active:scale-95 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>{locale === 'ar' ? 'إضافة سفير جديد' : 'Ajouter un Ambassadeur'}</span>
@@ -227,7 +227,7 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
               initial={{ scale: 0.94, opacity: 0, y: 16 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.94, opacity: 0, y: 16 }}
-              className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-lime-500/30 bg-[#0C1222] p-5 sm:p-7 text-white shadow-2xl space-y-4 font-arabic"
+              className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-lime-500/30 bg-[#111114] p-5 sm:p-7 text-white shadow-2xl space-y-4 font-arabic"
             >
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
@@ -351,7 +351,7 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
                     <select
                       value={form.wilayaCode}
                       onChange={(e) => setForm({ ...form, wilayaCode: Number(e.target.value) })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E1528] border border-white/10 text-white focus:outline-none focus:border-lime-400"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white focus:outline-none focus:border-lime-400"
                     >
                       {WILAYAS.map((w) => (
                         <option key={w.code} value={w.code}>
@@ -427,7 +427,7 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
                     type="submit"
                     data-testid="submit-ambassador-btn"
                     disabled={submitting}
-                    className="px-6 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black flex items-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
+                    className="px-6 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black flex items-center gap-2 shadow-lg shadow-lime-400/20 active:scale-95 transition-all disabled:opacity-60"
                   >
                     {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}
                     <span>{locale === 'ar' ? 'تأكيد وحفظ السفير' : 'Créer le Compte'}</span>
@@ -447,7 +447,7 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-md rounded-3xl border border-lime-400/40 bg-gradient-to-b from-[#0D182E] to-[#080D1A] p-6 text-white shadow-2xl text-center space-y-4 font-arabic"
+              className="relative w-full max-w-md rounded-3xl border border-lime-400/40 bg-[#111114] p-6 text-white shadow-2xl text-center space-y-4 font-arabic"
             >
               <div className="w-12 h-12 rounded-2xl bg-lime-400/20 text-lime-400 mx-auto flex items-center justify-center">
                 <Award className="w-6 h-6" />
@@ -467,22 +467,22 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
               {/* Credentials Card */}
               <div className="bg-white/[0.04] p-4 rounded-2xl border border-white/10 text-left space-y-2.5 font-mono text-xs">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-400 text-[11px]">👤 {locale === 'ar' ? 'الاسم' : 'Nom'}:</span>
+                  <span className="text-gray-400 text-[11px]">{locale === 'ar' ? 'الاسم' : 'Nom'}:</span>
                   <span className="font-bold text-white font-sans">{createdCred.name}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-400 text-[11px]">📧 Email:</span>
+                  <span className="text-gray-400 text-[11px]">Email:</span>
                   <span className="text-lime-400 font-bold select-all">{createdCred.email}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-400 text-[11px]">🔑 Password:</span>
+                  <span className="text-gray-400 text-[11px]">Password:</span>
                   <span className="text-lime-300 font-bold bg-lime-400/10 px-2 py-0.5 rounded select-all">
                     {createdCred.tempPassword}
                   </span>
                 </div>
                 {createdCred.promoCode && (
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400 text-[11px]">🏷️ Code Promo:</span>
+                    <span className="text-gray-400 text-[11px]">Code Promo:</span>
                     <span className="text-gold-400 font-bold bg-gold-400/10 px-2 py-0.5 rounded">
                       {createdCred.promoCode}
                     </span>
@@ -493,7 +493,7 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
               <div className="flex flex-col gap-2 pt-1">
                 <button
                   onClick={copyCredentialsText}
-                  className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-lime-400/20"
+                  className="w-full py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-navy-950 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-lime-400/20"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   <span>{copied ? (locale === 'ar' ? 'تم نسخ البيانات بنجاح ✓' : 'Copié ✓') : locale === 'ar' ? 'نسخ بيانات الدخول كاملة' : 'Copier les identifiants'}</span>
@@ -539,7 +539,7 @@ export const AmbassadorsTab: React.FC<AmbassadorsTabProps> = ({ locale }) => {
               <tr key={a.id} data-testid={`ambassador-row-${a.id}`} className="hover:bg-white/[0.03] transition-colors">
                 <td className="py-3.5 px-4 font-bold text-white">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-gold-500/30 to-amber-400/30 text-gold-300 flex items-center justify-center font-black border border-gold-400/30 shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-gold-500/30 text-gold-300 flex items-center justify-center font-black border border-gold-400/30 shrink-0">
                       {a.user?.name?.charAt(0) || '?'}
                     </div>
                     <div className="min-w-0">

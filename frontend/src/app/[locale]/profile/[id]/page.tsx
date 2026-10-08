@@ -1,5 +1,6 @@
 'use client';
 
+import { trackLabel } from '@/lib/courseDisplay';
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import {
@@ -141,7 +142,7 @@ export default function PublicProfilePage({
 
   if (loading) {
     return (
-      <div className="min-h-[85vh] flex flex-col items-center justify-center gap-3 bg-[#05070D] text-white">
+      <div className="min-h-[85vh] flex flex-col items-center justify-center gap-3 bg-[#050505] text-white">
         <Loader2 className="w-8 h-8 text-gold-400 animate-spin" />
         <p className="text-xs text-gray-400 font-mono">
           {locale === 'ar' ? 'جاري تحميل الملف الشخصي...' : 'Chargement du profil...'}
@@ -152,8 +153,8 @@ export default function PublicProfilePage({
 
   if (error || !data || !data.user) {
     return (
-      <div className="min-h-[85vh] flex items-center justify-center p-4 bg-[#05070D] text-white font-arabic">
-        <div className="w-full max-w-md p-8 rounded-3xl border border-rose-500/30 bg-[#0B0E1A] text-center shadow-2xl space-y-4">
+      <div className="min-h-[85vh] flex items-center justify-center p-4 bg-[#050505] text-white font-arabic">
+        <div className="w-full max-w-md p-8 rounded-3xl border border-rose-500/30 bg-[#111114] text-center shadow-2xl space-y-4">
           <XCircle className="w-12 h-12 text-rose-500 mx-auto" />
           <h1 className="text-xl font-black">
             {locale === 'ar' ? 'الملف الشخصي غير موجود' : 'Profil introuvable'}
@@ -217,10 +218,10 @@ export default function PublicProfilePage({
     : null;
 
   return (
-    <div className="min-h-screen bg-[#05070D] text-white font-arabic py-8 px-3 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#050505] text-white font-arabic py-8 px-3 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Top Header Card */}
-        <div className="relative rounded-3xl border border-gold-500/30 bg-gradient-to-br from-[#0C1224] via-[#080C18] to-[#04060E] p-6 sm:p-8 shadow-2xl overflow-hidden">
+        <div className="relative rounded-3xl border border-gold-500/30 bg-[#111114] p-6 sm:p-8 shadow-2xl overflow-hidden">
           {/* Ambient Glow */}
           <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-dzBlue-neon/10 blur-3xl pointer-events-none" />
@@ -229,7 +230,7 @@ export default function PublicProfilePage({
             {/* Left: Avatar & Personal Info */}
             <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
               <div className="relative">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl border-2 border-gold-400 bg-gradient-to-tr from-gold-600 via-amber-400 to-yellow-300 text-navy-950 flex items-center justify-center font-black text-3xl shadow-gold-glow overflow-hidden shrink-0">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl border-2 border-gold-400 bg-gold-600 text-navy-950 flex items-center justify-center font-black text-3xl shadow-gold-glow overflow-hidden shrink-0">
                   {user.avatar ? (
                     <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                   ) : (
@@ -252,7 +253,7 @@ export default function PublicProfilePage({
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start text-xs">
-                  <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-gold-500 via-amber-400 to-gold-500 text-navy-950 font-black shadow-sm">
+                  <span className="px-3 py-1 rounded-xl bg-gold-500 text-navy-950 font-black shadow-sm">
                     {roleTitle}
                   </span>
 
@@ -291,7 +292,7 @@ export default function PublicProfilePage({
               {currentUser && (currentUser.id === user.id || currentUser.studentCardId === user.studentCardId || currentUser.role === 'OWNER') && (
                 <button
                   onClick={() => setEditModalOpen(true)}
-                  className="w-full px-4 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 hover:from-gold-400 hover:to-amber-400 text-navy-950 text-xs font-black shadow-gold-glow flex items-center justify-center gap-2 transition-all active:scale-95"
+                  className="w-full px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 text-xs font-black shadow-gold-glow flex items-center justify-center gap-2 transition-all active:scale-95"
                 >
                   <Edit3 className="w-4 h-4" />
                   <span>{locale === 'ar' ? 'تعديل الملف الشخصي' : 'Modifier le profil'}</span>
@@ -442,7 +443,7 @@ export default function PublicProfilePage({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Card Presentation */}
           <div className="lg:col-span-5 flex flex-col items-center space-y-4">
-            <div className="w-full p-6 rounded-3xl border border-white/10 bg-[#0A0E1A] shadow-xl">
+            <div className="w-full p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] shadow-xl">
               <h3 className="text-sm font-black text-gold-300 flex items-center gap-2 mb-4">
                 <Award className="w-4 h-4" />
                 <span>{locale === 'ar' ? 'بطاقة الاعتماد الرقمية' : 'Carte d\'Identité Numérique'}</span>
@@ -469,7 +470,7 @@ export default function PublicProfilePage({
                 </div>
 
                 {/* Courses */}
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0A0E1A] space-y-4">
+                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-gold-400" />
                     <span>{locale === 'ar' ? 'المقررات والدروس المعتمدة' : 'Modules & Cours Enseignés'}</span>
@@ -488,7 +489,7 @@ export default function PublicProfilePage({
                             </p>
                           </div>
                           <span className="px-3 py-1 rounded-xl bg-gold-500/20 text-gold-300 text-xs font-bold shrink-0">
-                            {c.category}
+                            {trackLabel(c.category, locale)}
                           </span>
                         </div>
                       ))}
@@ -501,7 +502,7 @@ export default function PublicProfilePage({
                 </div>
 
                 {/* Dawarat & Live Sessions */}
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0A0E1A] space-y-4">
+                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <Video className="w-5 h-5 text-emerald-400" />
                     <span>{locale === 'ar' ? 'الدورات وورشات العمل المباشرة (Dawarat)' : 'Masterclasses & Séances Live'}</span>
@@ -539,7 +540,7 @@ export default function PublicProfilePage({
 
                 {/* Packs & Bundles */}
                 {bundles.length > 0 && (
-                  <div className="p-6 rounded-3xl border border-white/10 bg-[#0A0E1A] space-y-4">
+                  <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                     <h3 className="text-base font-black text-white flex items-center gap-2">
                       <Package className="w-5 h-5 text-amber-400" />
                       <span>{locale === 'ar' ? 'حزم الامتحانات والتحضير المكثف (Packs)' : 'Packs de Préparation & Examens'}</span>
@@ -566,7 +567,7 @@ export default function PublicProfilePage({
             {/* STUDENT VIEW */}
             {isStudent && (
               <div className="space-y-6">
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0A0E1A] space-y-4">
+                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <GraduationCap className="w-5 h-5 text-gold-400" />
                     <span>{locale === 'ar' ? 'الملف الأكاديمي للطالب' : 'Profil Académique Étudiant'}</span>
@@ -616,7 +617,7 @@ export default function PublicProfilePage({
             {/* ADMIN / EMPLOYEE VIEW */}
             {isAdminOrStaff && (
               <div className="space-y-6">
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0A0E1A] space-y-4">
+                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <ShieldCheck className="w-5 h-5 text-gold-400" />
                     <span>{locale === 'ar' ? 'المسؤولية الإدارية والوظيفية' : 'Responsabilité Administrative'}</span>
@@ -625,7 +626,7 @@ export default function PublicProfilePage({
                   <div className="space-y-3 text-xs">
                     <div className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.02] border border-white/5">
                       <span className="text-gray-400">{locale === 'ar' ? 'الصفة / المنصب الوظيفي:' : 'Poste & Fonction:'}</span>
-                      <span className="font-extrabold text-[#F2D272] text-sm">{user.jobTitle || roleTitle}</span>
+                      <span className="font-extrabold text-[#f4d58a] text-sm">{user.jobTitle || roleTitle}</span>
                     </div>
 
                     <div className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.02] border border-white/5">
@@ -647,23 +648,23 @@ export default function PublicProfilePage({
 
                     <div className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.02] border border-white/5">
                       <span className="text-gray-400">{locale === 'ar' ? 'مستوى الصلاحية:' : 'Niveau de gouvernance:'}</span>
-                      <span className="font-mono text-lime-400 font-bold">
+                      <span className="text-lime-400 font-bold">
                         {user.role === 'OWNER' || isZakarya
-                          ? 'SUPER ADMIN & CTO (Level 100)'
+                          ? (locale === 'ar' ? 'المالك والمدير التقني' : 'Propriétaire & CTO')
                           : user.adminRole === 'GENERAL_ADMIN'
-                          ? 'ADMIN GÉNÉRAL (Level 95)'
+                          ? (locale === 'ar' ? 'المدير العام' : 'Admin général')
                           : user.adminRole === 'HR_MANAGER'
-                          ? 'HR MANAGER (Level 85)'
+                          ? (locale === 'ar' ? 'مسؤولة الموارد البشرية' : 'Responsable RH')
                           : user.adminRole === 'COMMERCIAL'
-                          ? 'CHARGÉE COMMERCIALE (Level 80)'
-                          : 'ADMIN STAFF (Authorized)'}
+                          ? (locale === 'ar' ? 'المسؤولة التجارية' : 'Chargée commerciale')
+                          : (locale === 'ar' ? 'فريق الإدارة' : 'Équipe administrative')}
                       </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Official Seal Banner */}
-                <div className="p-5 rounded-2xl bg-gradient-to-r from-gold-500/15 via-[#0C142B] to-gold-500/15 border border-gold-500/40 space-y-2">
+                <div className="p-5 rounded-2xl bg-gold-500/15 border border-gold-500/40 space-y-2">
                   <div className="flex items-center gap-2 text-gold-300 font-bold text-xs">
                     <Award className="w-4 h-4 text-gold-400" />
                     <span>{locale === 'ar' ? 'عضو رسمي موثق في الطاقم الإداري' : 'Membre Certifié de l\'Équipe Dirigeante'}</span>
@@ -680,7 +681,7 @@ export default function PublicProfilePage({
             {/* AMBASSADOR VIEW */}
             {isAmbassador && (
               <div className="space-y-6">
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0A0E1A] space-y-4">
+                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <Award className="w-5 h-5 text-gold-400" />
                     <span>{locale === 'ar' ? 'بيانات السفير المعتمد للولاية' : 'Ambassadeur de Wilaya'}</span>

@@ -260,7 +260,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
   return (
     <div className="space-y-6" data-testid="footer-management-tab">
       {/* Tab Header Banner */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-[#0C1427] via-[#090F1E] to-[#050811] border border-gold-500/20 shadow-2xl relative overflow-hidden">
+      <div className="p-6 rounded-3xl bg-[#111114] border border-gold-500/20 shadow-2xl relative overflow-hidden">
         <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
           <div className="space-y-1.5">
@@ -301,7 +301,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
               onClick={handleSave}
               disabled={saving}
               data-testid="footer-save-all-btn"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-400 via-amber-400 to-yellow-400 hover:from-gold-500 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-500 text-navy-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               <span>{saving ? (isAr ? 'جارٍ الحفظ...' : 'Enregistrement...') : (isAr ? 'حفظ كافة التعديلات' : 'Enregistrer les Modifications')}</span>
@@ -333,7 +333,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
       </div>
 
       {/* Sub-Tabs Navigation */}
-      <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#080D1C] border border-white/10 overflow-x-auto no-scrollbar shadow-md">
+      <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#0b0b0d] border border-white/10 overflow-x-auto no-scrollbar shadow-md">
         {[
           { id: 'social', labelAr: 'منصات التواصل الاجتماعي', labelFr: 'Réseaux Sociaux', icon: Share2, count: config.socialLinks.length },
           { id: 'contact', labelAr: 'معلومات الاتصال والعناوين', labelFr: 'Coordonnées & Adresses', icon: Phone },
@@ -350,7 +350,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
               onClick={() => setActiveSubTab(sub.id as any)}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
                 active
-                  ? 'bg-gold-500 text-slate-950 shadow-md font-black'
+                  ? 'bg-gold-500 text-navy-950 shadow-md font-black'
                   : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
@@ -393,7 +393,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
               <button
                 onClick={handleAddSocialLink}
                 data-testid="add-social-link-btn"
-                className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all self-start sm:self-auto"
+                className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
                 <span>{isAr ? 'إضافة منصة جديدة' : 'Ajouter une Plateforme'}</span>
@@ -414,7 +414,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                     animate={{ opacity: 1, y: 0 }}
                     className={`p-4 rounded-2xl border transition-all ${
                       item.enabled
-                        ? 'bg-[#0A1020] border-white/10 hover:border-gold-500/30'
+                        ? 'bg-[#111114] border-white/10 hover:border-gold-500/30'
                         : 'bg-white/[0.01] border-white/5 opacity-60'
                     }`}
                   >
@@ -432,7 +432,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                           <label className="text-[10px] text-gray-400 block mb-1">
                             {isAr ? 'نوع المنصة (القائمة المنسدلة):' : 'Plateforme :'}
                           </label>
-                          <select
+                          <select aria-label={isAr ? 'نوع المنصة (القائمة المنسدلة):' : 'Plateforme :'}
                             data-testid={`social-platform-select-${item.id}`}
                             value={item.platform}
                             onChange={(e) =>
@@ -455,7 +455,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                           <label className="text-[10px] text-gray-400 block mb-1">
                             {isAr ? 'عنوان الرابط / الوصف:' : 'Titre :'}
                           </label>
-                          <input
+                          <input aria-label={meta.labelAr}
                             type="text"
                             value={item.title}
                             onChange={(e) => handleUpdateSocialLink(item.id, 'title', e.target.value)}
@@ -469,7 +469,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                             {isAr ? 'الرابط المباشر (URL):' : 'Lien URL :'}
                           </label>
                           <div className="relative">
-                            <input
+                            <input aria-label={meta.defaultPlaceholder}
                               type="url"
                               value={item.url}
                               onChange={(e) => handleUpdateSocialLink(item.id, 'url', e.target.value)}
@@ -564,7 +564,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
 
         {/* ================= 2. CONTACT DETAILS SUB-TAB ================= */}
         {activeSubTab === 'contact' && (
-          <div className="p-6 rounded-3xl bg-[#090F1F] border border-white/10 space-y-5" data-testid="footer-subtab-contact">
+          <div className="p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5" data-testid="footer-subtab-contact">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Phone className="w-4 h-4 text-gold-400" />
@@ -584,7 +584,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                   <Phone className="w-3.5 h-3.5 text-gold-400" />
                   <span>{isAr ? 'رقم الهاتف الرسمي:' : 'Numéro de Téléphone :'}</span>
                 </label>
-                <input
+                <input aria-label="+213 (0) 555 93 54 20"
                   type="text"
                   value={config.contactInfo.phone}
                   onChange={(e) =>
@@ -605,7 +605,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                   <Mail className="w-3.5 h-3.5 text-gold-400" />
                   <span>{isAr ? 'البريد الإلكتروني الرسمي:' : 'Email Officiel :'}</span>
                 </label>
-                <input
+                <input aria-label="contact@dzprimeacademy.live"
                   type="email"
                   value={config.contactInfo.email}
                   onChange={(e) =>
@@ -626,7 +626,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                   <MapPin className="w-3.5 h-3.5 text-gold-400" />
                   <span>{isAr ? 'العنوان وتغطية الولايات (بالعربية):' : 'Adresse & Couverture (Arabe) :'}</span>
                 </label>
-                <input
+                <input aria-label="58 ولاية • الجزائر العاصمة، الجزائر"
                   type="text"
                   value={config.contactInfo.addressAr}
                   onChange={(e) =>
@@ -646,7 +646,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                   <MapPin className="w-3.5 h-3.5 text-gold-400" />
                   <span>{isAr ? 'العنوان وتغطية الولايات (بالفرنسية):' : 'Adresse & Couverture (Français) :'}</span>
                 </label>
-                <input
+                <input aria-label="58 Wilayas • Alger, Algérie"
                   type="text"
                   value={config.contactInfo.addressFr}
                   onChange={(e) =>
@@ -665,7 +665,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
 
         {/* ================= 3. BRAND BIO SUB-TAB ================= */}
         {activeSubTab === 'bio' && (
-          <div className="p-6 rounded-3xl bg-[#090F1F] border border-white/10 space-y-5" data-testid="footer-subtab-bio">
+          <div className="p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5" data-testid="footer-subtab-bio">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-gold-400" />
@@ -683,7 +683,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                 <label className="text-xs font-bold text-gray-300 block">
                   {isAr ? 'الوصف باللغة العربية:' : 'Description en Arabe :'}
                 </label>
-                <textarea
+                <textarea aria-label={isAr ? 'الوصف باللغة العربية:' : 'Description en Arabe :'}
                   rows={3}
                   value={config.brandBio.descriptionAr}
                   onChange={(e) =>
@@ -700,7 +700,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                 <label className="text-xs font-bold text-gray-300 block">
                   {isAr ? 'الوصف باللغة الفرنسية:' : 'Description en Français :'}
                 </label>
-                <textarea
+                <textarea aria-label={isAr ? 'الوصف باللغة الفرنسية:' : 'Description en Français :'}
                   rows={3}
                   value={config.brandBio.descriptionFr}
                   onChange={(e) =>
@@ -736,7 +736,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
 
               <button
                 onClick={handleAddQuickLink}
-                className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all self-start sm:self-auto"
+                className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
                 <span>{isAr ? 'إضافة رابط سريع' : 'Ajouter un Lien'}</span>
@@ -747,13 +747,13 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
               {config.quickLinks.map((link) => (
                 <div
                   key={link.id}
-                  className="p-4 rounded-2xl bg-[#0A1020] border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-center"
+                  className="p-4 rounded-2xl bg-[#111114] border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-center"
                 >
                   <div className="md:col-span-3">
                     <label className="text-[10px] text-gray-400 block mb-1">
                       {isAr ? 'العنوان بالعربية:' : 'Titre (Arabe) :'}
                     </label>
-                    <input
+                    <input aria-label={isAr ? 'العنوان بالعربية:' : 'Titre (Arabe) :'}
                       type="text"
                       value={link.labelAr}
                       onChange={(e) => handleUpdateQuickLink(link.id, 'labelAr', e.target.value)}
@@ -765,7 +765,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                     <label className="text-[10px] text-gray-400 block mb-1">
                       {isAr ? 'العنوان بالفرنسية:' : 'Titre (Français) :'}
                     </label>
-                    <input
+                    <input aria-label={isAr ? 'العنوان بالفرنسية:' : 'Titre (Français) :'}
                       type="text"
                       value={link.labelFr}
                       onChange={(e) => handleUpdateQuickLink(link.id, 'labelFr', e.target.value)}
@@ -777,7 +777,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                     <label className="text-[10px] text-gray-400 block mb-1">
                       {isAr ? 'مسار الرابط (URL):' : 'Chemin URL :'}
                     </label>
-                    <input
+                    <input aria-label={isAr ? 'مسار الرابط (URL):' : 'Chemin URL :'}
                       type="text"
                       value={link.url}
                       onChange={(e) => handleUpdateQuickLink(link.id, 'url', e.target.value)}
@@ -823,14 +823,14 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                 </h3>
                 <p className="text-xs text-gray-400 mt-0.5">
                   {isAr
-                    ? 'المربعات المعروضة في العمود الثالث للتذييل (مثل: Telegram, Smart Bots, Web Portal, Mobile App).'
+                    ? 'المربعات المعروضة في العمود الثالث للتذييل (مثل: Telegram, Assistant, Web Portal, Mobile App).'
                     : 'Les tuiles affichées dans la 3ème colonne.'}
                 </p>
               </div>
 
               <button
                 onClick={handleAddEcosystemItem}
-                className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all self-start sm:self-auto"
+                className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-gold-500/20 active:scale-95 transition-all self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
                 <span>{isAr ? 'إضافة منصة للمنظومة' : 'Ajouter un Élément'}</span>
@@ -841,13 +841,13 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
               {config.ecosystemItems.map((eco) => (
                 <div
                   key={eco.id}
-                  className="p-4 rounded-2xl bg-[#0A1020] border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-center"
+                  className="p-4 rounded-2xl bg-[#111114] border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-center"
                 >
                   <div className="md:col-span-3">
                     <label className="text-[10px] text-gray-400 block mb-1">
                       {isAr ? 'اسم المنصة:' : 'Nom :'}
                     </label>
-                    <input
+                    <input aria-label={isAr ? 'اسم المنصة:' : 'Nom :'}
                       type="text"
                       value={eco.name}
                       onChange={(e) => handleUpdateEcosystemItem(eco.id, 'name', e.target.value)}
@@ -859,7 +859,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                     <label className="text-[10px] text-gray-400 block mb-1">
                       {isAr ? 'الوصف الفرعي (عربي):' : 'Sous-texte (Arabe) :'}
                     </label>
-                    <input
+                    <input aria-label={isAr ? 'الوصف الفرعي (عربي):' : 'Sous-texte (Arabe) :'}
                       type="text"
                       value={eco.subtextAr || ''}
                       onChange={(e) => handleUpdateEcosystemItem(eco.id, 'subtextAr', e.target.value)}
@@ -871,7 +871,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                     <label className="text-[10px] text-gray-400 block mb-1">
                       {isAr ? 'الرابط (URL):' : 'Lien (URL) :'}
                     </label>
-                    <input
+                    <input aria-label={isAr ? 'الرابط (URL):' : 'Lien (URL) :'}
                       type="text"
                       value={eco.url || ''}
                       onChange={(e) => handleUpdateEcosystemItem(eco.id, 'url', e.target.value)}
@@ -909,7 +909,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
 
         {/* ================= 6. BOTTOM BAR SUB-TAB ================= */}
         {activeSubTab === 'bottomBar' && (
-          <div className="p-6 rounded-3xl bg-[#090F1F] border border-white/10 space-y-5" data-testid="footer-subtab-bottombar">
+          <div className="p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5" data-testid="footer-subtab-bottombar">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Award className="w-4 h-4 text-gold-400" />
@@ -927,7 +927,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                 <label className="text-xs font-bold text-gray-300 block">
                   {isAr ? 'نص الحقوق (بالعربية):' : 'Droits d\'auteur (Arabe) :'}
                 </label>
-                <input
+                <input aria-label={isAr ? 'نص الحقوق (بالعربية):' : 'Droits d\'auteur (Arabe) :'}
                   type="text"
                   value={config.bottomBar.copyrightAr}
                   onChange={(e) =>
@@ -944,7 +944,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                 <label className="text-xs font-bold text-gray-300 block">
                   {isAr ? 'نص الحقوق (بالفرنسية):' : 'Droits d\'auteur (Français) :'}
                 </label>
-                <input
+                <input aria-label={isAr ? 'نص الحقوق (بالفرنسية):' : 'Droits d\'auteur (Français) :'}
                   type="text"
                   value={config.bottomBar.copyrightFr}
                   onChange={(e) =>
@@ -961,7 +961,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                 <label className="text-xs font-bold text-gray-300 block">
                   {isAr ? 'الشعار الوطني (بالعربية):' : 'Slogan National (Arabe) :'}
                 </label>
-                <input
+                <input aria-label={isAr ? 'الشعار الوطني (بالعربية):' : 'Slogan National (Arabe) :'}
                   type="text"
                   value={config.bottomBar.sloganAr}
                   onChange={(e) =>
@@ -978,7 +978,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
                 <label className="text-xs font-bold text-gray-300 block">
                   {isAr ? 'الشعار الوطني (بالفرنسية):' : 'Slogan National (Français) :'}
                 </label>
-                <input
+                <input aria-label={isAr ? 'الشعار الوطني (بالفرنسية):' : 'Slogan National (Français) :'}
                   type="text"
                   value={config.bottomBar.sloganFr}
                   onChange={(e) =>
@@ -1008,7 +1008,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
             </span>
           </div>
 
-          <div className="rounded-3xl border border-gold-500/30 overflow-hidden bg-[#040817] shadow-2xl relative">
+          <div className="rounded-3xl border border-gold-500/30 overflow-hidden bg-[#0b0b0d] shadow-2xl relative">
             <div className="p-6 sm:p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pb-6 border-b border-white/10">
                 {/* Col 1 */}
@@ -1114,7 +1114,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
       )}
 
       {/* Bottom Save Bar Sticky */}
-      <div className="p-4 rounded-2xl bg-[#090E1F]/90 backdrop-blur-md border border-gold-500/30 flex items-center justify-between gap-4 shadow-xl">
+      <div className="p-4 rounded-2xl bg-[#111114]/90 border border-gold-500/30 flex items-center justify-between gap-4 shadow-xl">
         <span className="text-xs text-gray-300 font-arabic hidden sm:inline">
           {isAr
             ? 'تأكد من الضغط على زر الحفظ لتطبيق التغييرات على كافة صفحات المنصة.'
@@ -1124,7 +1124,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-gold-400 via-amber-400 to-yellow-400 hover:from-gold-500 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-gold-500/25 active:scale-95 transition-all disabled:opacity-50"
+          className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-500 text-navy-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-gold-500/25 active:scale-95 transition-all disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           <span>{saving ? (isAr ? 'جارٍ الحفظ...' : 'Enregistrement...') : (isAr ? 'حفظ كافة التعديلات الآن' : 'Enregistrer Maintenant')}</span>
