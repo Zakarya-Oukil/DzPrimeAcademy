@@ -2,7 +2,6 @@ import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dzprimeacademy.live';
-  const now = new Date();
 
   const publicRoutes = [
     { path: '', priority: 1.0, changeFrequency: 'daily' as const },
@@ -17,26 +16,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const sitemapEntries: MetadataRoute.Sitemap = [];
 
-  // Root redirect entry
-  sitemapEntries.push({
-    url: baseUrl,
-    lastModified: now,
-    changeFrequency: 'daily',
-    priority: 1.0,
-    alternates: {
-      languages: {
-        ar: `${baseUrl}/ar`,
-        fr: `${baseUrl}/fr`,
-      },
-    },
-  });
-
+  // The bare root only redirects to a locale, so it is not listed.
   // Localized entries for Arabic and French
   for (const route of publicRoutes) {
     for (const locale of ['ar', 'fr']) {
       sitemapEntries.push({
         url: `${baseUrl}/${locale}${route.path}`,
-        lastModified: now,
         changeFrequency: route.changeFrequency,
         priority: route.priority,
         alternates: {

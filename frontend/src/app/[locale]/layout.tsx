@@ -95,10 +95,6 @@ export async function generateMetadata({
     verification: {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
     },
-    icons: {
-      icon: '/favicon.ico',
-      apple: '/favicon.ico',
-    },
   };
 }
 
