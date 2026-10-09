@@ -130,7 +130,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
   return (
     <div className="space-y-6" data-testid="sessions-tab">
       {/* Top Banner */}
-      <div className="p-5 rounded-3xl bg-[#111114] border border-gold-500/30 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="dark p-5 rounded-3xl bg-[#111114] border border-gold-500/30 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-lime-500/20 border border-lime-400/40 text-lime-400 flex items-center justify-center shrink-0">
             <Video className="w-5 h-5" />
@@ -264,7 +264,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
             <select
               value={form.platform}
               onChange={(e) => setForm({ ...form, platform: e.target.value as any })}
-              className="w-full px-3.5 py-2 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-lime-400"
+              className="dark w-full px-3.5 py-2 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-lime-400"
             >
               <option value="GOOGLE_MEET">Google Meet</option>
               <option value="CLASSROOM">Classroom</option>
@@ -286,7 +286,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value as any })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs font-bold text-lime-400 focus:outline-none focus:border-lime-400"
+                className="dark w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs font-bold text-lime-400 focus:outline-none focus:border-lime-400"
               >
                 <option value="UPCOMING">UPCOMING (قادمة)</option>
                 <option value="LIVE">LIVE (مباشرة الآن)</option>
@@ -320,7 +320,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ locale }) => {
             <div
               key={s.id}
               data-testid={`session-row-${s.id}`}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-3xl bg-[#0b0b0d] border border-white/10 hover:border-gold-500/30 transition-all shadow-sm"
+              className="dark flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-3xl bg-[#0b0b0d] border border-white/10 hover:border-gold-500/30 transition-all shadow-sm"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div

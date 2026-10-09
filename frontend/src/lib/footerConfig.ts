@@ -239,9 +239,9 @@ export function getPlatformMeta(type: string): PlatformMetadata {
 export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
   brandBio: {
     descriptionAr:
-      'المنصة الوطنية التعليمية الجزائرية. نوفر لطلبة البكالوريا والجامعات وصولاً حصرياً لأكبر بنك امتحانات مصححة ونخبة الأساتذة المعتمدين عبر 58 ولاية.',
+      'المنصة الوطنية التعليمية الجزائرية. نوفر لطلبة البكالوريا والجامعات بنك امتحانات مصححة وملخصات وحصصاً مباشرة مع أساتذة معتمدين.',
     descriptionFr:
-      "La plateforme éducative nationale algérienne. Nous offrons aux étudiants du BAC et de l'université un accès exclusif à la plus grande banque d'épreuves corrigées et aux meilleurs enseignants à travers les 58 wilayas.",
+      "La plateforme éducative nationale algérienne. Nous offrons aux étudiants du BAC et de l'université une banque d'épreuves corrigées, des résumés et des sessions en direct avec des enseignants certifiés.",
   },
   socialLinks: [
     {
@@ -383,7 +383,7 @@ export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
   bottomBar: {
     copyrightAr: 'جميع الحقوق محفوظة.',
     copyrightFr: 'Tous droits réservés.',
-    sloganAr: 'فخر المنظومة التعليمية الجزائرية في 58 ولاية',
-    sloganFr: "Fierté de l'éducation algérienne dans les 58 wilayas",
+    sloganAr: 'منصة جزائرية للتحضير للبكالوريا والجامعة',
+    sloganFr: "Plateforme algérienne de préparation au BAC et à l'université",
   },
 };

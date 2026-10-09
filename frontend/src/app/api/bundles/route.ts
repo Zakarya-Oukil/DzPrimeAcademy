@@ -34,6 +34,8 @@ async function POSTHandler(request: NextRequest) {
     return NextResponse.json({ error: 'العنوان والأسعار (أعداد صحيحة غير سالبة) مطلوبة' }, { status: 400 });
   }
 
+  if (body.currentPriceDzd > body.originalPriceDzd) return NextResponse.json({ error: 'سعر البيع الحالي لا يمكن أن يتجاوز السعر الأصلي' }, { status: 400 });
+
   const image = parseImageField(body.imageUrl, 'bundle');
   if ('error' in image) return NextResponse.json({ error: image.error }, { status: 400 });
 

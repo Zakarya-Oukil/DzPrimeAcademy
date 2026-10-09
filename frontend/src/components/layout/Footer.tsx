@@ -148,7 +148,7 @@ export const Footer: React.FC = () => {
       className={`w-full border-t ${footerBgClass} pt-12 pb-8 relative overflow-hidden transition-colors duration-300`}
     >
       {/* Top Gold Border Accent */}
-      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-gold-500 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gold-500/60" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-slate-200 dark:border-gray-800">
@@ -171,7 +171,7 @@ export const Footer: React.FC = () => {
                     target="_blank"
                     rel="noreferrer"
                     data-testid={`footer-social-${item.platform}`}
-                    className={`w-8 h-8 rounded-xl bg-white dark:bg-navy-850 border border-slate-300 dark:border-gold-500/30 flex items-center justify-center text-slate-700 dark:text-gray-300 ${meta.hoverClass} transition-all hover:scale-110 shadow-sm`}
+                    className={`w-8 h-8 rounded-xl bg-white dark:bg-navy-850 border border-slate-300 dark:border-gold-500/30 flex items-center justify-center text-slate-700 dark:text-gray-300 ${meta.hoverClass} transition-all shadow-sm`}
                     title={item.title || meta.labelAr}
                   >
                     <IconComponent className="w-4 h-4" />
@@ -301,7 +301,7 @@ export const Footer: React.FC = () => {
             © {new Date().getFullYear()} DZ PRIME ACADEMY. {copyrightText}
           </p>
           <p className="font-bold text-gold-700 dark:text-gold-300">
-            🇩🇿 {sloganText}
+            {sloganText}
           </p>
         </div>
       </div>

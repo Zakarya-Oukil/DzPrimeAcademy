@@ -33,25 +33,13 @@ export const FloatingBotWidget: React.FC = () => {
         <motion.button
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.94 }}
           onClick={() => setIsOpen(true)}
-          className="relative group flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-gold-500 text-navy-950 font-semibold shadow-lg border border-navy-950/20 transition-all duration-300 touch-target"
+          aria-label={t('floatingBot.launcherTitle')}
+          title={t('floatingBot.launcherTitle')}
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-gold-500 hover:bg-gold-400 text-navy-950 shadow-lg border border-navy-950/20 transition-colors touch-target"
         >
-
-
-          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-navy-950 text-gold-400 flex items-center justify-center shrink-0 shadow-inner">
-            <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-
-          <div className="flex flex-col text-left font-sans">
-            <span className="text-[11px] sm:text-xs font-black tracking-wide leading-tight">
-              {t('floatingBot.launcherTitle')}
-            </span>
-            <span className="text-[9px] sm:text-[10px] font-semibold opacity-90 leading-tight">
-              {t('floatingBot.badge')}
-            </span>
-          </div>
+          <Bot className="w-5 h-5" />
         </motion.button>
       )}
 
@@ -76,9 +64,6 @@ export const FloatingBotWidget: React.FC = () => {
                 <div>
                   <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 font-arabic">
                     <span>{t('floatingBot.launcherTitle')}</span>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-bold">
-                      {t('floatingBot.online')}
-                    </span>
                   </h3>
                   <p className="text-[10px] text-slate-500 dark:text-gray-400 font-arabic">
                     {t('floatingBot.launcherSubtitle')}

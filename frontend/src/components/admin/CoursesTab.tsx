@@ -47,6 +47,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
   const [modules, setModules] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<{ id: string; name: string }[]>([]);
   const [formError, setFormError] = useState('');
+  const [moduleError, setModuleError] = useState('');
   const [saving, setSaving] = useState(false);
   const ar = locale === 'ar';
   const [showCourseForm, setShowCourseForm] = useState(false);
@@ -140,34 +141,55 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
 
   const handleAddModule = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch('/api/modules', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(moduleForm),
-    });
+    setModuleError('');
+    try {
+      const res = await fetch('/api/modules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(moduleForm),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        return setModuleError(d.error || (ar ? 'تعذر حفظ المقياس' : "Échec de l'enregistrement du module"));
+      }
+    } catch {
+      return setModuleError(ar ? 'خطأ في الاتصال بالخادم' : 'Erreur de connexion');
+    }
     setModuleForm({ nameAr: '', nameFr: '', code: '', coefficient: 2, trackType: 'UNIVERSITY_LMD' });
     setShowModuleForm(false);
     loadModules();
   };
 
   const handleDeleteModule = async (id: string) => {
-    await fetch(`/api/modules?id=${id}`, { method: 'DELETE' });
+    if (!window.confirm(ar ? 'حذف هذا المقياس نهائياً؟' : 'Supprimer définitivement ce module ?')) return;
+    try {
+      const res = await fetch(`/api/modules?id=${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setModuleError(d.error || (ar ? 'تعذر حذف المقياس' : 'Échec de la suppression du module'));
+        return;
+      }
+      setModuleError('');
+    } catch {
+      setModuleError(ar ? 'خطأ في الاتصال بالخادم' : 'Erreur de connexion');
+      return;
+    }
     loadModules();
   };
 
   return (
     <div className="space-y-8" data-testid="courses-tab">
       {/* Top Commercial Banner */}
-      <div className="p-5 rounded-3xl bg-[#111114] border border-gold-500/30 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="dark p-5 rounded-3xl bg-[#111114] border border-gold-500/30 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center shrink-0">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-base font-black text-white">
+              <h2 className="text-base font-black text-white">
                 {locale === 'ar' ? 'إدارة دورات ومقررات الامتياز (Dawarat)' : 'Gestion des Dawarat & Modules d\'Excellence'}
-              </h3>
+              </h2>
               <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-400/30">
                 {ar ? 'الإدارة التجارية' : 'Direction commerciale'}
               </span>
@@ -217,6 +239,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
                   setEditingCourse(null);
                 }}
                 className="p-1 rounded-lg hover:bg-white/10 text-gray-400"
+                aria-label={ar ? 'إغلاق' : 'Fermer'}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -248,7 +271,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               <select
                 value={courseForm.teacherId}
                 onChange={(e) => setCourseForm({ ...courseForm, teacherId: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-gold-400"
+                className="dark w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-gold-400"
               >
                 <option value="">{ar ? '— اختر الأستاذ —' : '— Choisir —'}</option>
                 {teachers.map((t) => (
@@ -262,7 +285,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               <select
                 value={courseForm.category}
                 onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value as CourseForm['category'] })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-gold-400"
+                className="dark w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-gold-400"
               >
                 {(['UNIVERSITY_LMD', 'BAC', 'MEDICAL'] as const).map((k) => (
                   <option key={k} value={k}>{trackLabel(k, locale)}</option>
@@ -345,7 +368,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
                 type="submit"
                 disabled={saving}
                 data-testid="submit-course-btn"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 hover:from-gold-400 hover:to-amber-400 text-navy-950 font-black text-xs shadow-md active:scale-95 transition-all disabled:opacity-60"
+                className="px-6 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs shadow-md active:scale-95 transition-all disabled:opacity-60"
               >
                 {editingCourse
                   ? (ar ? 'تحديث ونشر التعديلات ✓' : 'Mettre à jour')
@@ -361,7 +384,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
             <div
               key={c.id}
               data-testid={`admin-course-card-${c.id}`}
-              className="p-4 rounded-3xl bg-[#0b0b0d] border border-white/10 hover:border-gold-500/40 transition-all space-y-2.5 shadow-md"
+              className="dark p-4 rounded-3xl bg-[#0b0b0d] border border-white/10 hover:border-gold-500/40 transition-all space-y-2.5 shadow-md"
             >
               <div className="flex items-center justify-between">
                 <span className="px-2.5 py-0.5 rounded-lg bg-gold-400/10 text-gold-300 text-[10px] font-bold border border-gold-400/20">
@@ -462,6 +485,9 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               onChange={(e) => setModuleForm({ ...moduleForm, coefficient: Number(e.target.value) })}
               className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-gray-500"
             />
+            {moduleError && (
+              <p role="alert" data-testid="module-form-error" className="sm:col-span-4 text-xs font-bold text-rose-400">{moduleError}</p>
+            )}
             <button
               type="submit"
               data-testid="submit-module-btn"
@@ -470,6 +496,10 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               {locale === 'ar' ? 'حفظ المقياس' : 'Enregistrer'}
             </button>
           </form>
+        )}
+
+        {moduleError && !showModuleForm && (
+          <p role="alert" className="text-xs font-bold text-rose-400">{moduleError}</p>
         )}
 
         <div className="overflow-x-auto no-scrollbar rounded-2xl border border-white/10">
@@ -497,6 +527,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
                       data-testid={`delete-module-${m.id}`}
                       onClick={() => handleDeleteModule(m.id)}
                       className="p-1.5 rounded-lg hover:bg-rose-500/20 text-gray-500 hover:text-rose-400"
+                      aria-label={ar ? 'حذف المقياس' : 'Supprimer le module'}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

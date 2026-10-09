@@ -217,7 +217,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
   return (
     <div className="space-y-6 font-arabic" data-testid="admin-settings-tab">
       {/* Header Banner */}
-      <div className="p-5 rounded-3xl bg-[#111114] border border-lime-500/30 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="dark p-5 rounded-3xl bg-[#111114] border border-lime-500/30 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-2xl bg-lime-400/20 text-lime-400 flex items-center justify-center font-black shrink-0">
             <Sliders className="w-6 h-6" />
@@ -298,10 +298,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
 
           <form onSubmit={handleProfileSubmit} className="space-y-3.5 text-xs">
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold">
+              <label htmlFor="as-f1" className="block text-gray-300 mb-1 font-semibold">
                 {locale === 'ar' ? 'الاسم الكامل للمسؤول' : 'Nom complet'} *
               </label>
-              <input
+              <input id="as-f1"
                 required
                 value={profileForm.name}
                 onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
@@ -311,10 +311,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold">
+              <label htmlFor="as-f2" className="block text-gray-300 mb-1 font-semibold">
                 {locale === 'ar' ? 'البريد الإلكتروني' : 'Email'}
               </label>
-              <input
+              <input id="as-f2"
                 disabled
                 value={currentUser?.email || ''}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-gray-400 font-mono cursor-not-allowed"
@@ -322,10 +322,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold">
+              <label htmlFor="as-f3" className="block text-gray-300 mb-1 font-semibold">
                 {locale === 'ar' ? 'رقم الهاتف' : 'Téléphone'}
               </label>
-              <input
+              <input id="as-f3"
                 value={profileForm.phone}
                 onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
                 placeholder="0555 12 34 56"
@@ -335,13 +335,13 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold">
+              <label htmlFor="as-f4" className="block text-gray-300 mb-1 font-semibold">
                 {locale === 'ar' ? 'الولاية والمقر' : 'Wilaya'}
               </label>
-              <select
+              <select id="as-f4"
                 value={profileForm.wilayaCode}
                 onChange={(e) => setProfileForm({ ...profileForm, wilayaCode: Number(e.target.value) })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white focus:outline-none focus:border-lime-400"
+                className="dark w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white focus:outline-none focus:border-lime-400"
               >
                 {WILAYAS.map((w) => (
                   <option key={w.code} value={w.code}>
@@ -352,10 +352,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold">
+              <label htmlFor="as-f5" className="block text-gray-300 mb-1 font-semibold">
                 {locale === 'ar' ? 'المؤسسة أو الهيئة' : 'Institution'}
               </label>
-              <input
+              <input id="as-f5"
                 value={profileForm.institutionName}
                 onChange={(e) => setProfileForm({ ...profileForm, institutionName: e.target.value })}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-lime-400"
@@ -397,10 +397,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
 
           <form onSubmit={handleSaveSystemSettings} className="space-y-3.5 text-xs">
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold">
+              <label htmlFor="as-f6" className="block text-gray-300 mb-1 font-semibold">
                 {locale === 'ar' ? 'السنة الجامعية المعتمدة' : 'Année académique'}
               </label>
-              <input
+              <input id="as-f6"
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-mono focus:outline-none focus:border-lime-400"
@@ -408,10 +408,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold">
+              <label htmlFor="as-f7" className="block text-gray-300 mb-1 font-semibold">
                 {locale === 'ar' ? 'نسبة عمولة السفراء (%)' : 'Taux commission ambassadeurs (%)'}
               </label>
-              <input
+              <input id="as-f7"
                 type="number"
                 min={1}
                 max={50}
@@ -469,10 +469,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
               </label>
 
               <div>
-                <label className="block text-gray-300 text-[11px] mb-1">
+                <label htmlFor="as-f8" className="block text-gray-300 text-[11px] mb-1">
                   {locale === 'ar' ? 'رقم واتساب الإدارة والدعم (WhatsApp)' : 'Numéro WhatsApp (Support)'}
                 </label>
-                <input
+                <input id="as-f8"
                   value={whatsappNumber}
                   onChange={(e) => setWhatsappNumber(e.target.value)}
                   placeholder="https://wa.me/qr/5473INCXN3HJI1"
@@ -482,10 +482,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
               </div>
 
               <div>
-                <label className="block text-gray-300 text-[11px] mb-1">
+                <label htmlFor="as-f9" className="block text-gray-300 text-[11px] mb-1">
                   {locale === 'ar' ? 'معرّف تيليغرام الإدارة والدعم (Telegram)' : 'Nom d\'utilisateur Telegram (Support)'}
                 </label>
-                <input
+                <input id="as-f9"
                   value={telegramUsername}
                   onChange={(e) => setTelegramUsername(e.target.value)}
                   placeholder="dzprime_academy"
@@ -495,11 +495,11 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
               </div>
 
               <div>
-                <label className="block text-gray-300 text-[11px] mb-1">
+                <label htmlFor="as-f10" className="block text-gray-300 text-[11px] mb-1">
                   {locale === 'ar' ? 'سعر العضوية الذهبية VIP (دج) — يظهر بالشريط الجانبي وصفحات الترقية' : 'Prix Adhésion VIP Gold (DZD)'}
                 </label>
                 <div className="relative">
-                  <input
+                  <input id="as-f10"
                     type="number"
                     min="0"
                     step="500"
@@ -513,10 +513,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
               </div>
 
               <div>
-                <label className="block text-gray-300 text-[11px] mb-1">
+                <label htmlFor="as-f11" className="block text-gray-300 text-[11px] mb-1">
                   {locale === 'ar' ? 'رابط حساب لينكد إن الرسمي (LinkedIn)' : 'Lien profil LinkedIn'}
                 </label>
-                <input
+                <input id="as-f11"
                   value={linkedinUrl}
                   onChange={(e) => setLinkedinUrl(e.target.value)}
                   placeholder="https://www.linkedin.com/company/dzprimeacademy"
@@ -538,6 +538,9 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
                 <button
                   type="button"
                   onClick={() => setAutoVerifyCards(!autoVerifyCards)}
+                  role="switch"
+                  aria-checked={autoVerifyCards}
+                  aria-label={locale === 'ar' ? 'التفعيل التلقائي للبطاقات' : 'Activation automatique des cartes'}
                   className={`w-10 h-5 rounded-full relative transition-all ${autoVerifyCards ? 'bg-lime-400' : 'bg-white/15'}`}
                 >
                   <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${autoVerifyCards ? 'left-5' : 'left-0.5'}`} />
@@ -580,11 +583,11 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
 
           <form onSubmit={handlePasswordChange} className="space-y-3.5 text-xs">
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold text-[11px]">
+              <label htmlFor="as-f12" className="block text-gray-300 mb-1 font-semibold text-[11px]">
                 {locale === 'ar' ? 'كلمة المرور الحالية' : 'Mot de passe actuel'}
               </label>
               <div className="relative">
-                <input
+                <input id="as-f12"
                   type={showCurrentPassword ? 'text' : 'password'}
                   required
                   placeholder="••••••••"
@@ -595,6 +598,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  aria-label={locale === 'ar' ? 'إظهار أو إخفاء كلمة المرور' : 'Afficher ou masquer le mot de passe'}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
                 >
                   {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -603,11 +607,11 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold text-[11px]">
+              <label htmlFor="as-f13" className="block text-gray-300 mb-1 font-semibold text-[11px]">
                 {locale === 'ar' ? 'كلمة المرور الجديدة' : 'Nouveau mot de passe'}
               </label>
               <div className="relative">
-                <input
+                <input id="as-f13"
                   type={showNewPassword ? 'text' : 'password'}
                   required
                   placeholder="•••••••• (8+ أحرف)"
@@ -618,6 +622,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
+                  aria-label={locale === 'ar' ? 'إظهار أو إخفاء كلمة المرور' : 'Afficher ou masquer le mot de passe'}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
                 >
                   {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -626,10 +631,10 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ locale }) =>
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1 font-semibold text-[11px]">
+              <label htmlFor="as-f14" className="block text-gray-300 mb-1 font-semibold text-[11px]">
                 {locale === 'ar' ? 'تأكيد كلمة المرور الجديدة' : 'Confirmer le mot de passe'}
               </label>
-              <input
+              <input id="as-f14"
                 type="password"
                 required
                 placeholder="••••••••"

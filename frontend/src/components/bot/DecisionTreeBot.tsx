@@ -259,7 +259,6 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
       } border border-slate-200 dark:border-gold-500/30 bg-white/95 dark:bg-navy-900/95 shadow-xl text-slate-900 dark:text-white transition-colors duration-300 relative overflow-hidden`}
     >
       {/* Background highlight */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-gold-500/10 dark:bg-gold-500/10 blur-3xl pointer-events-none" />
 
       {/* Header with Title & Reset Button */}
       {!isFloating && (
@@ -473,7 +472,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                 onClick={() => handleSelectTrack('UNIVERSITY_LMD')}
                 className="group p-5 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-navy-850 hover:bg-amber-50/50 dark:hover:from-navy-800 dark:hover:to-navy-850 flex flex-col items-center text-center transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.98]"
               >
-                <div className="w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/40 text-gold-600 dark:text-gold-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/40 text-gold-600 dark:text-gold-400 flex items-center justify-center mb-3 group- transition-transform">
                   <GraduationCap className="w-8 h-8" />
                 </div>
                 <h4 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-gold-600 dark:group-hover:text-gold-200 font-arabic">
@@ -492,7 +491,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                 onClick={() => handleSelectTrack('BAC')}
                 className="group p-5 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-navy-850 hover:bg-amber-50/50 dark:hover:from-navy-800 dark:hover:to-navy-850 flex flex-col items-center text-center transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.98]"
               >
-                <div className="w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/40 text-gold-600 dark:text-gold-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/40 text-gold-600 dark:text-gold-400 flex items-center justify-center mb-3 group- transition-transform">
                   <BookOpen className="w-8 h-8" />
                 </div>
                 <h4 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-gold-600 dark:group-hover:text-gold-200 font-arabic">
@@ -536,7 +535,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                     }
                     className="p-3.5 rounded-xl border border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-navy-850 hover:bg-white dark:hover:bg-navy-800 text-left flex items-start gap-3 transition-all group active:scale-[0.98]"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-gold-500/15 border border-gold-500/40 flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 group- transition-transform">
                       <Building2 className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -576,7 +575,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                     onClick={() => handleSelectFaculty(fac.id, facName)}
                     className="p-4 rounded-xl border border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-navy-850 hover:bg-white dark:hover:bg-navy-800 flex items-center gap-3 text-left transition-all group active:scale-[0.98]"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gold-500/15 border border-gold-500/40 flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 group- transition-transform">
                       <Layers className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
@@ -613,7 +612,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                     onClick={() => handleSelectSpecialty(spec.id, specName)}
                     className="p-4 rounded-xl border border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-navy-850 hover:bg-white dark:hover:bg-navy-800 flex items-center gap-3 text-left transition-all group active:scale-[0.98]"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gold-500/15 border border-gold-500/40 flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 group- transition-transform">
                       <BookOpen className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
@@ -650,7 +649,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                     onClick={() => handleSelectAcademicYear(year.id, yearName)}
                     className="p-4 rounded-xl border border-slate-200 dark:border-gold-500/30 hover:border-gold-500 bg-slate-50 dark:bg-navy-850 hover:bg-white dark:hover:bg-navy-800 flex items-center gap-3 text-left transition-all group active:scale-[0.98]"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gold-500/15 border border-gold-500/40 flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 group- transition-transform">
                       <Calendar className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
@@ -762,9 +761,9 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
             {finalTab === 'SUMMARIES' && (
               <div className="space-y-4">
                 {/* Intro Callout Banner */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-gold-500/10 to-transparent border border-gold-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/15 border border-gold-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 mt-0.5">
+                    <div className="flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0 mt-0.5">
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
@@ -904,7 +903,7 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
                         onClick={() =>
                           setActiveSummaryPreview({
                             title: locale === 'ar' ? `دليل المنهجية والأخطاء - ${selection.moduleName}` : `Guide Méthodologique - ${selection.moduleName}`,
-                            desc: locale === 'ar' ? 'نصائح حصرية من نخبة الأساتذة لضمان الحصول على أعلى الدرجات.' : 'Conseils exclusifs pour maximiser votre note aux examens.',
+                            desc: locale === 'ar' ? 'نصائح حصرية من أساتذة المنصة لضمان الحصول على أعلى الدرجات.' : 'Conseils exclusifs pour maximiser votre note aux examens.',
                           })
                         }
                         className="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-navy-800 hover:bg-slate-200 dark:hover:bg-navy-700 text-slate-800 dark:text-gold-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
@@ -1005,9 +1004,9 @@ export const DecisionTreeBot: React.FC<DecisionTreeBotProps> = ({ isFloating = f
 
                 {/* Free vs. Paid Notice Banner */}
                 {!isUserGold && (
-                  <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-gold-500/10 to-transparent border border-gold-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="p-3.5 rounded-2xl bg-amber-500/15 border border-gold-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-xl bg-gold-500/20 border border-gold-400/50 flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0">
+                      <div className="flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0">
                         <Sparkles className="w-4 h-4" />
                       </div>
                       <div>

@@ -182,6 +182,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
           </div>
           <select
             data-testid="students-wilaya-filter"
+            aria-label={locale === 'ar' ? 'تصفية حسب الولاية' : 'Filtrer par wilaya'}
             value={wilayaFilter}
             onChange={(e) => setWilayaFilter(e.target.value)}
             className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-200"
@@ -195,6 +196,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
           </select>
           <select
             data-testid="students-tier-filter"
+            aria-label={locale === 'ar' ? 'تصفية حسب الفئة' : 'Filtrer par catégorie'}
             value={tierFilter}
             onChange={(e) => setTierFilter(e.target.value)}
             className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-200"
@@ -336,7 +338,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
       {/* Add Student Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-[#111114] p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
+          <div className="dark w-full max-w-lg rounded-3xl border border-white/10 bg-[#111114] p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2 text-white font-bold text-sm">
                 <GraduationCap className="w-4 h-4 text-lime-400" />
@@ -509,7 +511,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ locale }) => {
       {/* Delete Confirmation Modal */}
       {deleteCandidate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm rounded-3xl border border-rose-500/30 bg-[#111114] p-6 shadow-2xl space-y-4 text-center">
+          <div className="dark w-full max-w-sm rounded-3xl border border-rose-500/30 bg-[#111114] p-6 shadow-2xl space-y-4 text-center">
             <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
               <Trash2 className="w-6 h-6" />
             </div>

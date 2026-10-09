@@ -154,7 +154,7 @@ export default function PublicProfilePage({
   if (error || !data || !data.user) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center p-4 bg-[#050505] text-white font-arabic">
-        <div className="w-full max-w-md p-8 rounded-3xl border border-rose-500/30 bg-[#111114] text-center shadow-2xl space-y-4">
+        <div className="dark w-full max-w-md p-8 rounded-3xl border border-rose-500/30 bg-[#111114] text-center shadow-2xl space-y-4">
           <XCircle className="w-12 h-12 text-rose-500 mx-auto" />
           <h1 className="text-xl font-black">
             {locale === 'ar' ? 'الملف الشخصي غير موجود' : 'Profil introuvable'}
@@ -221,10 +221,8 @@ export default function PublicProfilePage({
     <div className="min-h-screen bg-[#050505] text-white font-arabic py-8 px-3 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Top Header Card */}
-        <div className="relative rounded-3xl border border-gold-500/30 bg-[#111114] p-6 sm:p-8 shadow-2xl overflow-hidden">
+        <div className="dark relative rounded-3xl border border-gold-500/30 bg-[#111114] p-6 sm:p-8 shadow-2xl overflow-hidden">
           {/* Ambient Glow */}
-          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-dzBlue-neon/10 blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
             {/* Left: Avatar & Personal Info */}
@@ -443,7 +441,7 @@ export default function PublicProfilePage({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Card Presentation */}
           <div className="lg:col-span-5 flex flex-col items-center space-y-4">
-            <div className="w-full p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] shadow-xl">
+            <div className="dark w-full p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] shadow-xl">
               <h3 className="text-sm font-black text-gold-300 flex items-center gap-2 mb-4">
                 <Award className="w-4 h-4" />
                 <span>{locale === 'ar' ? 'بطاقة الاعتماد الرقمية' : 'Carte d\'Identité Numérique'}</span>
@@ -470,7 +468,7 @@ export default function PublicProfilePage({
                 </div>
 
                 {/* Courses */}
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
+                <div className="dark p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-gold-400" />
                     <span>{locale === 'ar' ? 'المقررات والدروس المعتمدة' : 'Modules & Cours Enseignés'}</span>
@@ -502,7 +500,7 @@ export default function PublicProfilePage({
                 </div>
 
                 {/* Dawarat & Live Sessions */}
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
+                <div className="dark p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <Video className="w-5 h-5 text-emerald-400" />
                     <span>{locale === 'ar' ? 'الدورات وورشات العمل المباشرة (Dawarat)' : 'Masterclasses & Séances Live'}</span>
@@ -540,7 +538,7 @@ export default function PublicProfilePage({
 
                 {/* Packs & Bundles */}
                 {bundles.length > 0 && (
-                  <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
+                  <div className="dark p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                     <h3 className="text-base font-black text-white flex items-center gap-2">
                       <Package className="w-5 h-5 text-amber-400" />
                       <span>{locale === 'ar' ? 'حزم الامتحانات والتحضير المكثف (Packs)' : 'Packs de Préparation & Examens'}</span>
@@ -567,7 +565,7 @@ export default function PublicProfilePage({
             {/* STUDENT VIEW */}
             {isStudent && (
               <div className="space-y-6">
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
+                <div className="dark p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <GraduationCap className="w-5 h-5 text-gold-400" />
                     <span>{locale === 'ar' ? 'الملف الأكاديمي للطالب' : 'Profil Académique Étudiant'}</span>
@@ -617,7 +615,7 @@ export default function PublicProfilePage({
             {/* ADMIN / EMPLOYEE VIEW */}
             {isAdminOrStaff && (
               <div className="space-y-6">
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
+                <div className="dark p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <ShieldCheck className="w-5 h-5 text-gold-400" />
                     <span>{locale === 'ar' ? 'المسؤولية الإدارية والوظيفية' : 'Responsabilité Administrative'}</span>
@@ -681,7 +679,7 @@ export default function PublicProfilePage({
             {/* AMBASSADOR VIEW */}
             {isAmbassador && (
               <div className="space-y-6">
-                <div className="p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
+                <div className="dark p-6 rounded-3xl border border-white/10 bg-[#0b0b0d] space-y-4">
                   <h3 className="text-base font-black text-white flex items-center gap-2">
                     <Award className="w-5 h-5 text-gold-400" />
                     <span>{locale === 'ar' ? 'بيانات السفير المعتمد للولاية' : 'Ambassadeur de Wilaya'}</span>

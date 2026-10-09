@@ -34,19 +34,23 @@ async function POSTHandler(request: NextRequest) {
   const bad = moduleProblem(body, true);
   if (bad) return badField(bad);
 
-  const mod = await prisma.module.create({
-    data: {
-      nameAr: body.nameAr,
-      nameFr: body.nameFr || null,
-      code: body.code,
-      coefficient: body.coefficient ?? 1,
-      academicYearId: body.academicYearId || 'year-mi-s1',
-      trackType: body.trackType || 'UNIVERSITY_LMD',
-      examsCount: body.examsCount ?? 0,
-    },
-  });
-
-  return NextResponse.json(mod, { status: 201 });
+  try {
+    const mod = await prisma.module.create({
+      data: {
+        nameAr: body.nameAr,
+        nameFr: body.nameFr || null,
+        code: body.code,
+        coefficient: body.coefficient ?? 1,
+        academicYearId: body.academicYearId || 'year-mi-s1',
+        trackType: body.trackType || 'UNIVERSITY_LMD',
+        examsCount: body.examsCount ?? 0,
+      },
+    });
+    return NextResponse.json(mod, { status: 201 });
+  } catch (e: any) {
+    if (e?.code === 'P2002') return NextResponse.json({ error: 'رمز المقياس مستخدم من قبل، اختر رمزاً آخر' }, { status: 409 });
+    throw e;
+  }
 }
 
 async function PUTHandler(request: NextRequest) {

@@ -89,7 +89,7 @@ function ResetContent() {
 
       {view === 'done' && (
         <div className={card} data-testid="reset-password-done">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center"><CheckCircle2 className="w-6 h-6" /></div>
+          <div className="text-emerald-300 flex items-center justify-center"><CheckCircle2 className="w-6 h-6" /></div>
           <h1 className="text-xl font-black">{t('تم تغيير كلمة المرور', 'Mot de passe modifié')}</h1>
           <p className="text-sm text-slate-400">{t('تم تسجيل خروجك من كل الأجهزة الأخرى. سجّل الدخول بكلمة المرور الجديدة.', 'Vous avez été déconnecté partout ailleurs. Connectez-vous avec votre nouveau mot de passe.')}</p>
           <button type="button" onClick={() => openAuth('login')} className={primary}>{t('الذهاب إلى تسجيل الدخول', 'Aller à la connexion')}</button>
@@ -98,7 +98,7 @@ function ResetContent() {
 
       {view === 'invalid' && (
         <div className={card} data-testid="reset-password-invalid">
-          <div className="w-11 h-11 rounded-2xl bg-rose-500/20 text-rose-300 flex items-center justify-center"><AlertTriangle className="w-6 h-6" /></div>
+          <div className="text-rose-300 flex items-center justify-center"><AlertTriangle className="w-6 h-6" /></div>
           <h1 className="text-xl font-black">{t('هذا الرابط لم يعد يعمل', 'Ce lien ne fonctionne plus')}</h1>
           <p className="text-sm text-slate-400">{t('روابط إعادة التعيين تعمل مرة واحدة وتنتهي بعد 30 دقيقة. افتح تسجيل الدخول واختر «نسيت كلمة المرور» لطلب رابط جديد، ثم استعمل أحدث رسالة.', 'Les liens de réinitialisation ne fonctionnent qu\'une fois et expirent après 30 minutes. Ouvrez la connexion, choisissez « Mot de passe oublié » pour un nouveau lien, puis utilisez le dernier e-mail.')}</p>
           <button type="button" onClick={() => openAuth('login')} className={primary}>{t('فتح تسجيل الدخول', 'Ouvrir la connexion')}</button>

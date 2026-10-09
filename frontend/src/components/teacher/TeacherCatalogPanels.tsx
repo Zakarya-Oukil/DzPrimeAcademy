@@ -153,10 +153,10 @@ export const TeacherCoursesPanel: React.FC<PanelProps> = ({ locale, userId }) =>
               <input type="checkbox" checked={form.isLive} onChange={(e) => setForm({ ...form, isLive: e.target.checked })} className="w-4 h-4 rounded" />
               {t('مقرر مباشر مع حصص تفاعلية', 'Cours en direct avec séances interactives')}
             </label>
-            <div className="sm:col-span-2 max-w-md rounded-2xl bg-[#111114] p-4">
+            <div className="dark sm:col-span-2 max-w-md rounded-2xl bg-[#111114] p-4">
               <ImageUploader kind="course" locale={locale} label={t('صورة المقرر', 'Image du cours')} value={form.imageUrl} onChange={(url) => setForm({ ...form, imageUrl: url })} />
             </div>
-            <div className="sm:col-span-2 max-w-md rounded-2xl bg-[#111114] p-4">
+            <div className="dark sm:col-span-2 max-w-md rounded-2xl bg-[#111114] p-4">
               <VideoField kind="course" locale={locale} label={t('فيديو تعريفي (اختياري)', 'Vidéo de présentation (optionnel)')} value={form.videoUrl} onChange={(url) => setForm({ ...form, videoUrl: url })} />
             </div>
           </div>

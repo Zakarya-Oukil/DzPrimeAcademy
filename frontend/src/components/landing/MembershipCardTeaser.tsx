@@ -30,13 +30,9 @@ export const MembershipCardTeaser: React.FC = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8" data-testid="landing-membership-teaser">
-      <div className="rounded-[2rem] sm:rounded-[2.5rem] bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 p-7 sm:p-12 flex flex-col lg:flex-row items-center gap-8 sm:gap-12">
+      <div className="rounded-2xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 p-7 sm:p-12 flex flex-col lg:flex-row items-center gap-8 sm:gap-12">
         <div className="flex-1">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/40 text-gold-800 dark:text-gold-300 text-[10px] font-black">
-            <ShieldCheck className="w-3 h-3" />
-            {locale === 'ar' ? 'موثّق وآمن' : 'Sécurisé & Vérifié'}
-          </span>
-          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{c.title}</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{c.title}</h2>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-md">{c.body}</p>
           <button
             type="button"
@@ -49,7 +45,7 @@ export const MembershipCardTeaser: React.FC = () => {
         </div>
 
         <div className="w-full max-w-[300px] shrink-0">
-          <div className="rounded-2xl p-5 bg-navy-900 border border-gold-500/30 shadow-2xl">
+          <div className="dark rounded-2xl p-5 bg-navy-900 border border-gold-500/30 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <span className="text-[10px] font-black text-gold-300 tracking-widest">DZ PRIME ACADEMY</span>
               <QrCode className="w-7 h-7 text-white/80" />

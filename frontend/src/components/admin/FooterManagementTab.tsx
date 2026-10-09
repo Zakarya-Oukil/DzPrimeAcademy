@@ -260,8 +260,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
   return (
     <div className="space-y-6" data-testid="footer-management-tab">
       {/* Tab Header Banner */}
-      <div className="p-6 rounded-3xl bg-[#111114] border border-gold-500/20 shadow-2xl relative overflow-hidden">
-        <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
+      <div className="dark p-6 rounded-3xl bg-[#111114] border border-gold-500/20 shadow-2xl relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2.5">
@@ -333,7 +332,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
       </div>
 
       {/* Sub-Tabs Navigation */}
-      <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#0b0b0d] border border-white/10 overflow-x-auto no-scrollbar shadow-md">
+      <div className="dark flex items-center gap-1.5 p-1 rounded-2xl bg-[#0b0b0d] border border-white/10 overflow-x-auto no-scrollbar shadow-md">
         {[
           { id: 'social', labelAr: 'منصات التواصل الاجتماعي', labelFr: 'Réseaux Sociaux', icon: Share2, count: config.socialLinks.length },
           { id: 'contact', labelAr: 'معلومات الاتصال والعناوين', labelFr: 'Coordonnées & Adresses', icon: Phone },
@@ -564,7 +563,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
 
         {/* ================= 2. CONTACT DETAILS SUB-TAB ================= */}
         {activeSubTab === 'contact' && (
-          <div className="p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5" data-testid="footer-subtab-contact">
+          <div className="dark p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5" data-testid="footer-subtab-contact">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Phone className="w-4 h-4 text-gold-400" />
@@ -665,7 +664,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
 
         {/* ================= 3. BRAND BIO SUB-TAB ================= */}
         {activeSubTab === 'bio' && (
-          <div className="p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5" data-testid="footer-subtab-bio">
+          <div className="dark p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5" data-testid="footer-subtab-bio">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-gold-400" />
@@ -747,7 +746,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
               {config.quickLinks.map((link) => (
                 <div
                   key={link.id}
-                  className="p-4 rounded-2xl bg-[#111114] border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-center"
+                  className="dark p-4 rounded-2xl bg-[#111114] border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-center"
                 >
                   <div className="md:col-span-3">
                     <label className="text-[10px] text-gray-400 block mb-1">
@@ -841,7 +840,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
               {config.ecosystemItems.map((eco) => (
                 <div
                   key={eco.id}
-                  className="p-4 rounded-2xl bg-[#111114] border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-center"
+                  className="dark p-4 rounded-2xl bg-[#111114] border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-center"
                 >
                   <div className="md:col-span-3">
                     <label className="text-[10px] text-gray-400 block mb-1">
@@ -909,7 +908,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
 
         {/* ================= 6. BOTTOM BAR SUB-TAB ================= */}
         {activeSubTab === 'bottomBar' && (
-          <div className="p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5" data-testid="footer-subtab-bottombar">
+          <div className="dark p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5" data-testid="footer-subtab-bottombar">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Award className="w-4 h-4 text-gold-400" />
@@ -1008,7 +1007,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
             </span>
           </div>
 
-          <div className="rounded-3xl border border-gold-500/30 overflow-hidden bg-[#0b0b0d] shadow-2xl relative">
+          <div className="dark rounded-3xl border border-gold-500/30 overflow-hidden bg-[#0b0b0d] shadow-2xl relative">
             <div className="p-6 sm:p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pb-6 border-b border-white/10">
                 {/* Col 1 */}
@@ -1105,7 +1104,7 @@ export const FooterManagementTab: React.FC<FooterManagementTabProps> = ({ locale
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-400 font-arabic">
                 <p>© {new Date().getFullYear()} DZ PRIME ACADEMY. {isAr ? config.bottomBar.copyrightAr : config.bottomBar.copyrightFr}</p>
                 <p className="font-bold text-gold-400">
-                  🇩🇿 {isAr ? config.bottomBar.sloganAr : config.bottomBar.sloganFr}
+                  {isAr ? config.bottomBar.sloganAr : config.bottomBar.sloganFr}
                 </p>
               </div>
             </div>

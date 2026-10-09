@@ -118,6 +118,8 @@ const config: Config = {
           neon: "#6DB1D8",
         },
       },
+      // One radius scale: 14px cards and panels, 10px controls, rounded-full for avatars and tags only.
+      borderRadius: { md: "8px", lg: "10px", xl: "10px", "2xl": "14px", "3xl": "14px" },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         arabic: ["var(--font-sans)", "sans-serif"],

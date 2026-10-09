@@ -25,7 +25,7 @@
     "login": "Sign In",
     "register": "Register",
     "logout": "Sign Out",
-    "upgrade": "Upgrade to Gold ✨",
+    "upgrade": "Upgrade to Gold",
     "rolePreview": "Role Preview Mode"
   },
   "hero": {
@@ -185,7 +185,7 @@
     "goal4Desc": "Boosting ambassador activity and engagement inside the platform",
     "goal5": "Expanding Network",
     "goal5Desc": "Reaching all universities and secondary schools across Algeria",
-    "slogan": "Together, building the largest student network in Algeria"
+    "slogan": "Together, building an Algerian student network"
   },
   "roadmap": {
     "title": "Key Milestones Prior to Academic Year Kickoff",
@@ -278,7 +278,7 @@
       "membershipStatus": "Digital Card Status",
       "goldActive": "Golden Member Active (VIP)",
       "freeAccount": "Free Account",
-      "upgradeToGold": "Upgrade to Golden Tier ✨",
+      "upgradeToGold": "Upgrade to Golden Tier",
       "availableEvents": "Events in Your Wilaya",
       "recentExamsTitle": "Latest exam papers in your specialty",
       "downloadPdf": "Download PDF",

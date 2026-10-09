@@ -230,7 +230,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Card 1: Approved & Confirmed Revenue (Real Money Collected) */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-emerald-500/40 space-y-1 relative overflow-hidden shadow-lg shadow-emerald-500/10">
+        <div className="dark p-4 sm:p-5 rounded-3xl bg-[#111114] border border-emerald-500/40 space-y-1 relative overflow-hidden shadow-lg shadow-emerald-500/10">
           <div className="flex items-center justify-between">
             <span className="text-xs text-emerald-300 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -249,7 +249,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
         </div>
 
         {/* Card 2: Pending Volume */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-amber-500/30 space-y-1 relative overflow-hidden">
+        <div className="dark p-4 sm:p-5 rounded-3xl bg-[#111114] border border-amber-500/30 space-y-1 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs text-amber-300 font-bold">
               {isAr ? 'المبالغ قيد الانتظار' : 'Volume financier en attente'}
@@ -265,7 +265,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
         </div>
 
         {/* Card 3: Pending Count */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-1">
+        <div className="dark p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-300 font-bold">
               {isAr ? 'الطلبات المعلقة' : 'En attente'}
@@ -281,7 +281,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
         </div>
 
         {/* Card 4: Total & Live Sync */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 flex items-center justify-between p-4 sm:p-5">
+        <div className="dark p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 flex items-center justify-between p-4 sm:p-5">
           <div>
             <span className="text-xs text-gray-300 font-bold">
               {isAr ? 'إجمالي سجل العمليات' : 'Total des requêtes'}
@@ -304,7 +304,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="p-4 rounded-3xl bg-[#111114] border border-white/10 flex flex-col md:flex-row items-center gap-3">
+      <div className="dark p-4 rounded-3xl bg-[#111114] border border-white/10 flex flex-col md:flex-row items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -354,6 +354,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
 
         {/* Channel Filter */}
         <select
+          aria-label={isAr ? 'تصفية حسب القناة' : 'Filtrer par canal'}
           value={channelFilter}
           onChange={(e) => setChannelFilter(e.target.value)}
           className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 focus:outline-none focus:border-lime-400 w-full md:w-auto"
@@ -376,7 +377,7 @@ export const AdminOperationsTab: React.FC<AdminOperationsTabProps> = ({ locale }
             </p>
           </div>
         ) : operations.length === 0 ? (
-          <div className="py-16 text-center rounded-3xl bg-[#111114] border border-white/10 space-y-3">
+          <div className="dark py-16 text-center rounded-3xl bg-[#111114] border border-white/10 space-y-3">
             <CheckCircle2 className="w-12 h-12 text-gray-600 mx-auto" />
             <h4 className="text-base font-bold text-gray-300">
               {isAr ? 'لا توجد طلبات تطابق معايير البحث' : 'Aucune requête trouvée'}

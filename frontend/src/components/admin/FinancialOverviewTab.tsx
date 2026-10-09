@@ -317,7 +317,7 @@ export const FinancialOverviewTab: React.FC<FinancialOverviewTabProps> = ({ loca
       </div>
 
       {/* Transaction stream */}
-      <div className="rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl">
+      <div className="dark rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl">
         <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/10">
           <div>
             <h3 className="text-base font-black text-white">{t('آخر العمليات المالية', 'Recent transactions')}</h3>

@@ -96,7 +96,6 @@ export default function VerifyCardPage({
         className="w-full max-w-lg rounded-3xl border border-slate-200 dark:border-gold-500/50 bg-white dark:bg-[#111114] p-6 sm:p-10 text-slate-900 dark:text-white shadow-xl dark:shadow-gold-glow-lg text-center relative overflow-hidden transition-colors"
       >
         {/* Background Aura */}
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-gold-500/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Logo */}
         <div className="flex justify-center mb-4">

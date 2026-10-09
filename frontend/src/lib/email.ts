@@ -207,7 +207,7 @@ export function buildActivationEmailTemplate({ name, activationUrl, locale = 'ar
                       </tr>
                       <tr>
                         <td style="padding: 6px 0; font-size: 14px; color: #FFFFFF !important; font-weight: 600;">
-                          🎥 <span style="color: #FFFFFF !important;">${isAr ? 'حصص بث مباشر أسبوعية وتفاعلية مع نخبة الأساتذة (Dawarat)' : 'Sessions interactives en direct chaque semaine (Dawarat Live)'}</span>
+                          🎥 <span style="color: #FFFFFF !important;">${isAr ? 'حصص بث مباشر أسبوعية وتفاعلية مع أساتذة المنصة (Dawarat)' : 'Sessions interactives en direct chaque semaine (Dawarat Live)'}</span>
                         </td>
                       </tr>
                       <tr>

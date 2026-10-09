@@ -45,7 +45,7 @@ export default function StudentDashboardPage() {
   return (
     <div className="py-6 sm:py-8 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 sm:space-y-8 select-none font-arabic" data-testid="student-dashboard-page">
       {!currentUser && (
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-lime-500/15 to-transparent border border-lime-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500/15 border border-lime-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-lime-500/15 border border-lime-500/40 flex items-center justify-center text-lime-700 dark:text-lime-300 shrink-0 font-bold">
               
@@ -78,7 +78,7 @@ export default function StudentDashboardPage() {
         </div>
 
         {!isGold ? (
-          <button onClick={() => setIsUpgradeOpen(true)} data-testid="student-upgrade-btn" className="px-4 py-2 rounded-2xl bg-lime-400 text-navy-950 font-black text-xs shadow-md flex items-center gap-1.5 hover:scale-105 transition-all">
+          <button onClick={() => setIsUpgradeOpen(true)} data-testid="student-upgrade-btn" className="px-4 py-2 rounded-2xl bg-lime-400 text-navy-950 font-black text-xs shadow-md flex items-center gap-1.5 transition-all">
             <Sparkles className="w-4 h-4" />
             <span>{locale === 'ar' ? 'تفعيل العضوية الذهبية VIP' : 'Passer en VIP Gold'}</span>
           </button>
@@ -113,9 +113,9 @@ export default function StudentDashboardPage() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-black text-slate-900 dark:text-white">
+              <h2 className="text-sm font-black text-slate-900 dark:text-white">
                 {locale === 'ar' ? 'دورات جديدة' : 'New Courses'}
-              </h3>
+              </h2>
               <Link href={`/${locale}/dawarat`} className="text-xs font-bold text-lime-600 dark:text-lime-400 hover:underline">
                 {locale === 'ar' ? 'عرض الكل' : 'View All'} →
               </Link>

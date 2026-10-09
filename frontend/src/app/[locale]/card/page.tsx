@@ -76,10 +76,7 @@ export default function CardStudioPage() {
   return (
     <div className="py-6 sm:py-8 px-3 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-6 sm:space-y-8">
       <div className="text-center max-w-3xl mx-auto">
-        <span className="px-3.5 sm:px-4 py-1 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-700 dark:text-gold-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider font-arabic">
-          DIGITAL CARD STUDIO & EXPORT
-        </span>
-        <h1 className="text-xl xs:text-2xl sm:text-4xl font-black font-arabic text-slate-900 dark:text-white mt-2 sm:mt-3">
+        <h1 className="text-xl xs:text-2xl sm:text-4xl font-black font-arabic text-slate-900 dark:text-white">
           {t('card.title')}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-arabic mt-1.5 sm:mt-2">
@@ -178,7 +175,7 @@ export default function CardStudioPage() {
           )}
 
           {(!currentUser || (currentUser.role !== 'STUDENT_PAID' && currentUser.role !== 'OWNER' && currentUser.role !== 'ADMIN')) && (
-            <div className="w-full max-w-md p-4 rounded-3xl bg-[#111114] border border-gold-500/30 text-center space-y-2">
+            <div className="dark w-full max-w-md p-4 rounded-3xl bg-[#111114] border border-gold-500/30 text-center space-y-2">
               <span className="text-[11px] text-gray-400 font-arabic block">
                 {locale === 'ar'
                   ? 'هل تريد ترقية بطاقتك إلى عضوية VIP المشفرة وفتح كافة الدروس والامتحانات؟'

@@ -2,7 +2,7 @@
   "brand": {
     "name": "DZ PRIME ACADEMY",
     "tagline": "Plateforme Éducative Algérienne Intégrée",
-    "subtagline": "Vers un avenir meilleur | Bâtir le plus grand réseau d'étudiants en Algérie",
+    "subtagline": "Vers un avenir meilleur | Bâtir un réseau d'étudiants algériens",
     "membership": "Adhésion",
     "membershipCard": "MEMBERSHIP CARD / Carte d'Adhérent",
     "officialSeal": "Sceau Officiel Agréé",
@@ -25,14 +25,14 @@
     "login": "Connexion",
     "register": "Inscription",
     "logout": "Déconnexion",
-    "upgrade": "Passer au Gold ✨",
+    "upgrade": "Passer au Gold",
     "rolePreview": "Aperçu des Rôles"
   },
   "hero": {
     "badge": "🇩🇿 La plateforme éducative et de services algérienne 2027",
     "titlePrefix": "Votre réussite académique commence ici avec",
     "titleHighlight": "DZ PRIME ACADEMY",
-    "description": "Une plateforme nationale qui réunit l'élite des professeurs et ambassadeurs d'universités et lycées algériens pour vous offrir des annales d'examens corrigées et un bot d'orientation interactif.",
+    "description": "Une plateforme nationale qui réunit des professeurs et ambassadeurs d'universités et lycées algériens pour vous offrir des annales d'examens corrigées et un bot d'orientation interactif.",
     "ctaPrimary": "Essayer l'assistant examens 🤖",
     "ctaSecondary": "Générer ma Carte d'Adhérent 💳",
     "statsStudents": "+50,000 Étudiants",
@@ -185,7 +185,7 @@
     "goal4Desc": "Augmentation continue de l'engagement et des interactions sur la plateforme",
     "goal5": "Expansion du Réseau",
     "goal5Desc": "Présence active dans toutes les universités et lycées des 58 wilayas",
-    "slogan": "Ensemble, bâtissons le plus grand réseau étudiant d'Algérie"
+    "slogan": "Ensemble, bâtissons un réseau étudiant algérien"
   },
   "roadmap": {
     "title": "Étapes clés avant la rentrée scolaire et universitaire",
@@ -278,7 +278,7 @@
       "membershipStatus": "Statut de la Carte Digitale",
       "goldActive": "Adhésion Gold Active (VIP)",
       "freeAccount": "Compte Gratuit",
-      "upgradeToGold": "Passer à l'Adhésion Gold ✨",
+      "upgradeToGold": "Passer à l'Adhésion Gold",
       "availableEvents": "Séances dans votre Wilaya",
       "recentExamsTitle": "Dernières annales d'examens dans votre filière",
       "downloadPdf": "Télécharger PDF",

@@ -191,10 +191,10 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/[0.02] p-4 rounded-2xl border border-white/5">
         <div>
-          <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+          <h2 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
             <Landmark className="w-5 h-5 text-lime-400" />
             <span>{locale === 'ar' ? 'سجل أعضاء هيئة التدريس وتسويات المستحقات' : 'Faculty Registry & Payroll Ledger'}</span>
-          </h3>
+          </h2>
           <p className="text-xs text-gray-400 mt-0.5">
             {locale === 'ar' ? `إجمالي الأساتذة المسجلين: ${teachers.length} أستاذ معتمد` : `Total enseignants : ${teachers.length}`}
           </p>
@@ -234,7 +234,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
               initial={{ scale: 0.94, opacity: 0, y: 16 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.94, opacity: 0, y: 16 }}
-              className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-lime-500/30 bg-[#111114] p-5 sm:p-7 text-white shadow-2xl space-y-4"
+              className="dark relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-lime-500/30 bg-[#111114] p-5 sm:p-7 text-white shadow-2xl space-y-4"
             >
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
@@ -324,6 +324,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
+                        aria-label={locale === 'ar' ? 'إظهار أو إخفاء كلمة المرور' : 'Afficher ou masquer le mot de passe'}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -358,7 +359,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
                     <select
                       value={form.wilayaCode}
                       onChange={(e) => setForm({ ...form, wilayaCode: Number(e.target.value) })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white focus:outline-none focus:border-lime-400"
+                      className="dark w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white focus:outline-none focus:border-lime-400"
                     >
                       {WILAYAS.map((w) => (
                         <option key={w.code} value={w.code}>
@@ -469,7 +470,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-md rounded-3xl border border-lime-400/40 bg-[#111114] p-6 text-white shadow-2xl text-center space-y-4"
+              className="dark relative w-full max-w-md rounded-3xl border border-lime-400/40 bg-[#111114] p-6 text-white shadow-2xl text-center space-y-4"
             >
               <div className="w-12 h-12 rounded-2xl bg-lime-400/20 text-lime-400 mx-auto flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6" />

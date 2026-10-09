@@ -13,12 +13,11 @@ export const GoPremiumBanner: React.FC<GoPremiumBannerProps> = ({ locale, onUpgr
     <button
       onClick={onUpgrade}
       data-testid="go-premium-banner"
-      className="relative w-full text-left p-5 rounded-3xl bg-[#111114] border border-lime-500/30 text-white shadow-lg overflow-hidden group transition-transform hover:scale-[1.01]"
+      className="dark relative w-full text-left p-5 rounded-3xl bg-[#111114] border border-lime-500/30 text-white shadow-lg overflow-hidden group transition-transform"
     >
-      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-lime-400/15 blur-3xl pointer-events-none" />
       <div className="relative z-10 flex items-center gap-2 mb-2">
         <Crown className="w-5 h-5 text-lime-400" />
-        <span className="text-xs font-black uppercase tracking-wide text-lime-300">Go Premium / Gold VIP</span>
+        <span className="text-xs font-black text-lime-300">Go Premium / Gold VIP</span>
       </div>
       <h4 className="text-sm font-black relative z-10">
         {locale === 'ar' ? 'وصول مدى الحياة لكل الدورات والمواضيع' : 'Accès à vie à tous les cours et sujets'}

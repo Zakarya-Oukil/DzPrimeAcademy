@@ -171,7 +171,7 @@ export default function AdminCommandCenterPage() {
   const adminBadge = getAdminRoleBadge();
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-arabic" data-testid="admin-command-center">
+    <div className="min-h-screen bg-navy-700 text-white font-arabic" data-testid="admin-command-center">
       <div className="px-3 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-[1600px] mx-auto space-y-6 sm:space-y-7">
         {/* Top Header Banner */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
@@ -209,17 +209,13 @@ export default function AdminCommandCenterPage() {
             </button>
             )}
 
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-white/[0.04] border border-white/10 text-xs text-gray-300 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 " />
-              <span>{locale === 'ar' ? 'نظام البث والمدفوعات: متصل' : 'Système Live: Online'}</span>
-            </div>
           </div>
         </div>
 
         {/* Global Horizontal Executive Nav Bar */}
         <div
           data-testid="admin-segmented-nav"
-          className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-[#111114] border border-white/10 overflow-x-auto no-scrollbar shadow-xl w-full"
+          className="dark flex items-center gap-1.5 p-1.5 rounded-2xl bg-[#111114] border border-white/10 overflow-x-auto no-scrollbar shadow-xl w-full"
         >
           {tabs.map((tItem) => {
             const Icon = tItem.icon;

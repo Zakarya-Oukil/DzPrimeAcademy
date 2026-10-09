@@ -323,12 +323,12 @@ export default function AmbassadorDashboardPage() {
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white font-arabic p-3 sm:p-6 lg:p-8 space-y-6 sm:space-y-8" data-testid="ambassador-slesforcess-dashboard">
+    <div className="min-h-screen bg-navy-700 text-white font-arabic p-3 sm:p-6 lg:p-8 space-y-6 sm:space-y-8" data-testid="ambassador-slesforcess-dashboard">
       {/* ================= 1. SLESFORCESS STYLE TOP BAR WITH EMBEDDED CARD & ACTIONS ================= */}
-      <div className="rounded-3xl bg-[#111114] border border-white/10 p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
+      <div className="dark rounded-3xl bg-[#111114] border border-white/10 p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-2xl bg-gold-500 p-0.5 shadow-md flex items-center justify-center shrink-0">
-            <div className="w-full h-full bg-[#111114] rounded-[14px] flex items-center justify-center">
+            <div className="dark w-full h-full bg-[#111114] rounded-[14px] flex items-center justify-center">
               <Award className="w-6 h-6 text-gold-400" />
             </div>
           </div>
@@ -377,7 +377,7 @@ export default function AmbassadorDashboardPage() {
             data-testid="ambassador-header-card-btn"
             className="px-3.5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs transition-all shadow-md flex items-center gap-2 shrink-0 group"
           >
-            <CreditCard className="w-4 h-4 text-navy-950 group-hover:scale-110 transition-transform" />
+            <CreditCard className="w-4 h-4 text-navy-950 group- transition-transform" />
             <span className="font-mono">{currentUser?.studentCardId || 'DZ-AMB-16'}</span>
             <span className="px-1.5 py-0.2 rounded bg-black/15 text-[9px] font-extrabold uppercase">VIP</span>
           </button>
@@ -405,7 +405,7 @@ export default function AmbassadorDashboardPage() {
       {/* Embedded Membership Card Modal */}
       {isCardModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-          <div className="w-full max-w-xl rounded-3xl bg-[#111114] border border-gold-500/30 p-6 space-y-4 shadow-2xl relative text-white">
+          <div className="dark w-full max-w-xl rounded-3xl bg-[#111114] border border-gold-500/30 p-6 space-y-4 shadow-2xl relative text-white">
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-gold-400" />
@@ -433,7 +433,7 @@ export default function AmbassadorDashboardPage() {
         <div className="space-y-6">
           {/* KPI Cards: real values from the ambassador record only */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-            <div className="rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-4 shadow-md">
+            <div className="dark rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between text-xs font-bold text-slate-400">
                 <span>{locale === 'ar' ? 'عدد الإحالات' : 'Referrals'}</span>
                 <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300">
@@ -443,7 +443,7 @@ export default function AmbassadorDashboardPage() {
               <div className="text-3xl font-black text-white font-mono tracking-tight">{currentReferrals}</div>
             </div>
 
-            <div className="rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-4 shadow-md">
+            <div className="dark rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between text-xs font-bold text-slate-400">
                 <span>{locale === 'ar' ? 'إجمالي عوائد الإحالات' : 'Commission earned'}</span>
                 <div className="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400">
@@ -453,7 +453,7 @@ export default function AmbassadorDashboardPage() {
               <div className="text-3xl font-black text-gold-400 font-mono tracking-tight">{formatDZD(currentCommission)}</div>
             </div>
 
-            <div className="rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-4 shadow-md">
+            <div className="dark rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between text-xs font-bold text-slate-400">
                 <span>{locale === 'ar' ? 'كود الخصم' : 'Promo code'}</span>
                 <div className="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-400">
@@ -466,7 +466,7 @@ export default function AmbassadorDashboardPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
             {/* Right: Quick Action Toolkit & Promo Code ("Your Activity" Image 1) */}
-            <div className="lg:col-span-5 rounded-3xl bg-[#111114] border border-white/10 p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
+            <div className="dark lg:col-span-5 rounded-3xl bg-[#111114] border border-white/10 p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
               <div>
                 <h3 className="text-base font-black text-white">
                   {locale === 'ar' ? 'أدواتك التسويقية السريعة' : 'Your Activity & Toolkit'}
@@ -477,7 +477,7 @@ export default function AmbassadorDashboardPage() {
               </div>
 
               {/* Promo Code Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-gold-500/20 via-amber-500/10 to-transparent border border-gold-500/40 space-y-2">
+              <div className="p-4 rounded-2xl bg-gold-500/20 border border-gold-500/40 space-y-2">
                 <span className="text-[10px] font-bold text-gold-400 uppercase tracking-wider block font-mono">
                   {locale === 'ar' ? 'كود الخصم الحصري الخاص بك' : 'YOUR EXCLUSIVE PROMO CODE'}
                 </span>
@@ -522,12 +522,12 @@ export default function AmbassadorDashboardPage() {
       {activeTab === 'workshops' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Create Workshop Form */}
-          <div className="lg:col-span-5 rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl h-fit">
+          <div className="dark lg:col-span-5 rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl h-fit">
             <div className="flex items-center gap-2">
               <PlusCircle className="w-5 h-5 text-gold-400" />
-              <h3 className="text-lg font-black text-white">
+              <h2 className="text-lg font-black text-white">
                 {locale === 'ar' ? 'إعلان ورشة دراسية أو حصة مراجعة' : 'Créer une session d\'étude'}
-              </h3>
+              </h2>
             </div>
             <p className="text-xs text-slate-400">
               {locale === 'ar' ? 'نظم حصة لطلبة ولايتك بالتعاون مع أساتذة المنصة المعتمدين.' : 'Planifiez un atelier pour les étudiants de votre campus.'}
@@ -635,10 +635,10 @@ export default function AmbassadorDashboardPage() {
           {/* Posts Stream */}
           <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <h2 className="text-lg font-black text-white flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-purple-400" />
                 <span>{locale === 'ar' ? 'منشورات وورشات السفراء المعتمدة' : 'Fil d\'actualités des sessions'}</span>
-              </h3>
+              </h2>
               <span className="text-xs text-slate-400 font-mono">{posts.length} Posts</span>
             </div>
 
@@ -646,7 +646,7 @@ export default function AmbassadorDashboardPage() {
               {posts.map((post) => (
                 <div
                   key={post.id}
-                  className="rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-3.5 hover:border-gold-500/30 transition-all shadow-md"
+                  className="dark rounded-3xl bg-[#111114] border border-white/10 p-5 space-y-3.5 hover:border-gold-500/30 transition-all shadow-md"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -739,7 +739,7 @@ export default function AmbassadorDashboardPage() {
             </h3>
           </div>
 
-          <div className="rounded-3xl bg-[#111114] border border-white/10 p-8 text-center text-xs text-slate-400 font-arabic">
+          <div className="dark rounded-3xl bg-[#111114] border border-white/10 p-8 text-center text-xs text-slate-400 font-arabic">
             {locale === 'ar' ? 'لا توجد تقييمات بعد.' : 'Aucun avis pour le moment.'}
           </div>
         </div>
@@ -749,7 +749,7 @@ export default function AmbassadorDashboardPage() {
       {activeTab === 'profile' && (
         <div className="space-y-6">
           {/* Ambassador Card Presentation */}
-          <div className="rounded-3xl bg-[#111114] border border-white/10 p-6 shadow-xl flex flex-col items-center space-y-4">
+          <div className="dark rounded-3xl bg-[#111114] border border-white/10 p-6 shadow-xl flex flex-col items-center space-y-4">
             <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Award className="w-5 h-5 text-gold-400" />
@@ -770,7 +770,7 @@ export default function AmbassadorDashboardPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Profile Form */}
-          <div className="rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl">
+          <div className="dark rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl">
             <div className="flex items-center gap-2">
               <UserCheck className="w-5 h-5 text-gold-400" />
               <h3 className="text-lg font-black text-white">
@@ -877,7 +877,7 @@ export default function AmbassadorDashboardPage() {
           </div>
 
           {/* Password & Security Form */}
-          <div className="rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl">
+          <div className="dark rounded-3xl bg-[#111114] border border-white/10 p-6 space-y-4 shadow-xl">
             <div className="flex items-center gap-2">
               <Lock className="w-5 h-5 text-purple-400" />
               <h3 className="text-lg font-black text-white">
@@ -901,6 +901,7 @@ export default function AmbassadorDashboardPage() {
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    aria-label={locale === 'ar' ? 'إظهار أو إخفاء كلمة المرور' : 'Afficher ou masquer le mot de passe'}
                     className="absolute right-3 top-2.5 text-slate-400 hover:text-white"
                   >
                     {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -923,6 +924,7 @@ export default function AmbassadorDashboardPage() {
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
+                    aria-label={locale === 'ar' ? 'إظهار أو إخفاء كلمة المرور' : 'Afficher ou masquer le mot de passe'}
                     className="absolute right-3 top-2.5 text-slate-400 hover:text-white"
                   >
                     {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

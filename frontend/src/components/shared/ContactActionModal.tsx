@@ -386,13 +386,13 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-300 mt-1 max-w-md">
                   {isAr
-                    ? 'انضم لنخبة ممثلي DZ Prime Academy في جامعتك وولايتك. يتم تقديم الطلبات حصرياً عبر مسؤول السفراء في تيليغرام:'
-                    : "Rejoignez l'élite des ambassadeurs dans votre wilaya. Candidatures gérées exclusivement via Telegram :"}
+                    ? 'انضم لممثلي DZ Prime Academy في جامعتك وولايتك. يتم تقديم الطلبات حصرياً عبر مسؤول السفراء في تيليغرام:'
+                    : "Rejoignez les ambassadeurs dans votre wilaya. Candidatures gérées exclusivement via Telegram :"}
                 </p>
               </div>
 
               {/* Ambassador Info Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-b from-slate-50 to-white dark:from-[#111114] dark:to-[#0b0b0d] border border-slate-200 dark:border-sky-500/30 space-y-2.5 text-xs">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111114] border border-slate-200 dark:border-sky-500/30 space-y-2.5 text-xs">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-white/10">
                   <span className="font-bold text-slate-600 dark:text-gray-300">
                     {isAr ? 'المسؤول المعتمد:' : 'Responsable Officiel :'}
@@ -402,7 +402,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-gray-400 space-y-1">
-                  <div>🇩🇿 {isAr ? 'تمثيل الأكاديمية في 58 ولاية وتنسيق العمليات الطلابية.' : 'Représentation dans les 58 wilayas.'}</div>
+                  <div>{isAr ? 'تمثيل الأكاديمية في 58 ولاية وتنسيق العمليات الطلابية.' : 'Représentation dans les 58 wilayas.'}</div>
                   <div>{isAr ? 'عمولات مالية وبطاقة سفير رقمية مشفرة معتمدة.' : 'Commissions et carte officielle accréditée.'}</div>
                 </div>
               </div>
@@ -443,7 +443,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
               </div>
 
               {/* Order Summary Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-b from-slate-50 to-white dark:from-[#111114] dark:to-[#0b0b0d] border border-slate-200 dark:border-gold-500/30 space-y-3 text-xs">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111114] border border-slate-200 dark:border-gold-500/30 space-y-3 text-xs">
                 <div className="flex items-center justify-between pb-2.5 border-b border-slate-200 dark:border-white/10">
                   <span className="font-bold text-slate-600 dark:text-gray-300">
                     {isAr ? 'الخدمة المطلوبة:' : 'Service demandé :'}
