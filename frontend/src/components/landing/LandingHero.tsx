@@ -95,7 +95,7 @@ export const LandingHero: React.FC = () => {
     fetch('/api/settings/landing')
       .then((res) => res.json())
       .then((data) => {
-        if (data?.config) setDynamicConfig(data.config);
+        if (data?.landingConfig) setDynamicConfig(data.landingConfig);
         // Only real database counts; a stat with 0 is hidden.
         const r = data?.realStats;
         if (r) setCounts({ exams: Number(r.examsCount) || 0, users: Number(r.studentsCount) || 0 });

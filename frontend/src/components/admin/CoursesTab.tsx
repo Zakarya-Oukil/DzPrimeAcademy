@@ -47,6 +47,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
   const [modules, setModules] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<{ id: string; name: string }[]>([]);
   const [formError, setFormError] = useState('');
+  const [moduleError, setModuleError] = useState('');
   const [saving, setSaving] = useState(false);
   const ar = locale === 'ar';
   const [showCourseForm, setShowCourseForm] = useState(false);
@@ -140,18 +141,39 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
 
   const handleAddModule = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch('/api/modules', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(moduleForm),
-    });
+    setModuleError('');
+    try {
+      const res = await fetch('/api/modules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(moduleForm),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        return setModuleError(d.error || (ar ? 'تعذر حفظ المقياس' : "Échec de l'enregistrement du module"));
+      }
+    } catch {
+      return setModuleError(ar ? 'خطأ في الاتصال بالخادم' : 'Erreur de connexion');
+    }
     setModuleForm({ nameAr: '', nameFr: '', code: '', coefficient: 2, trackType: 'UNIVERSITY_LMD' });
     setShowModuleForm(false);
     loadModules();
   };
 
   const handleDeleteModule = async (id: string) => {
-    await fetch(`/api/modules?id=${id}`, { method: 'DELETE' });
+    if (!window.confirm(ar ? 'حذف هذا المقياس نهائياً؟' : 'Supprimer définitivement ce module ?')) return;
+    try {
+      const res = await fetch(`/api/modules?id=${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setModuleError(d.error || (ar ? 'تعذر حذف المقياس' : 'Échec de la suppression du module'));
+        return;
+      }
+      setModuleError('');
+    } catch {
+      setModuleError(ar ? 'خطأ في الاتصال بالخادم' : 'Erreur de connexion');
+      return;
+    }
     loadModules();
   };
 
@@ -217,6 +239,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
                   setEditingCourse(null);
                 }}
                 className="p-1 rounded-lg hover:bg-white/10 text-gray-400"
+                aria-label={ar ? 'إغلاق' : 'Fermer'}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -462,6 +485,9 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               onChange={(e) => setModuleForm({ ...moduleForm, coefficient: Number(e.target.value) })}
               className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-gray-500"
             />
+            {moduleError && (
+              <p role="alert" data-testid="module-form-error" className="sm:col-span-4 text-xs font-bold text-rose-400">{moduleError}</p>
+            )}
             <button
               type="submit"
               data-testid="submit-module-btn"
@@ -470,6 +496,10 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               {locale === 'ar' ? 'حفظ المقياس' : 'Enregistrer'}
             </button>
           </form>
+        )}
+
+        {moduleError && !showModuleForm && (
+          <p role="alert" className="text-xs font-bold text-rose-400">{moduleError}</p>
         )}
 
         <div className="overflow-x-auto no-scrollbar rounded-2xl border border-white/10">
@@ -497,6 +527,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
                       data-testid={`delete-module-${m.id}`}
                       onClick={() => handleDeleteModule(m.id)}
                       className="p-1.5 rounded-lg hover:bg-rose-500/20 text-gray-500 hover:text-rose-400"
+                      aria-label={ar ? 'حذف المقياس' : 'Supprimer le module'}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

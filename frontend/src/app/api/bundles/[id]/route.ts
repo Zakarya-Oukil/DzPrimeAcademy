@@ -14,6 +14,10 @@ async function PUTHandler(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: 'الأسعار يجب أن تكون أعداداً صحيحة غير سالبة' }, { status: 400 });
   }
 
+  if (body.originalPriceDzd !== undefined && body.currentPriceDzd !== undefined && body.currentPriceDzd > body.originalPriceDzd) {
+    return NextResponse.json({ error: 'سعر البيع الحالي لا يمكن أن يتجاوز السعر الأصلي' }, { status: 400 });
+  }
+
   const image = parseImageField(body.imageUrl, 'bundle');
   if ('error' in image) return NextResponse.json({ error: image.error }, { status: 400 });
 
