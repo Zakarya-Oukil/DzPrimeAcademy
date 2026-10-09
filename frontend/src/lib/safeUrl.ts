@@ -4,7 +4,7 @@
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 export const STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'dz-images';
 
-export type UploadKind = 'course' | 'bundle' | 'post' | 'landing';
+export type UploadKind = 'course' | 'bundle' | 'post' | 'landing' | 'teacher';
 
 export function storageConfig() {
   const url = process.env.SUPABASE_URL?.replace(/\/+$/, '');

@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ImagePlus, AlertTriangle, RefreshCw, Trash2, X } from 'lucide-react';
 
-export type ImageUploadKind = 'course' | 'bundle' | 'post' | 'landing';
+export type ImageUploadKind = 'course' | 'bundle' | 'post' | 'landing' | 'teacher';
 
 interface ImageUploaderProps {
   kind: ImageUploadKind;

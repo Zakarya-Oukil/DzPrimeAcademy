@@ -30,6 +30,7 @@ import { formatDZD } from '@/lib/format';
 import { generateStrongPassword } from '@/lib/clientPassword';
 import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
 import { Locale } from '@/types';
+import { TeacherLandingModal } from './TeacherLandingModal';
 
 interface FacultyPayrollTabProps {
   locale: Locale | string;
@@ -54,6 +55,7 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
   const [errorMsg, setErrorMsg] = useState('');
   const [createdCredentials, setCreatedCredentials] = useState<CreatedTeacherCredentials | null>(null);
   const [copied, setCopied] = useState(false);
+  const [landingTeacher, setLandingTeacher] = useState<any | null>(null);
 
   const [form, setForm] = useState({
     name: '',
@@ -526,6 +528,10 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
         )}
       </AnimatePresence>
 
+      {landingTeacher && (
+        <TeacherLandingModal locale={String(locale)} teacher={landingTeacher} onClose={() => setLandingTeacher(null)} onSaved={load} />
+      )}
+
       {/* Teachers Table */}
       <div className="overflow-x-auto no-scrollbar rounded-2xl border border-white/10 bg-white/[0.02]">
         <table className="w-full min-w-[900px] text-left text-xs">
@@ -620,6 +626,16 @@ export const FacultyPayrollTab: React.FC<FacultyPayrollTabProps> = ({ locale, on
                           <ExternalLink className="w-3.5 h-3.5" />
                         </Link>
                       )}
+
+                      <button
+                        data-testid={`teacher-landing-btn-${t.id}`}
+                        onClick={() => setLandingTeacher(t)}
+                        className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-bold transition-all ${t.showOnLanding ? 'bg-amber-400/15 border-amber-400/40 text-amber-300' : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10'}`}
+                      >
+                        {t.showOnLanding
+                          ? (locale === 'ar' ? 'ظاهر في الرئيسية' : "Sur l'accueil")
+                          : (locale === 'ar' ? 'الصفحة الرئيسية' : 'Page d’accueil')}
+                      </button>
 
                       <button
                         title={locale === 'ar' ? 'حذف الأستاذ' : 'Supprimer'}

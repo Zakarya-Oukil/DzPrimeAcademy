@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { requirePermission } from '@/lib/auth';
 import { canManageUser, hasAnyPermission } from '@/lib/rbac';
 import { guard, textProblem, badField } from '@/lib/http';
+import { parseImageField } from '@/lib/safeUrl';
 
 // Pay-related fields (CCP, rate) need HR or finance; the rest is HR only.
 async function PUTHandler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -24,8 +25,12 @@ async function PUTHandler(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: 'قيمة رقمية غير صالحة' }, { status: 400 });
   }
 
-  const bad = textProblem({ university: [body.university, 160], specialty: [body.specialty, 120], ccpAccount: [body.ccpAccount, 30], ccpCle: [body.ccpCle, 4] });
+  const bad = textProblem({ university: [body.university, 160], specialty: [body.specialty, 120], ccpAccount: [body.ccpAccount, 30], ccpCle: [body.ccpCle, 4], publicBio: [body.publicBio, 400] });
   if (bad) return badField(bad);
+  const landingOrder = body.landingOrder === undefined ? undefined : Number.isInteger(body.landingOrder) && body.landingOrder >= 0 && body.landingOrder <= 999 ? body.landingOrder : null;
+  if (landingOrder === null) return badField('landingOrder');
+  const photo = parseImageField(body.photoUrl, 'teacher');
+  if ('error' in photo) return NextResponse.json({ error: photo.error }, { status: 400 });
 
   const existing = await prisma.teacherProfile.findUnique({ where: { id } });
   if (!existing) {
@@ -40,6 +45,10 @@ async function PUTHandler(request: NextRequest, { params }: { params: Promise<{ 
       specialty: isHR ? body.specialty : undefined,
       hoursTaught: isHR ? hoursTaught : undefined,
       studentsCount: isHR ? studentsCount : undefined,
+      showOnLanding: isHR && typeof body.showOnLanding === 'boolean' ? body.showOnLanding : undefined,
+      landingOrder: isHR ? landingOrder : undefined,
+      publicBio: isHR ? (body.publicBio?.trim() || (body.publicBio === undefined ? undefined : null)) : undefined,
+      photoUrl: isHR ? photo.value : undefined,
       // pay fields: HR or finance
       hourlyRateDzd,
       ccpAccount: body.ccpAccount,

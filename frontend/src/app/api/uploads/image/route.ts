@@ -6,13 +6,14 @@ import { POST_AUTHOR_ROLES } from '@/lib/posts';
 import { MAX_IMAGE_BYTES, MAX_VIDEO_BYTES, VIDEO_EXT, STORAGE_BUCKET, storageConfig, storagePublicBase, type UploadKind } from '@/lib/safeUrl';
 import { rateLimit } from '@/lib/rateLimit';
 
-const KINDS: UploadKind[] = ['course', 'bundle', 'post', 'landing'];
+const KINDS: UploadKind[] = ['course', 'bundle', 'post', 'landing', 'teacher'];
 
 // Who may upload for what. Teachers upload course and post images; staff with the matching permission the rest.
 function allowed(kind: UploadKind, user: NonNullable<SafeUser>) {
   if (kind === 'course') return user.role === 'TEACHER' || hasAnyPermission(user, 'catalog.manage');
   if (kind === 'bundle') return hasAnyPermission(user, 'catalog.manage');
   if (kind === 'landing') return hasAnyPermission(user, 'settings.manage');
+  if (kind === 'teacher') return hasAnyPermission(user, 'users.manage');
   return POST_AUTHOR_ROLES.includes(user.role);
 }
 

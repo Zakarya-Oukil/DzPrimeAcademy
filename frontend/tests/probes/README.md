@@ -11,6 +11,7 @@ They create their own users, courses, posts and money records, log in as each ro
 | `04-sign-in-lifecycle` | token versions, lockouts and rate limits, reset and activation links, password policy, seeding |
 | `05-hardening` | public settings subset and no write-on-read, session join links, error answers instead of 500s, card expiry, account validation, private exam files, security headers |
 | `06-media-ratings-officers` | video upload and link rules, up to 4 post images, course cover video, real ratings (enrolled only, one vote, shown from 3), admin-managed registration officers |
+| `07-teacher-landing` | admin-only landing cards for teachers (switch, order, public bio, photo), upload and edit permissions, input rules, public endpoint shows verified + switched-on teachers only with public fields only |
 
 ## Run locally
 

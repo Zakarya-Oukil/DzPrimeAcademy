@@ -388,6 +388,12 @@ model TeacherProfile {
   lastPayoutAt    DateTime?
   createdAt       DateTime     @default(now())
 
+  // Public landing-page card, managed by admins (hidden until showOnLanding is switched on).
+  showOnLanding Boolean @default(false)
+  landingOrder  Int     @default(0)
+  publicBio     String?
+  photoUrl      String?
+
   payouts FacultyPayout[]
 }
 
