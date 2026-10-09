@@ -30,7 +30,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({ metrics }) => {
               <span className="text-xs font-semibold text-slate-600 dark:text-gray-300 font-arabic">
                 {metric.title}
               </span>
-              <div className="w-9 h-9 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-gold-600 dark:text-gold-400 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-gold-600 dark:text-gold-400 group- transition-transform">
                 <Icon className="w-4 h-4" />
               </div>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Send, Award, Globe2, MapPinned } from 'lucide-react';
+import { Send, Award } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthModal } from '@/lib/authModalContext';
 import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
@@ -15,36 +15,30 @@ export const LandingSections: React.FC = () => {
 
   const copy = {
     ar: {
-      badge1: 'تغطية وطنية',
-      badge2: '58 ولاية',
-      title: 'شبكة سفراء وأساتذة معتمدين في 58 ولاية',
+      title: 'سفراء وأساتذة معتمدون في 58 ولاية',
       body: 'تصلك بسفراء، أساتذة، ومكوّنين معتمدين من أجل أفضل مساندة، تحضير، ومتابعة أينما كنت.',
       ctaPrimary: 'تصفح دليل السفراء في ولايتك',
       ctaSecondary: 'كن سفيراً معتمداً',
-      finalTitle: 'جاهز للانطلاق مع DZ Prime؟',
-      finalBody: 'انضم لآلاف الطلبة الجزائريين يحققون التميز الأكاديمي كل يوم.',
+      finalTitle: 'ابدأ مع DZ Prime',
+      finalBody: 'ابدأ مجاناً، وتابع تحضيرك للبكالوريا أو الجامعة خطوة بخطوة.',
       finalCta: 'أنشئ حسابك المجاني',
     },
     fr: {
-      badge1: 'Couverture Nationale',
-      badge2: '58 Wilayas',
       title: 'Réseau d\'ambassadeurs et professeurs certifiés dans 58 wilayas',
-      body: 'Connectez-vous avec des ambassadeurs, professeurs et formateurs certifiés pour le meilleur accompagnement.',
+      body: 'Connectez-vous avec des ambassadeurs, professeurs et formateurs certifiés pour vous accompagner.',
       ctaPrimary: 'Voir les ambassadeurs de ma wilaya',
       ctaSecondary: 'Devenir Ambassadeur',
-      finalTitle: 'Prêt à décoller avec DZ Prime ?',
+      finalTitle: 'Commencez avec DZ Prime',
       finalBody: 'Rejoignez des milliers d\'étudiants algériens qui excellent chaque jour.',
       finalCta: 'Créer mon compte gratuit',
     },
     en: {
-      badge1: 'Nationwide Coverage',
-      badge2: '58 Wilayas',
       title: 'Certified Ambassador & Teacher Network in 58 Wilayas',
       body: 'Connect with certified ambassadors, teachers and trainers for the best support and follow-up.',
       ctaPrimary: 'Browse Ambassadors in Your Wilaya',
       ctaSecondary: 'Become an Ambassador',
-      finalTitle: 'Ready to Launch with DZ Prime?',
-      finalBody: 'Join thousands of Algerian students achieving academic excellence every day.',
+      finalTitle: 'Start with DZ Prime',
+      finalBody: 'Start for free and prepare for the BAC or university step by step.',
       finalCta: 'Create My Free Account',
     },
   };
@@ -55,15 +49,7 @@ export const LandingSections: React.FC = () => {
       {/* ================= WILAYA MARQUEE + AMBASSADOR NETWORK ================= */}
       <section className="overflow-hidden" data-testid="landing-wilaya-network">
         <div className="max-w-2xl mx-auto mb-8 px-3 text-center">
-          <div className="flex items-center justify-center gap-2 flex-wrap mb-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/40 text-gold-800 dark:text-gold-300 text-[10px] font-black">
-              <Globe2 className="w-3 h-3" /> {c.badge1}
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/40 text-gold-800 dark:text-gold-300 text-[10px] font-black">
-              <MapPinned className="w-3 h-3" /> {c.badge2}
-            </span>
-          </div>
-          <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{c.title}</h2>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{c.title}</h2>
           <p className="mt-2 text-sm text-slate-500 dark:text-gray-400">{c.body}</p>
         </div>
 
@@ -110,7 +96,7 @@ export const LandingSections: React.FC = () => {
 
       {/* ================= FINAL CTA ================= */}
       <section className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8" data-testid="landing-final-cta">
-        <div className="rounded-3xl sm:rounded-[2.5rem] bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 p-8 sm:p-14 text-center relative overflow-hidden">
+        <div className="rounded-2xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 p-8 sm:p-14 text-center relative overflow-hidden">
           <div className="hidden" />
           <h2 className="relative z-10 text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">{c.finalTitle}</h2>
           <p className="relative z-10 mt-3 text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto">{c.finalBody}</p>

@@ -75,19 +75,19 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
   const isOn = (seg: string) => pathname.includes(`/${seg}`);
 
   const adminItems: NavItem[] = [
-    { id: 'operations', label: locale === 'ar' ? 'طلبات التفعيل والمدفوعات' : 'Opérations & Paiements', href: `/${locale}/admin#operations`, icon: ClipboardList, isActive: false, badge: 'Live' },
+    { id: 'operations', label: locale === 'ar' ? 'طلبات التفعيل والمدفوعات' : 'Opérations & Paiements', href: `/${locale}/admin#operations`, icon: ClipboardList, isActive: false },
     { id: 'financial', label: locale === 'ar' ? 'المركز المالي والإداري' : 'Centre Financier', href: `/${locale}/admin#financial`, icon: Landmark, isActive: isOn('admin') },
     { id: 'teachers', label: locale === 'ar' ? 'الأساتذة والمستحقات' : 'Enseignants & Paie', href: `/${locale}/admin#teachers`, icon: Users, isActive: false },
     { id: 'students', label: locale === 'ar' ? 'الطلبة وتفعيل البطاقات' : 'Étudiants & Cartes', href: `/${locale}/admin#students`, icon: GraduationCap, isActive: false },
     { id: 'sessions', label: locale === 'ar' ? 'الحصص والمحاضرات الوطنية' : 'Sessions Nationales', href: `/${locale}/admin#sessions`, icon: Video, isActive: false },
-    { id: 'community', label: locale === 'ar' ? 'مجتمع الأكاديمية والمدونة' : 'Communauté & Médias', href: `/${locale}/community`, icon: Sparkles, isActive: isOn('community') || isOn('leaderboard'), badge: 'Feed' },
+    { id: 'community', label: locale === 'ar' ? 'مجتمع الأكاديمية والمدونة' : 'Communauté & Médias', href: `/${locale}/community`, icon: Sparkles, isActive: isOn('community') || isOn('leaderboard')},
     { id: 'ambassadors', label: locale === 'ar' ? 'شبكة السفراء (58 ولاية)' : 'Réseau Ambassadeurs', href: `/${locale}/admin#ambassadors`, icon: Award, isActive: false },
     { id: 'courses', label: locale === 'ar' ? 'دليل المقاييس والحزم' : 'Modules & Packs', href: `/${locale}/admin#courses`, icon: Layers, isActive: false },
   ];
 
   const teacherItems: NavItem[] = [
     { id: 'studio', label: locale === 'ar' ? 'استوديو التدريس' : 'Studio Enseignant', href: `/${locale}/teacher`, icon: Sparkles, isActive: isOn('teacher') && !pathname.includes('#') },
-    { id: 'community', label: locale === 'ar' ? 'نشر الفيديوهات والمجتمع' : 'Vidéos & Communauté', href: `/${locale}/community`, icon: Video, isActive: isOn('community') || isOn('leaderboard'), badge: 'Feed' },
+    { id: 'community', label: locale === 'ar' ? 'نشر الفيديوهات والمجتمع' : 'Vidéos & Communauté', href: `/${locale}/community`, icon: Video, isActive: isOn('community') || isOn('leaderboard')},
     { id: 'courses', label: locale === 'ar' ? 'مقرراتي ومقاييسي' : 'Mes Modules', href: `/${locale}/teacher#courses`, icon: BookOpen, isActive: false },
     { id: 'sessions', label: locale === 'ar' ? 'الحصص المباشرة والجدول' : 'Sessions en Direct', href: `/${locale}/teacher#sessions`, icon: Video, isActive: false },
     { id: 'roster', label: locale === 'ar' ? 'قائمة الطلبة والحضور' : 'Liste & Présence', href: `/${locale}/teacher#roster`, icon: ClipboardList, isActive: false },
@@ -97,15 +97,15 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
 
   const studentItems: NavItem[] = [
     { id: 'dashboard', label: locale === 'ar' ? 'لوحة دراستي' : 'Mon Tableau de Bord', href: `/${locale}/student`, icon: GraduationCap, isActive: isOn('student') },
-    { id: 'community', label: locale === 'ar' ? 'مجتمع الأكاديمية والفيديوهات' : 'Communauté & Vidéos', href: `/${locale}/community`, icon: Sparkles, isActive: isOn('community') || isOn('leaderboard'), badge: 'جديد' },
-    { id: 'dawarat', label: locale === 'ar' ? 'دورات الامتياز (Live)' : 'Dawarat Excellence (Live)', href: `/${locale}/dawarat`, icon: Video, isActive: isOn('dawarat'), badge: 'Live' },
+    { id: 'community', label: locale === 'ar' ? 'مجتمع الأكاديمية والفيديوهات' : 'Communauté & Vidéos', href: `/${locale}/community`, icon: Sparkles, isActive: isOn('community') || isOn('leaderboard')},
+    { id: 'dawarat', label: locale === 'ar' ? 'دورات الامتياز (Live)' : 'Dawarat Excellence (Live)', href: `/${locale}/dawarat`, icon: Video, isActive: isOn('dawarat') },
     { id: 'exams', label: locale === 'ar' ? 'بنك الامتحانات السريع' : "Banque d'Examens", href: `/${locale}/exams`, icon: Zap, isActive: isOn('exams') },
     { id: 'ambassadors', label: locale === 'ar' ? 'سفراء 58 ولاية' : 'Ambassadeurs (58 wilayas)', href: `/${locale}/ambassadors`, icon: Award, isActive: isOn('ambassadors') },
   ];
 
   const ambassadorItems: NavItem[] = [
     { id: 'dashboard', label: locale === 'ar' ? 'لوحة تحكم السفير' : 'Espace Ambassadeur', href: `/${locale}/ambassador`, icon: Award, isActive: isOn('ambassador') && !isOn('ambassadors') && !pathname.includes('#') },
-    { id: 'community', label: locale === 'ar' ? 'فيديوهات ومنشورات الولاية' : 'Vidéos & Communauté', href: `/${locale}/community`, icon: Video, isActive: isOn('community') || isOn('leaderboard'), badge: 'Feed' },
+    { id: 'community', label: locale === 'ar' ? 'فيديوهات ومنشورات الولاية' : 'Vidéos & Communauté', href: `/${locale}/community`, icon: Video, isActive: isOn('community') || isOn('leaderboard')},
     { id: 'network', label: locale === 'ar' ? 'شبكة السفراء (58 ولاية)' : 'Réseau (58 wilayas)', href: `/${locale}/ambassadors`, icon: Users, isActive: isOn('ambassadors') },
     { id: 'profile', label: locale === 'ar' ? 'الملف الأكاديمي والأمان' : 'Profil & Sécurité', href: `/${locale}/ambassador#profile`, icon: ShieldCheck, isActive: false },
   ];
@@ -153,7 +153,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${item.isActive ? 'text-slate-950' : 'text-gray-400 group-hover:text-white'}`} />
+                  <Icon className={`w-4 h-4 shrink-0 transition-transform group- ${item.isActive ? 'text-slate-950' : 'text-gray-400 group-hover:text-white'}`} />
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
@@ -180,9 +180,6 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
                 <UserCheck className="w-4 h-4 shrink-0" />
                 <span>{locale === 'ar' ? 'ملفي الشخصي والبطاقة' : 'Mon Profil & Badge'}</span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-gold-500/20 text-gold-300 border border-gold-500/30">
-                PRO
-              </span>
             </Link>
           )}
 
@@ -204,9 +201,6 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
                       {locale === 'ar' ? 'العضوية الذهبية VIP' : 'Adhésion VIP Gold'}
                     </span>
                   </div>
-                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-400 text-navy-950 font-mono">
-                    PRO
-                  </span>
                 </div>
                 <p className="text-[11px] text-gray-300 font-normal leading-relaxed mb-2 font-arabic">
                   {locale === 'ar'
@@ -251,12 +245,9 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <Trophy className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isOn('leaderboard') ? 'text-navy-950' : 'text-gold-400'}`} />
+            <Trophy className={`w-4 h-4 shrink-0 transition-transform group- ${isOn('leaderboard') ? 'text-navy-950' : 'text-gold-400'}`} />
             <span>{locale === 'ar' ? 'لوحة صدارة المتفوقين' : 'Classement & Majors'}</span>
           </div>
-          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isOn('leaderboard') ? 'bg-navy-950/20 text-navy-950 font-black' : 'bg-gold-500/20 text-gold-300'}`}>
-            TOP
-          </span>
         </Link>
 
         {/* 2. Bot Button (fixed above Card button) */}
@@ -271,10 +262,9 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isMobileOpen = false, on
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <Bot className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isOn('bot') ? 'text-slate-950' : 'text-lime-400'}`} />
+            <Bot className={`w-4 h-4 shrink-0 transition-transform group- ${isOn('bot') ? 'text-slate-950' : 'text-lime-400'}`} />
             <span>{locale === 'ar' ? 'مساعد الامتحانات والملخصات' : 'Assistant examens & résumés'}</span>
           </div>
-          <span className="w-2 h-2 rounded-full bg-lime-400 " />
         </Link>
 
         {/* 3. Digital Card Button */}

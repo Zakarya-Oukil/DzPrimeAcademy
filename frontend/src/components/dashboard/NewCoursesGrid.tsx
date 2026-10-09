@@ -31,7 +31,7 @@ export const NewCoursesGrid: React.FC<NewCoursesGridProps> = ({ courses, locale 
           key={c.id}
           href={`/${locale}/dawarat`}
           data-testid={`new-course-card-${c.id}`}
-          className="group p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111114] shadow-sm hover:shadow-md hover:border-gold-500/50 hover:-translate-y-0.5 transition-all flex flex-col justify-between"
+          className="group p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111114] shadow-sm hover:shadow-md hover:border-gold-500/50 transition-all flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-3">

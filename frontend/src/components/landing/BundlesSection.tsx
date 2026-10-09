@@ -7,9 +7,9 @@ import { formatDZD } from '@/lib/format';
 import { MockCheckoutModal } from './MockCheckoutModal';
 
 const THEME: Record<string, string> = {
-  lime: 'from-lime-100 to-white dark:from-lime-500/10 dark:to-transparent border-lime-300/50 dark:border-lime-400/20',
-  gold: 'from-amber-100 to-white dark:from-gold-500/10 dark:to-transparent border-amber-300/50 dark:border-gold-500/20',
-  sky: 'from-sky-100 to-white dark:from-sky-500/10 dark:to-transparent border-sky-300/50 dark:border-sky-400/20',
+  lime: 'bg-white dark:bg-[#111114] border-slate-200 dark:border-white/10',
+  gold: 'bg-white dark:bg-[#111114] border-slate-200 dark:border-white/10',
+  sky: 'bg-white dark:bg-[#111114] border-slate-200 dark:border-white/10',
 };
 
 export const BundlesSection: React.FC = () => {
@@ -29,10 +29,7 @@ export const BundlesSection: React.FC = () => {
   return (
     <section id="bundles" className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8" data-testid="landing-bundles">
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600 dark:text-gold-400">
-          {locale === 'ar' ? 'حزم جاهزة للتفوق' : 'Bundles Prêts à Réussir'}
-        </span>
-        <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
           {locale === 'ar' ? 'حزم التحضير للامتحانات والمسابقات' : "Bundles de Préparation aux Examens"}
         </h2>
       </div>
@@ -45,9 +42,9 @@ export const BundlesSection: React.FC = () => {
             <div
               key={b.id}
               data-testid={`landing-bundle-card-${b.id}`}
-              className={`p-6 rounded-3xl border bg-gradient-to-b ${THEME[b.colorTheme] || THEME.gold} shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col`}
+              className={`p-6 rounded-3xl border ${THEME[b.colorTheme] || THEME.gold} shadow-sm hover:shadow-xl transition-all flex flex-col`}
             >
-              <span className="inline-flex w-fit items-center gap-1.5 px-2.5 py-1 rounded-full bg-navy-950 text-white text-[10px] font-black">
+              <span className="dark inline-flex w-fit items-center gap-1.5 px-2.5 py-1 rounded-full bg-navy-950 text-white text-[10px] font-black">
                 {b.badge}
               </span>
               <h3 className="mt-3 text-sm font-black text-slate-900 dark:text-white leading-snug">{title}</h3>

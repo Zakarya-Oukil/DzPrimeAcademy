@@ -184,7 +184,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
   return (
     <div className="space-y-8 font-arabic" data-testid="bundles-tab">
       {/* Top Banner */}
-      <div className="p-6 rounded-3xl bg-[#111114] border border-amber-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="dark p-6 rounded-3xl bg-[#111114] border border-amber-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-2xl bg-amber-500 text-navy-950 flex items-center justify-center font-black shrink-0 shadow-lg shadow-amber-500/20">
             <Gift className="w-6 h-6" />
@@ -247,7 +247,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
           <form
             onSubmit={handleSubmit}
             data-testid="add-bundle-form"
-            className="p-5 rounded-3xl bg-[#111114] border border-amber-400/40 grid grid-cols-1 sm:grid-cols-3 gap-3.5 shadow-2xl relative"
+            className="dark p-5 rounded-3xl bg-[#111114] border border-amber-400/40 grid grid-cols-1 sm:grid-cols-3 gap-3.5 shadow-2xl relative"
           >
             <div className="sm:col-span-3 flex items-center justify-between pb-2 border-b border-white/10">
               <span className="text-xs font-black text-amber-300 flex items-center gap-1.5">
@@ -295,7 +295,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
             <select
               value={form.track}
               onChange={(e) => setForm({ ...form, track: e.target.value as any })}
-              className="px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-amber-400"
+              className="dark px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-amber-400"
             >
               <option value="BAC">BAC (البكالوريا)</option>
               <option value="UNIVERSITY_LMD">University LMD</option>
@@ -489,7 +489,7 @@ export const BundlesTab: React.FC<BundlesTabProps> = ({ locale }) => {
         {showPromoForm && (
           <form
             onSubmit={handleCreatePromo}
-            className="p-5 rounded-3xl bg-[#111114] border border-gold-400/40 grid grid-cols-1 sm:grid-cols-4 gap-3 shadow-xl relative"
+            className="dark p-5 rounded-3xl bg-[#111114] border border-gold-400/40 grid grid-cols-1 sm:grid-cols-4 gap-3 shadow-xl relative"
           >
             <div className="sm:col-span-4 flex items-center justify-between pb-2 border-b border-white/10">
               <span className="text-xs font-black text-gold-300 flex items-center gap-1.5">

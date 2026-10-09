@@ -198,7 +198,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
   return (
     <div className="space-y-6 font-arabic" data-testid="landing-management-tab">
       {/* ================= TOP CONTROL BAR ================= */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+      <div className="dark p-4 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
         <div>
           <div className="flex items-center gap-2 text-gold-400 text-xs font-bold uppercase tracking-wider">
             <Globe className="w-4 h-4" />
@@ -259,7 +259,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
       )}
 
       {/* ================= SUB-NAVIGATION TABS ================= */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#0b0b0d] border border-white/10 overflow-x-auto no-scrollbar shadow-md">
+      <div className="dark flex items-center gap-2 p-1.5 rounded-2xl bg-[#0b0b0d] border border-white/10 overflow-x-auto no-scrollbar shadow-md">
         <button
           onClick={() => setActiveSubTab('stats')}
           className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 whitespace-nowrap transition-all ${
@@ -325,7 +325,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
       {activeSubTab === 'stats' && (
         <div className="space-y-6">
           {/* Mode Switch Card */}
-          <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
+          <div className="dark p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-base font-black text-white flex items-center gap-2">
@@ -389,7 +389,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
           {/* 4 Stats Cards Editor */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Stat 1: Exams */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
+            <div className="dark p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <span className="text-xs font-black text-gold-400">1. {isAr ? 'مواضيع الامتحانات' : 'Examens & Annales'}</span>
                 {config.stats.mode === 'AUTO' && (
@@ -422,7 +422,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             </div>
 
             {/* Stat 2: Active Students */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
+            <div className="dark p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <span className="text-xs font-black text-emerald-400">2. {isAr ? 'المستخدمون' : 'Utilisateurs'}</span>
                 {config.stats.mode === 'AUTO' && (
@@ -455,7 +455,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             </div>
 
             {/* Stat 3: Wilayas */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
+            <div className="dark p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <span className="text-xs font-black text-sky-400">3. {isAr ? 'الولايات المغطاة' : 'Wilayas'}</span>
                 {config.stats.mode === 'AUTO' && (
@@ -488,7 +488,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             </div>
 
             {/* Stat 4: Satisfaction Rate */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
+            <div className="dark p-4 sm:p-5 rounded-3xl bg-[#111114] border border-white/10 space-y-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <span className="text-xs font-black text-purple-400">4. {isAr ? 'نسبة رضا الطلبة' : 'Satisfaction'}</span>
                 {config.stats.mode === 'AUTO' && (
@@ -527,7 +527,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
       {activeSubTab === 'courses' && (
         <div className="space-y-6">
           {/* Section Heading Settings */}
-          <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
+          <div className="dark p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-black text-white flex items-center gap-2">
                 <Layers className="w-4 h-4 text-gold-400" />
@@ -605,15 +605,15 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
             {config.featuredCoursesSection.courses.map((course) => (
               <div
                 key={course.id}
-                className="p-4 rounded-3xl bg-[#111114] border border-white/10 hover:border-gold-500/40 flex flex-col justify-between transition-all group"
+                className="dark p-4 rounded-3xl bg-[#111114] border border-white/10 hover:border-gold-500/40 flex flex-col justify-between transition-all group"
               >
                 <div>
                   {/* Thumbnail Image Preview */}
-                  <div className="relative w-full h-36 rounded-2xl overflow-hidden mb-3 bg-navy-950">
+                  <div className="dark relative w-full h-36 rounded-2xl overflow-hidden mb-3 bg-navy-950">
                     <img
                       src={course.thumbnailUrl}
                       alt={course.titleAr}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group- transition-transform duration-300"
                     />
                     <div className="absolute top-2 left-2 rtl:left-auto rtl:right-2">
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${course.badgeColor || 'bg-gold-500/20 text-gold-400 border-gold-500/30'}`}>
@@ -666,7 +666,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
       {/* ================= TAB 3: HERO SECTION ================= */}
       {activeSubTab === 'hero' && (
-        <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
+        <div className="dark p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
           <h3 className="text-base font-black text-white flex items-center gap-2 border-b border-white/10 pb-3">
             <Sparkles className="w-4 h-4 text-gold-400" />
             <span>{isAr ? 'نصوص واجهة الترحيب الرئيسية (Hero Section)' : 'Textes de l\'en-tête (Hero)'}</span>
@@ -744,7 +744,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
       {/* ================= TAB 4: AMBASSADOR BANNER & TELEGRAM ================= */}
       {activeSubTab === 'ambassador' && (
-        <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5">
+        <div className="dark p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-5">
           <div className="border-b border-white/10 pb-3">
             <h3 className="text-base font-black text-white flex items-center gap-2">
               <Award className="w-4 h-4 text-sky-400" />
@@ -846,7 +846,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
       {/* ================= TAB 5: FINAL CTA ================= */}
       {activeSubTab === 'finalCta' && (
-        <div className="p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
+        <div className="dark p-5 sm:p-6 rounded-3xl bg-[#111114] border border-white/10 space-y-4">
           <h3 className="text-base font-black text-white flex items-center gap-2 border-b border-white/10 pb-3">
             <Crown className="w-4 h-4 text-lime-400" />
             <span>{isAr ? 'نصوص الصندوق الختامي (Final Call to Action)' : 'Appel à l\'action final'}</span>
@@ -891,7 +891,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
               initial={{ scale: 0.94, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.94, opacity: 0 }}
-              className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl bg-[#111114] border border-gold-500/40 p-5 sm:p-6 text-white shadow-2xl space-y-4"
+              className="dark relative w-full max-w-lg max-h-[92vh] overflow-y-auto no-scrollbar rounded-3xl bg-[#111114] border border-gold-500/40 p-5 sm:p-6 text-white shadow-2xl space-y-4"
             >
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <h3 className="text-sm font-black text-gold-300">
@@ -928,7 +928,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
                   <select aria-label={isAr ? 'التصنيف (Category)' : 'Catégorie'}
                     value={editingCourse.category}
                     onChange={(e) => setEditingCourse({ ...editingCourse, category: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#111114] border border-white/10 text-white text-xs focus:outline-none focus:border-gold-400"
+                    className="dark w-full px-3 py-2 rounded-xl bg-[#111114] border border-white/10 text-white text-xs focus:outline-none focus:border-gold-400"
                   >
                     <option value="BAC">BAC 2026</option>
                     <option value="UNIVERSITY_LMD">جامعي LMD</option>
@@ -1027,7 +1027,7 @@ export const LandingManagementTab: React.FC<LandingManagementTabProps> = ({ loca
 
                 {/* Preview */}
                 {editingCourse.thumbnailUrl && (
-                  <div className="relative w-full h-28 rounded-xl overflow-hidden mt-2 bg-navy-950 border border-white/10">
+                  <div className="dark relative w-full h-28 rounded-xl overflow-hidden mt-2 bg-navy-950 border border-white/10">
                     <img src={editingCourse.thumbnailUrl} alt="Preview" className="w-full h-full object-cover" />
                     <span className="absolute bottom-1 right-1 px-2 py-0.5 rounded bg-black/70 text-[9px] text-gray-300">
                       معاينة الغلاف

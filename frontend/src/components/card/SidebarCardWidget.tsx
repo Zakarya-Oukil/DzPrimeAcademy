@@ -20,23 +20,19 @@ export const SidebarCardWidget: React.FC = () => {
   return (
     <>
       <motion.div
-        whileHover={{ scale: 1.02, y: -2 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsCardModalOpen(true)}
-        className="relative group w-full p-3.5 sm:p-4 rounded-2xl bg-gradient-to-br from-[#D9F99D] via-[#BEF264] to-[#FACC15] text-slate-950 shadow-md cursor-pointer overflow-hidden transition-all duration-300 select-none border border-lime-300/80"
+        className="relative group w-full p-3.5 sm:p-4 rounded-2xl bg-gold-500 text-navy-950 shadow-md cursor-pointer overflow-hidden transition-all duration-300 select-none border border-gold-600/40"
       >
-        {/* Subtle Decorative Waves / Texture */}
-        <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-white/30 blur-xl pointer-events-none" />
-        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent pointer-events-none" />
 
         {/* Top Header: Badge & Arrow Action Button */}
         <div className="flex items-center justify-between gap-2 mb-2.5 relative z-10">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/10 backdrop-blur-sm text-[10px] font-black tracking-wider uppercase">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/10 text-[10px] font-black tracking-wider uppercase">
             <QrCode className="w-3 h-3 text-slate-900" />
             <span className="font-mono">{cardId}</span>
           </div>
 
-          <div className="w-7 h-7 rounded-full bg-slate-950 text-lime-300 flex items-center justify-center shadow-sm group-hover:bg-black group-hover:scale-110 transition-all shrink-0">
+          <div className="w-7 h-7 rounded-full bg-slate-950 text-lime-300 flex items-center justify-center shadow-sm group-hover:bg-black group- transition-all shrink-0">
             <ArrowUpRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-[-90deg]' : ''}`} />
           </div>
         </div>
@@ -89,10 +85,7 @@ export const SidebarCardWidget: React.FC = () => {
               </button>
 
               <div className="mb-4">
-                <span className="px-3 py-1 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-700 dark:text-gold-300 text-[11px] font-bold uppercase tracking-wider font-arabic">
-                  OFFICIAL DIGITAL MEMBERSHIP CARD
-                </span>
-                <h3 className="text-lg sm:text-2xl font-black font-arabic text-slate-900 dark:text-white mt-1.5">
+                <h3 className="text-lg sm:text-2xl font-black font-arabic text-slate-900 dark:text-white">
                   {t('card.title')}
                 </h3>
               </div>

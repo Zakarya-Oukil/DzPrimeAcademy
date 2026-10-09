@@ -93,20 +93,23 @@ export const CourseTopicExplorer: React.FC = () => {
       ? currentCourses
       : currentCourses.filter((c) => c.category === selectedCategory);
 
+  const st = dynamicConfig?.stats;
+  const autoStats = st?.mode === 'AUTO' && !!realStats;
+  const arL = locale === 'ar';
+  const num = (n: unknown) => (Number(n) > 0 ? Number(n).toLocaleString() : '');
+  const stats = [
+    { k: 'exams', v: autoStats ? num(realStats?.examsCount) : st?.examsValue || '', l: arL ? st?.examsLabelAr || 'موضوع امتحان محلول' : st?.examsLabelFr || 'Annales Corrigées' },
+    { k: 'students', v: autoStats ? num(realStats?.studentsCount) : st?.studentsValue || '', l: arL ? st?.studentsLabelAr || 'طالب نشط بالمنصة' : st?.studentsLabelFr || 'Étudiants Actifs' },
+    { k: 'wilayas', v: autoStats ? num(realStats?.wilayasCount) : st?.wilayasValue || '', l: arL ? st?.wilayasLabelAr || 'ولاية مغطاة بالسفراء' : st?.wilayasLabelFr || 'Wilayas Couvertes' },
+    { k: 'sat', v: autoStats ? (realStats?.satisfactionRate ? `${realStats.satisfactionRate}%` : '') : st?.satisfactionValue || '', l: arL ? st?.satisfactionLabelAr || 'نسبة رضا الطلبة' : st?.satisfactionLabelFr || 'Taux de Satisfaction' },
+  ].filter((x) => x.v);
+
   return (
     <section id="courses-explorer" className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 font-arabic scroll-mt-24" data-testid="course-topic-explorer">
       {/* ================= 1. CATEGORY PILLS FILTER (Learnova style) ================= */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-gold-500 " />
-            <span className="text-xs font-black uppercase tracking-widest text-gold-600 dark:text-gold-400">
-              {locale === 'ar'
-                ? dynamicConfig?.featuredCoursesSection?.subtitleAr || 'المسارات والمقاييس المعتمدة'
-                : dynamicConfig?.featuredCoursesSection?.subtitleFr || 'Modules & Filières'}
-            </span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
             {locale === 'ar'
               ? dynamicConfig?.featuredCoursesSection?.titleAr || 'استكشف أشهر الدورات والمقاييس'
               : dynamicConfig?.featuredCoursesSection?.titleFr || 'Explorez nos modules populaires'}
@@ -138,7 +141,7 @@ export const CourseTopicExplorer: React.FC = () => {
 
       {/* ================= 2. POPULAR COURSES BENTO GRID (Learnova Card Style) ================= */}
       {filteredCourses.length === 0 && (
-        <p className="rounded-3xl border border-dashed border-slate-300 dark:border-gold-500/25 p-8 text-center text-sm text-slate-500 dark:text-gray-400">
+        <p className="text-sm text-slate-500 dark:text-gray-400">
           {locale === 'ar' ? 'ستظهر الدورات هنا قريباً.' : 'Les cours seront bientôt affichés ici.'}
         </p>
       )}
@@ -160,7 +163,7 @@ export const CourseTopicExplorer: React.FC = () => {
                   <img
                     src={course.thumbnailUrl}
                     alt={locale === 'ar' ? course.titleAr : course.titleFr}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group- transition-transform duration-500"
                   />
                   <div className="absolute top-2.5 left-2.5 rtl:left-auto rtl:right-2.5">
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border shadow-sm ${course.badgeColor}`}>
@@ -244,10 +247,7 @@ export const CourseTopicExplorer: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-gold-600 dark:text-gold-400">
-              {locale === 'ar' ? 'منظومة النجاح الأكاديمي' : 'Écosystème Pédagogique'}
-            </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5">
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
               {locale === 'ar' ? 'تعلّم حسب محورك المفضّل' : 'Explorez par catégorie'}
             </h3>
           </div>
@@ -264,22 +264,22 @@ export const CourseTopicExplorer: React.FC = () => {
           {/* Tile 1: AI Decision Tree Exam Bot & Summaries */}
           <Link
             href={`/${locale}/bot`}
-            className="group relative rounded-3xl bg-emerald-600/90 text-white p-6 flex flex-col justify-between overflow-hidden shadow-lg hover:scale-[1.02] transition-transform"
+            className="group relative rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/30 p-6 flex flex-col justify-between shadow-sm hover:border-gold-500 transition-all"
           >
             <div className="space-y-2 relative z-10">
-              <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center">
-                <Bot className="w-6 h-6 text-white" />
+              <div className="text-sapphire-600 dark:text-sapphire-400">
+                <Bot className="w-6 h-6" />
               </div>
-              <h4 className="text-base font-black text-white mt-3">
+              <h4 className="text-base font-black text-slate-900 dark:text-white mt-3">
                 {locale === 'ar' ? 'مساعد الامتحانات والملخصات' : 'Assistant examens & résumés'}
               </h4>
-              <p className="text-xs text-white/80 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
                 {locale === 'ar'
                   ? 'اختر جامعتك، كليتك، وتخصصك لتصل فوراً لملخصات الدروس والامتحانات المحلولة.'
                   : 'Arborescence intelligente menant à vos annales officielles et résumés.'}
               </p>
             </div>
-            <div className="mt-6 flex items-center gap-2 text-xs font-black text-white/90 group-hover:gap-3 transition-all">
+            <div className="mt-6 flex items-center gap-2 text-xs font-black text-sapphire-600 dark:text-sapphire-400 group-hover:gap-3 transition-all">
               <span>{locale === 'ar' ? 'افتح المساعد' : "Ouvrir l'assistant"}</span>
               <span>→</span>
             </div>
@@ -288,10 +288,10 @@ export const CourseTopicExplorer: React.FC = () => {
           {/* Tile 2: Live Excellence Dawarat */}
           <Link
             href={`/${locale}/dawarat`}
-            className="group relative rounded-3xl bg-gold-500 text-navy-950 p-6 flex flex-col justify-between overflow-hidden shadow-lg hover:scale-[1.02] transition-transform"
+            className="group relative rounded-3xl bg-gold-500 text-navy-950 p-6 flex flex-col justify-between overflow-hidden shadow-lg transition-transform"
           >
             <div className="space-y-2 relative z-10">
-              <div className="w-11 h-11 rounded-2xl bg-navy-950/15 flex items-center justify-center">
+              <div className="text-navy-950">
                 <Video className="w-6 h-6 text-navy-950" />
               </div>
               <h4 className="text-base font-black text-navy-950 mt-3">
@@ -299,8 +299,8 @@ export const CourseTopicExplorer: React.FC = () => {
               </h4>
               <p className="text-xs text-navy-950/80 leading-relaxed font-semibold">
                 {locale === 'ar'
-                  ? 'محاضرات تفاعلية أسبوعية مع نخبة الأساتذة عبر Google Meet ومتابعة يومية.'
-                  : 'Cours interactifs en temps réel avec les meilleurs enseignants certifiés.'}
+                  ? 'محاضرات تفاعلية أسبوعية مع أساتذة المنصة عبر Google Meet ومتابعة يومية.'
+                  : 'Cours interactifs en temps réel avec des enseignants certifiés.'}
               </p>
             </div>
             <div className="mt-6 flex items-center gap-2 text-xs font-black text-navy-950 group-hover:gap-3 transition-all">
@@ -312,10 +312,10 @@ export const CourseTopicExplorer: React.FC = () => {
           {/* Tile 3: Top Honor Roll & Leadership */}
           <Link
             href={`/${locale}/leaderboard`}
-            className="group relative rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/30 p-6 flex flex-col justify-between shadow-sm hover:border-gold-500 hover:scale-[1.02] transition-all"
+            className="group relative rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/30 p-6 flex flex-col justify-between shadow-sm hover:border-gold-500 transition-all"
           >
             <div className="space-y-2">
-              <div className="w-11 h-11 rounded-2xl bg-sapphire-500/15 text-sapphire-600 dark:text-sapphire-400 flex items-center justify-center border border-sapphire-500/30">
+              <div className="text-sapphire-600 dark:text-sapphire-400">
                 <Trophy className="w-6 h-6" />
               </div>
               <h4 className="text-base font-black text-slate-900 dark:text-white mt-3">
@@ -336,10 +336,10 @@ export const CourseTopicExplorer: React.FC = () => {
           {/* Tile 4: 58 Wilayas Ambassador Network */}
           <Link
             href={`/${locale}/ambassadors`}
-            className="group relative rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/30 p-6 flex flex-col justify-between shadow-sm hover:border-gold-500 hover:scale-[1.02] transition-all"
+            className="group relative rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-gold-500/30 p-6 flex flex-col justify-between shadow-sm hover:border-gold-500 transition-all"
           >
             <div className="space-y-2">
-              <div className="w-11 h-11 rounded-2xl bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center border border-sky-500/30">
+              <div className="text-sapphire-600 dark:text-sapphire-400">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h4 className="text-base font-black text-slate-900 dark:text-white mt-3">
@@ -351,7 +351,7 @@ export const CourseTopicExplorer: React.FC = () => {
                   : 'Des ambassadeurs certifiés sur votre campus pour vous guider au quotidien.'}
               </p>
             </div>
-            <div className="mt-6 flex items-center gap-2 text-xs font-black text-sky-600 dark:text-sky-400 group-hover:gap-3 transition-all">
+            <div className="mt-6 flex items-center gap-2 text-xs font-black text-sapphire-600 dark:text-sapphire-400 group-hover:gap-3 transition-all">
               <span>{locale === 'ar' ? 'دليل السفراء' : 'Trouver un Ambassadeur'}</span>
               <span>→</span>
             </div>
@@ -359,59 +359,17 @@ export const CourseTopicExplorer: React.FC = () => {
         </div>
       </div>
 
-      {/* ================= 4. TRUST & METRICS RIBBON ================= */}
-      <div className="rounded-3xl bg-slate-100 dark:bg-[#0b0b0d] border border-slate-200 dark:border-gold-500/25 p-6 sm:p-8 flex flex-wrap justify-around gap-6 text-center">
-        <div className="space-y-1">
-          <div className="text-2xl sm:text-3xl font-black text-gold-600 dark:text-gold-300 font-mono">
-            {dynamicConfig?.stats?.mode === 'AUTO' && realStats
-              ? Number(realStats.examsCount).toLocaleString()
-              : dynamicConfig?.stats?.examsValue || '-'}
-          </div>
-          <div className="text-xs text-slate-600 dark:text-gray-400 font-semibold">
-            {locale === 'ar'
-              ? dynamicConfig?.stats?.examsLabelAr || 'موضوع امتحان محلول'
-              : dynamicConfig?.stats?.examsLabelFr || 'Annales Corrigées'}
-          </div>
+      {/* Real figures only: each stat, and the whole strip, stays hidden until a real value exists. */}
+      {stats.length > 0 && (
+        <div className="rounded-2xl bg-white dark:bg-[#0b0b0d] border border-slate-200 dark:border-white/10 p-6 sm:p-8 flex flex-wrap justify-around gap-6 text-center">
+          {stats.map((x) => (
+            <div key={x.k} className="space-y-1">
+              <div className="text-2xl sm:text-3xl font-black text-gold-600 dark:text-gold-300 font-mono">{x.v}</div>
+              <div className="text-xs text-slate-600 dark:text-gray-400 font-semibold">{x.l}</div>
+            </div>
+          ))}
         </div>
-        <div className="space-y-1">
-          <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
-            {dynamicConfig?.stats?.mode === 'AUTO' && realStats
-              ? Number(realStats.studentsCount).toLocaleString()
-              : dynamicConfig?.stats?.studentsValue || '-'}
-          </div>
-          <div className="text-xs text-slate-600 dark:text-gray-400 font-semibold">
-            {locale === 'ar'
-              ? dynamicConfig?.stats?.studentsLabelAr || 'طالب نشط بالمنصة'
-              : dynamicConfig?.stats?.studentsLabelFr || 'Étudiants Actifs'}
-          </div>
-        </div>
-        <div className="space-y-1">
-          <div className="text-2xl sm:text-3xl font-black text-sky-600 dark:text-sky-400 font-mono">
-            {dynamicConfig?.stats?.mode === 'AUTO' && realStats
-              ? `${realStats.wilayasCount}`
-              : dynamicConfig?.stats?.wilayasValue || '-'}
-          </div>
-          <div className="text-xs text-slate-600 dark:text-gray-400 font-semibold">
-            {locale === 'ar'
-              ? dynamicConfig?.stats?.wilayasLabelAr || 'ولاية مغطاة بالسفراء'
-              : dynamicConfig?.stats?.wilayasLabelFr || 'Wilayas Couvertes'}
-          </div>
-        </div>
-        {(dynamicConfig?.stats?.mode === 'AUTO' ? !!realStats?.satisfactionRate : !!dynamicConfig?.stats?.satisfactionValue) && (
-        <div className="space-y-1">
-          <div className="text-2xl sm:text-3xl font-black text-sapphire-600 dark:text-sapphire-400 font-mono">
-            {dynamicConfig?.stats?.mode === 'AUTO' && realStats?.satisfactionRate
-              ? `${realStats.satisfactionRate}%`
-              : dynamicConfig?.stats?.satisfactionValue || '-'}
-          </div>
-          <div className="text-xs text-slate-600 dark:text-gray-400 font-semibold">
-            {locale === 'ar'
-              ? dynamicConfig?.stats?.satisfactionLabelAr || 'نسبة رضا الطلبة'
-              : dynamicConfig?.stats?.satisfactionLabelFr || 'Taux de Satisfaction'}
-          </div>
-        </div>
-        )}
-      </div>
+      )}
     </section>
   );
 };

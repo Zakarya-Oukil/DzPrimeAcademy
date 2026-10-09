@@ -232,7 +232,7 @@ export const AdminMembershipCard: React.FC<AdminMembershipCardProps> = ({
             onClick={exportCardAsPng}
             data-testid="card-download-png-btn"
             disabled={isExporting}
-            className="px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 text-xs font-bold flex items-center gap-1.5 transition-all shadow-gold-glow active:scale-95 disabled:opacity-50"
+            className="px-4 sm:px-5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 text-xs font-bold flex items-center gap-1.5 transition-all shadow-gold-glow active:scale-95 disabled:opacity-50"
           >
             <Download className="w-3.5 h-3.5" />
             <span>{isExporting ? t('card.generatingPng') : t('card.downloadPng')}</span>

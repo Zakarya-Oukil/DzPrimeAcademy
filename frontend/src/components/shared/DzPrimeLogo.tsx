@@ -46,12 +46,6 @@ export const DzPrimeLogo: React.FC<LogoProps> = ({
         className="relative flex items-center justify-center shrink-0"
         style={{ width: size, height: size }}
       >
-        {withGlow && (
-          <div
-            className={`absolute inset-0 rounded-full ${glowColor} blur-md pointer-events-none`}
-            style={{ transform: 'scale(1.15)' }}
-          />
-        )}
         <div className={`relative z-10 w-full h-full flex items-center justify-center ${shadowFilter}`}>
           <Image
             src={logoSrc}

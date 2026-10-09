@@ -284,7 +284,7 @@ export default function SocialFeed({
             {canCreatePost && (
               <button
                 onClick={() => setIsStudioOpen(true)}
-                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 font-black text-sm shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95"
+                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 font-black text-sm shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
               >
                 <Plus className="w-5 h-5" />
                 <span>نشر فيديو أو مقال جديد</span>

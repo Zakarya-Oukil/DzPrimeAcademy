@@ -99,7 +99,7 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md font-arabic">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-gold-500/40 bg-[#0b0b0d] p-5 sm:p-7 text-white shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+      <div className="dark relative w-full max-w-2xl rounded-3xl border border-gold-500/40 bg-[#0b0b0d] p-5 sm:p-7 text-white shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div className="flex items-center gap-2.5">
@@ -228,7 +228,7 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
           </div>
 
           {/* Privacy Switch (Public vs Private to signed-in students) */}
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-white/[0.03] to-gold-500/10 border border-gold-500/30 flex items-center justify-between gap-4">
+          <div className="p-4 rounded-2xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-between gap-4">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
                 {isPrivate ? (

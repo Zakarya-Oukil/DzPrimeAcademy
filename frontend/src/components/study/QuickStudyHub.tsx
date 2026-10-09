@@ -169,8 +169,6 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
       {/* ================= HERO SEARCH & 1-CLICK FAST BAR ================= */}
       <div className="relative p-5 sm:p-7 rounded-3xl bg-slate-900 border border-gold-500/30 text-white shadow-xl overflow-hidden">
         {/* Background Ambient Glow */}
-        <div className="absolute -top-16 -right-16 w-64 h-64 bg-gold-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-lime-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1 text-left">
@@ -528,7 +526,7 @@ export const QuickStudyHub: React.FC<QuickStudyHubProps> = ({ initialTrack }) =>
                     {isLocked ? (
                       <button
                         onClick={() => setIsUpgradeModalOpen(true)}
-                        className="px-3 py-1.5 rounded-xl bg-gold-500 text-navy-950 text-xs font-black flex items-center gap-1 shadow-sm hover:scale-105 transition-all"
+                        className="px-3 py-1.5 rounded-xl bg-gold-500 text-navy-950 text-xs font-black flex items-center gap-1 shadow-sm transition-all"
                       >
                         <Lock className="w-3.5 h-3.5" />
                         <span>VIP</span>

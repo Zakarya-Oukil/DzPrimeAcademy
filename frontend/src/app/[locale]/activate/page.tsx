@@ -72,10 +72,9 @@ function ActivationContent() {
       <motion.div
         initial={{ opacity: 0, scale: 0.94, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-md rounded-3xl bg-[#111114] border border-white/10 p-6 sm:p-8 text-center shadow-2xl space-y-6 relative overflow-hidden"
+        className="dark w-full max-w-md rounded-3xl bg-[#111114] border border-white/10 p-6 sm:p-8 text-center shadow-2xl space-y-6 relative overflow-hidden"
       >
         {/* Glow backdrop */}
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-lime-400/10 rounded-full blur-3xl pointer-events-none" />
 
         {status === 'loading' && (
           <div className="space-y-4 py-8">

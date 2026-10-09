@@ -13,11 +13,11 @@ import { isShowableCourse, validRating } from '@/lib/courseDisplay';
 import { ContactActionModal, ContactModalOperation } from '@/components/shared/ContactActionModal';
 
 const THEME_BG: Record<string, string> = {
-  lime: 'from-lime-500/20 to-transparent text-lime-600 dark:text-lime-400',
-  gold: 'from-amber-500/20 to-transparent text-amber-600 dark:text-amber-400',
-  sky: 'from-sky-500/20 to-transparent text-sky-600 dark:text-sky-400',
-  violet: 'from-violet-500/20 to-transparent text-violet-600 dark:text-violet-400',
-  rose: 'from-rose-500/20 to-transparent text-rose-600 dark:text-rose-400',
+  lime: 'bg-lime-500/15 text-lime-600 dark:text-lime-400',
+  gold: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+  sky: 'bg-sky-500/15 text-sky-600 dark:text-sky-400',
+  violet: 'bg-violet-500/15 text-violet-600 dark:text-violet-400',
+  rose: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
 };
 
 type Track = 'ALL' | 'BAC' | 'UNIVERSITY_LMD' | 'MEDICAL';
@@ -159,10 +159,10 @@ export default function DawaratCatalogPage() {
               transition={{ delay: idx * 0.05 }}
               data-testid={`dawarat-card-${c.id}`}
               onClick={() => setSelectedCourse(c)}
-              className="p-5 rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-gold-500/40 hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between"
+              className="p-5 rounded-3xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-gold-500/40 transition-all cursor-pointer flex flex-col justify-between"
             >
               <div>
-                <div className={`h-24 rounded-2xl bg-gradient-to-br ${THEME_BG[c.colorTheme] || THEME_BG.lime} flex items-center justify-center mb-3.5 relative overflow-hidden`}>
+                <div className={`h-24 rounded-2xl ${THEME_BG[c.colorTheme] || THEME_BG.lime} flex items-center justify-center mb-3.5 relative overflow-hidden`}>
                   {c.isLive && (
                     <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-white " />

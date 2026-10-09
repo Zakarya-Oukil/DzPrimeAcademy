@@ -233,7 +233,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
   return (
     <div className="space-y-6 font-arabic" data-testid="admin-staff-tab">
       {/* Header Banner */}
-      <div className="p-6 rounded-3xl bg-[#111114] border border-gold-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="dark p-6 rounded-3xl bg-[#111114] border border-gold-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-2xl bg-gold-500 text-navy-950 flex items-center justify-center font-black shrink-0">
             <Users className="w-6 h-6" />
@@ -358,7 +358,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
             return (
               <div
                 key={staff.id}
-                className="p-5 rounded-3xl border border-white/10 bg-[#0b0b0d] hover:border-gold-500/40 transition-all space-y-3.5 shadow-lg relative overflow-hidden"
+                className="dark p-5 rounded-3xl border border-white/10 bg-[#0b0b0d] hover:border-gold-500/40 transition-all space-y-3.5 shadow-lg relative overflow-hidden"
               >
                 {/* Top Badge */}
                 <div className="flex items-start justify-between gap-3">
@@ -466,7 +466,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
       {/* ================= ADD STAFF MODAL ================= */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md">
-          <div className="relative w-full max-w-lg rounded-3xl border border-gold-500/40 bg-[#111114] p-6 text-white shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+          <div className="dark relative w-full max-w-lg rounded-3xl border border-gold-500/40 bg-[#111114] p-6 text-white shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="font-black text-base flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-gold-400" />
@@ -559,7 +559,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
                     const defaultTitle = ROLE_OPTIONS.find((o) => o.value === r)?.title || '';
                     setForm({ ...form, adminRole: r, jobTitle: defaultTitle });
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white font-bold focus:outline-none focus:border-gold-400"
+                  className="dark w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white font-bold focus:outline-none focus:border-gold-400"
                 >
                   {assignable.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -602,7 +602,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
                   <select
                     value={form.wilayaCode}
                     onChange={(e) => setForm({ ...form, wilayaCode: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#111114] border border-white/10 text-xs focus:outline-none"
+                    className="dark w-full px-3 py-2 rounded-xl bg-[#111114] border border-white/10 text-xs focus:outline-none"
                   >
                     {WILAYAS.map((w) => (
                       <option key={w.code} value={w.code}>
@@ -650,7 +650,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
 
       {editTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md">
-          <form onSubmit={handleEditStaff} className="relative w-full max-w-lg rounded-3xl border border-gold-500/40 bg-[#111114] p-6 text-white shadow-2xl space-y-3.5 text-xs max-h-[92vh] overflow-y-auto">
+          <form onSubmit={handleEditStaff} className="dark relative w-full max-w-lg rounded-3xl border border-gold-500/40 bg-[#111114] p-6 text-white shadow-2xl space-y-3.5 text-xs max-h-[92vh] overflow-y-auto">
             <h3 className="font-black text-base">{locale === 'ar' ? 'تعديل بيانات' : 'Modifier'} {editTarget.name}</h3>
             {editError && (
               <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 font-bold">{editError}</div>
@@ -662,7 +662,7 @@ export const StaffTab: React.FC<StaffTabProps> = ({ locale }) => {
                   id="staff-edit-role"
                   value={editForm.adminRole}
                   onChange={(e) => setEditForm({ ...editForm, adminRole: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white font-bold focus:outline-none focus:border-gold-400"
+                  className="dark w-full px-3.5 py-2.5 rounded-xl bg-[#111114] border border-white/10 text-white font-bold focus:outline-none focus:border-gold-400"
                 >
                   {!assignable.some((o) => o.value === editForm.adminRole) && (
                     <option value={editForm.adminRole}>{editForm.adminRole || '—'}</option>

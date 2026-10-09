@@ -199,19 +199,12 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
   return (
     <div className="w-full space-y-6 select-none font-arabic">
       {/* ================= AMBASSADOR DIRECTORY HEADER BANNER ================= */}
-      <div className="relative p-5 sm:p-8 rounded-3xl bg-[#0b0b0d] border border-gold-500/35 text-white shadow-2xl overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-gold-500/15 via-emerald-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="dark relative p-5 sm:p-8 rounded-3xl bg-[#0b0b0d] border border-gold-500/35 text-white shadow-2xl overflow-hidden">
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="space-y-2 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/20 border border-gold-500/40 text-gold-300 text-xs font-bold shadow-sm">
-              <Award className="w-3.5 h-3.5 text-gold-400" />
-              <span>{locale === 'ar' ? 'شبكة النخبة وسفراء الجامعات الرسميين' : 'Réseau National des Ambassadeurs Certifiés'}</span>
-            </div>
-
             <h2 className="text-xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
               <span>{t('nav.ambassadors')}</span>
-              <span className="text-base sm:text-xl text-gold-400">🇩🇿</span>
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
@@ -221,30 +214,22 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
             </p>
           </div>
 
-          {/* Quick Stats Pill */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-3 bg-white/5 dark:bg-black/40 p-3 sm:p-4 rounded-2xl border border-white/10 text-center shrink-0">
+          {/* Real counts only, taken from the loaded list */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 bg-white/5 p-3 sm:p-4 rounded-2xl border border-white/10 text-center shrink-0">
             <div>
               <span className="block text-lg sm:text-2xl font-black text-gold-400 font-mono">
                 {ambassadorsList.length}
               </span>
-              <span className="text-[10px] text-slate-400 uppercase font-bold">
+              <span className="text-[10px] text-slate-400 font-bold">
                 {locale === 'ar' ? 'سفراء معتمدون' : 'Ambassadeurs'}
               </span>
             </div>
-            <div className="border-x border-white/10 px-2">
-              <span className="block text-lg sm:text-2xl font-black text-emerald-400 font-mono">
-                4.92
-              </span>
-              <span className="text-[10px] text-slate-400 uppercase font-bold">
-                {locale === 'ar' ? 'متوسط التقييم' : 'Note Globale'}
-              </span>
-            </div>
-            <div>
+            <div className="border-s border-white/10 ps-2">
               <span className="block text-lg sm:text-2xl font-black text-white font-mono">
-                58
+                {new Set(ambassadorsList.map((a) => a.wilayaCode)).size}
               </span>
-              <span className="text-[10px] text-slate-400 uppercase font-bold">
-                {locale === 'ar' ? 'ولاية مغطاة' : 'Wilayas'}
+              <span className="text-[10px] text-slate-400 font-bold">
+                {locale === 'ar' ? 'ولاية' : 'Wilayas'}
               </span>
             </div>
           </div>
@@ -428,7 +413,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => setBookModalAmbassador(amb)}
-                    className="px-3 py-1.5 rounded-xl bg-lime-400 dark:bg-gold-500 text-navy-950 font-black text-xs shadow-sm hover:scale-105 transition-all"
+                    className="px-3 py-1.5 rounded-xl bg-lime-400 dark:bg-gold-500 text-navy-950 font-black text-xs shadow-sm transition-all"
                   >
                     <Calendar className="w-3.5 h-3.5 inline mr-1" />
                     <span>{locale === 'ar' ? 'حجز حصة' : 'Réserver'}</span>
@@ -509,7 +494,7 @@ export const AmbassadorDirectory: React.FC<AmbassadorDirectoryProps> = ({
               </div>
 
               {/* Direct Telegram / WhatsApp Channels */}
-              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/10 via-teal-500/10 to-transparent border border-blue-500/30">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/30">
                 <div className="flex items-center gap-2">
                   <Send className="w-4 h-4 text-blue-500" />
                   <span className="text-xs font-bold text-slate-900 dark:text-white">

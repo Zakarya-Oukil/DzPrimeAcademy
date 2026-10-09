@@ -291,7 +291,7 @@ export default function TeacherStudioPage() {
             data-testid="teacher-header-card-btn"
             className="px-3.5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs transition-all shadow-md flex items-center gap-2 shrink-0 group"
           >
-            <CreditCard className="w-4 h-4 text-navy-950 group-hover:scale-110 transition-transform" />
+            <CreditCard className="w-4 h-4 text-navy-950 group- transition-transform" />
             <span className="font-mono">{currentUser?.studentCardId || 'DZ-TCH-16'}</span>
             <span className="px-1.5 py-0.2 rounded bg-black/15 text-[9px] font-extrabold uppercase">VIP</span>
           </button>
@@ -347,9 +347,9 @@ export default function TeacherStudioPage() {
           <div className="lg:col-span-4 rounded-3xl bg-white dark:bg-[#111114] border border-amber-200/60 dark:border-gold-500/20 p-5 sm:p-6 space-y-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-black text-slate-900 dark:text-white">
+                <h2 className="text-base font-black text-slate-900 dark:text-white">
                   {locale === 'ar' ? 'الجدول الزمني للحصص' : 'Calendrier des sessions'}
-                </h3>
+                </h2>
                 <span className="text-xs text-slate-400">{locale === 'ar' ? 'حصص البث المباشر' : 'Sessions en direct'}</span>
               </div>
               <span className="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-600 dark:text-gold-300 text-[10px] font-bold">
@@ -392,7 +392,7 @@ export default function TeacherStudioPage() {
                       <div className="w-1.5 h-1.5 rounded-full bg-gold-500" />
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-slate-900 dark:bg-navy-950 text-white space-y-2 shadow-md">
+                    <div className="dark p-4 rounded-2xl bg-slate-900 dark:bg-navy-950 text-white space-y-2 shadow-md">
                       <div className="flex items-center justify-between text-[10px] text-gold-400 font-mono">
                         <span>{new Date(ses.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         <span className="px-2 py-0.5 rounded-full bg-gold-500/20 text-gold-300 font-bold">
@@ -407,7 +407,7 @@ export default function TeacherStudioPage() {
                             href={ses.meetUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold text-[10px] flex items-center gap-1"
+                            className="px-2.5 py-1 rounded-lg bg-sapphire-600 text-white font-bold text-[10px] flex items-center gap-1"
                           >
                             <Video className="w-3 h-3" />
                             <span>{locale === 'ar' ? 'بدء البث' : 'Lancer'}</span>

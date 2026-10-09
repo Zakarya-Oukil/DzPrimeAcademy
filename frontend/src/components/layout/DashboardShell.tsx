@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AppSidebar } from './AppSidebar';
 import { Navbar } from './Navbar';
@@ -91,11 +92,12 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
     );
   }
 
+  const isDashboardRoute = ['admin', 'ambassador', 'teacher', 'student'].includes(routeSegment);
   const isNoSidebarPage = routeSegment === 'admin' || routeSegment === 'ambassador' || routeSegment === 'teacher';
 
   return (
     <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-      <div className={`flex min-h-screen w-full bg-[#f4f5f6] dark:bg-[#0b0b0d] text-slate-900 dark:text-white transition-colors${routeSegment === 'admin' || routeSegment === 'ambassador' ? ' dark' : ''}`} data-testid="app-dashboard-shell">
+      <div className={`flex min-h-screen w-full bg-[#f4f5f6] dark:bg-[#0b0b0d] text-slate-900 dark:text-white transition-colors${routeSegment === 'admin' || routeSegment === 'ambassador' ? ' dark !bg-navy-700' : ''}`} data-testid="app-dashboard-shell">
 
         {currentUser && !isNoSidebarPage && (
           <AppSidebar
@@ -112,7 +114,14 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
           />
           {currentUser && (currentUser.role === 'STUDENT_FREE' || currentUser.role === 'STUDENT_PAID') && <SessionReminderBanner />}
           <main className="flex-1 w-full">{bodyContent}</main>
-          <Footer />
+          {isDashboardRoute ? (
+            <footer className="px-4 sm:px-6 lg:px-8 py-4 border-t border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 flex flex-wrap items-center justify-between gap-2">
+              <span>© {new Date().getFullYear()} DZ Prime Academy</span>
+              <Link href={`/${locale}`} className="font-bold hover:underline">{locale === 'ar' ? 'الصفحة الرئيسية' : 'Accueil'}</Link>
+            </footer>
+          ) : (
+            <Footer />
+          )}
         </div>
 
         <FloatingBotWidget />

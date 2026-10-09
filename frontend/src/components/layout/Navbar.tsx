@@ -70,14 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
     <>
       <header className="sticky top-0 z-30 w-full bg-white/95 dark:bg-[#111114]/95 border-b border-slate-200 dark:border-slate-800/80 shadow-sm transition-colors select-none font-arabic">
         {/* Status & Preference Bar */}
-        <div className="bg-slate-100/90 dark:bg-[#111114] border-b border-slate-200 dark:border-slate-800/60 px-3 sm:px-6 py-1.5 flex items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-500  shrink-0" />
-            <span className="text-[10px] sm:text-[11px] font-bold text-slate-600 dark:text-gray-300 truncate">
-              {t('hero.badge')}
-            </span>
-          </div>
-
+        <div className="bg-slate-100/90 dark:bg-[#111114] border-b border-slate-200 dark:border-slate-800/60 px-3 sm:px-6 py-1.5 flex items-center justify-end gap-2 text-xs">
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <LanguageSwitcher />
             <ThemeToggle />

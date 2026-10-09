@@ -180,16 +180,16 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
   return (
     <div className="space-y-8" data-testid="courses-tab">
       {/* Top Commercial Banner */}
-      <div className="p-5 rounded-3xl bg-[#111114] border border-gold-500/30 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="dark p-5 rounded-3xl bg-[#111114] border border-gold-500/30 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center shrink-0">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-base font-black text-white">
+              <h2 className="text-base font-black text-white">
                 {locale === 'ar' ? 'إدارة دورات ومقررات الامتياز (Dawarat)' : 'Gestion des Dawarat & Modules d\'Excellence'}
-              </h3>
+              </h2>
               <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-400/30">
                 {ar ? 'الإدارة التجارية' : 'Direction commerciale'}
               </span>
@@ -271,7 +271,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               <select
                 value={courseForm.teacherId}
                 onChange={(e) => setCourseForm({ ...courseForm, teacherId: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-gold-400"
+                className="dark w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-gold-400"
               >
                 <option value="">{ar ? '— اختر الأستاذ —' : '— Choisir —'}</option>
                 {teachers.map((t) => (
@@ -285,7 +285,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
               <select
                 value={courseForm.category}
                 onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value as CourseForm['category'] })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-gold-400"
+                className="dark w-full px-3.5 py-2.5 rounded-xl bg-[#0b0b0d] border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-gold-400"
               >
                 {(['UNIVERSITY_LMD', 'BAC', 'MEDICAL'] as const).map((k) => (
                   <option key={k} value={k}>{trackLabel(k, locale)}</option>
@@ -368,7 +368,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
                 type="submit"
                 disabled={saving}
                 data-testid="submit-course-btn"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 hover:from-gold-400 hover:to-amber-400 text-navy-950 font-black text-xs shadow-md active:scale-95 transition-all disabled:opacity-60"
+                className="px-6 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs shadow-md active:scale-95 transition-all disabled:opacity-60"
               >
                 {editingCourse
                   ? (ar ? 'تحديث ونشر التعديلات ✓' : 'Mettre à jour')
@@ -384,7 +384,7 @@ export const CoursesTab: React.FC<CoursesTabProps> = ({ locale }) => {
             <div
               key={c.id}
               data-testid={`admin-course-card-${c.id}`}
-              className="p-4 rounded-3xl bg-[#0b0b0d] border border-white/10 hover:border-gold-500/40 transition-all space-y-2.5 shadow-md"
+              className="dark p-4 rounded-3xl bg-[#0b0b0d] border border-white/10 hover:border-gold-500/40 transition-all space-y-2.5 shadow-md"
             >
               <div className="flex items-center justify-between">
                 <span className="px-2.5 py-0.5 rounded-lg bg-gold-400/10 text-gold-300 text-[10px] font-bold border border-gold-400/20">
