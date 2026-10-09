@@ -92,13 +92,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onOpenAuth, hid
               </button>
             )}
 
+            <Link
+              href={`/${locale}`}
+              aria-label="DZ Prime Academy"
+              data-testid="navbar-logo"
+              className={`shrink-0 ${currentUser && !hideSidebarToggle ? 'lg:hidden' : ''}`}
+            >
+              <DzPrimeLogo size={44} showText={false} />
+            </Link>
+
             <div className="flex flex-col text-left min-w-0">
               {currentUser ? (
                 <h1 className="text-sm sm:text-xl font-black font-arabic text-slate-900 dark:text-white flex items-center gap-1.5 truncate">
                   <span>{t('dashboard.welcomeBack')}, {displayName.split(' ')[0]}</span>
                 </h1>
               ) : (
-                <h1 className="text-sm sm:text-xl font-black font-arabic text-slate-900 dark:text-white truncate">
+                <h1 className="hidden sm:block text-sm sm:text-xl font-black font-arabic text-slate-900 dark:text-white truncate">
                   DZ Prime Academy
                 </h1>
               )}
