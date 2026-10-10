@@ -75,9 +75,9 @@ const Hero: React.FC = () => {
   const c = copyFor(locale).hero;
   const { openAuth } = useAuthModal();
   return (
-    <section aria-labelledby="hero-title" className="grid grid-cols-1 items-center gap-10 pb-14 pt-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-16 lg:pb-24 lg:pt-14">
-      <div className="flex flex-col items-start gap-6">
-        <h1 id="hero-title" className="max-w-[16ch] text-balance text-[clamp(2.25rem,5.2vw,3.5rem)] leading-[1.18] tracking-tight sm:max-w-[20ch]">{c.title}</h1>
+    <section aria-labelledby="hero-title" className="grid grid-cols-1 items-center gap-8 pt-4 md:grid-cols-[minmax(0,1fr)_clamp(300px,36vw,480px)] md:gap-10 md:pt-6 lg:gap-14">
+      <div className="flex flex-col items-start gap-5 md:gap-6">
+        <h1 id="hero-title" className="max-w-[18ch] text-balance text-[clamp(2.25rem,5.6vw,4.25rem)] leading-[1.15] tracking-tight">{c.title}</h1>
         <p className="max-w-[44ch] text-[18px] leading-relaxed text-muted">{c.sub}</p>
         <div className="flex flex-wrap items-center gap-3">
           <CtaButton onClick={() => openAuth('register')}>{c.cta}</CtaButton>
@@ -85,7 +85,7 @@ const Hero: React.FC = () => {
         </div>
       </div>
       {/* Depth: the portrait is clipped by the circle, then the laptop and the hand that holds it are drawn again on top, unclipped, so they step out of the circle. */}
-      <div className="relative mx-auto aspect-square w-[min(420px,78vw)]">
+      <div className="relative mx-auto aspect-square w-[min(420px,78vw)] md:w-full md:max-w-[480px]">
         <div className="absolute inset-0 rounded-full bg-navy-700" />
         <div className="absolute inset-0 overflow-hidden rounded-full">
           <Image src="/images/hero-student.png" alt={c.photoAlt} width={840} height={1050} loading="eager" fetchPriority="high" unoptimized={process.env.NODE_ENV === 'development'} className={heroImg} style={{ height: 'auto' }} />

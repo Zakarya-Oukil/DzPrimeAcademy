@@ -105,7 +105,7 @@ export const PillHeader: React.FC<{ onOpenAuth: (tab: 'login' | 'register') => v
         <div className={`px-4 pt-3 transition-[padding] duration-200 ease-out motion-reduce:transition-none ${scrolled ? 'sm:px-6' : 'sm:px-12 sm:pt-6'}`}>
           <nav
             aria-label={c.main}
-            className={`pointer-events-auto mx-auto max-w-[1344px] border bg-pill text-pill-text transition-[border-color,box-shadow,border-radius] duration-200 ease-out motion-reduce:transition-none ${open ? 'rounded-[28px]' : 'rounded-full'} ${shell}`}
+            className={`pointer-events-auto mx-auto max-w-[1344px] border bg-pill text-pill-text transition-[border-color,box-shadow,border-radius] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${open ? 'rounded-[28px]' : 'rounded-[36px]'} ${shell}`}
           >
             <div className={`flex items-center gap-1.5 px-2 sm:px-4 ${scrolled ? 'py-2' : 'py-2 lg:py-3.5'}`}>
               <Link href={`/${locale}`} aria-label={c.home} className={`flex items-center gap-2.5 rounded-full ps-1 pe-2 sm:gap-3 sm:pe-3 ${focus}`}>
@@ -152,7 +152,10 @@ export const PillHeader: React.FC<{ onOpenAuth: (tab: 'login' | 'register') => v
               </button>
             </div>
 
-            <div id="landing-menu" hidden={!open} className="px-4 pb-5 lg:hidden">
+            {/* The panel opens by growing its row from 0fr to 1fr while it fades in; closed, it is inert so focus skips it. */}
+            <div className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none lg:hidden ${open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div id="landing-menu" inert={!open} className="overflow-hidden">
+            <div className="px-4 pb-5">
               <ul className="flex flex-col py-2">
                 {links.map((l) => (
                   <li key={l.href}>
@@ -170,6 +173,8 @@ export const PillHeader: React.FC<{ onOpenAuth: (tab: 'login' | 'register') => v
                 <button type="button" onClick={() => { setOpen(false); onOpenAuth('register'); }} className={`${ctaClass} w-full`}>{c.signup}</button>
                 <button type="button" onClick={() => { setOpen(false); onOpenAuth('login'); }} className={`min-h-[44px] rounded-full text-[15px] font-semibold ${focus}`}>{c.login}</button>
               </div>
+            </div>
+            </div>
             </div>
           </nav>
         </div>
