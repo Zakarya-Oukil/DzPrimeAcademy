@@ -14,6 +14,9 @@ import { SessionReminderBanner } from '@/components/dashboard/SessionReminderBan
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 import { Role } from '@/types';
+import { DevDesignToggle, useNewDesign } from '@/lib/newDesign';
+import { PillHeader } from '@/components/landing-v2/PillHeader';
+import { FloatingSupport } from '@/components/landing-v2/FloatingSupport';
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -42,6 +45,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
   const { isRtl, locale } = useTranslation();
   const { currentUser, isLoaded } = useAuthStore();
   const pathname = usePathname();
+  const newDesign = useNewDesign();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -78,6 +82,20 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
     }
   }
 
+  if (isGuestLanding && newDesign) {
+    return (
+      <div className="relative flex min-h-screen w-full flex-col bg-background text-foreground transition-colors" data-testid="guest-landing-shell-v2">
+        <PillHeader onOpenAuth={(tab) => setAuthModal({ open: true, tab })} />
+        <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
+          <main id="main" className="flex-1 w-full">{children}</main>
+        </AuthModalProvider>
+        <FloatingSupport />
+        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
+        <DevDesignToggle />
+      </div>
+    );
+  }
+
   if (isGuestLanding) {
     return (
       <div className="flex min-h-screen w-full flex-col bg-[#f4f5f6] dark:bg-[#0b0b0d] text-slate-900 dark:text-white transition-colors" data-testid="guest-landing-shell">
@@ -88,6 +106,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
         <Footer />
         <FloatingBotWidget />
         <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
+        <DevDesignToggle />
       </div>
     );
   }

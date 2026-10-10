@@ -16,6 +16,7 @@
     "test:probes": "node tests/probes/run-all.cjs"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@prisma/client": "^6.4.0",
     "bcryptjs": "^3.0.3",
     "canvas-confetti": "^1.9.4",

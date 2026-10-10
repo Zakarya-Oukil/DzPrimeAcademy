@@ -19,6 +19,25 @@
   --brand-field: #021a46;
   --card-bg: #ffffff;
   --card-border: rgba(5, 5, 5, 0.12);
+
+  /* New landing (Figma pages 10 to 24). Light mode: light page, black pill, near-black panels, white strips. */
+  --pill: #050505;
+  --pill-line: #333338;
+  --pill-text: #f2f2f0;
+  --pill-muted: #b0b0b0;
+  --pill-accent: #f2f2f0;
+  --pill-tint: rgba(242, 242, 240, 0.1);
+  --sheet: #111114;
+  --sheet-card: #17171b;
+  --sheet-text: #f2f2f0;
+  --sheet-muted: #b0b0b0;
+  --sheet-line: #333338;
+  --strip: #ffffff;
+  --strip-text: #0b0b0d;
+  --strip-muted: #555559;
+  --strip-on: #ffffff;
+  --strip-tint: rgba(0, 0, 0, 0.06);
+  --strip-line: #d9dbde;
 }
 
 .dark {
@@ -35,6 +54,25 @@
   --success: #6db1d8;
   --card-bg: #111114;
   --card-border: rgba(242, 170, 52, 0.28);
+
+  /* New landing, Black mode: black page, platinum pill and panels, dark-grey strips. */
+  --pill: #e8eaec;
+  --pill-line: #909090;
+  --pill-text: #050505;
+  --pill-muted: #4a4a4f;
+  --pill-accent: #021a46;
+  --pill-tint: rgba(5, 5, 8, 0.08);
+  --sheet: #e8eaec;
+  --sheet-card: #f4f5f6;
+  --sheet-text: #050505;
+  --sheet-muted: #4a4a4f;
+  --sheet-line: #c7c9cc;
+  --strip: #17171b;
+  --strip-text: #f2f2f0;
+  --strip-muted: #b0b0b0;
+  --strip-on: #050505;
+  --strip-tint: rgba(242, 242, 240, 0.1);
+  --strip-line: #17171b;
 }
 
 body {
@@ -51,6 +89,11 @@ body {
 h1 { font-family: var(--font-display), var(--font-sans), serif; }
 html[lang='ar'] h1 { font-weight: 700; }
 html:not([lang='ar']) h1 { font-weight: 400; }
+
+/* Redesigned landing: display headings use the display face with the weight each script supports (Reem Kufi 700, Marcellus 400). */
+.font-display-h { font-family: var(--font-display), var(--font-sans), serif; }
+html[lang='ar'] .font-display-h { font-weight: 700; }
+html:not([lang='ar']) .font-display-h { font-weight: 400; }
 
 ::-webkit-scrollbar {
   display: none;
