@@ -14,5 +14,5 @@ function LegacyCommunityPage() {
 }
 
 export default function CommunityPage() {
-  return <V2Gate v2={<StudentCommunityV2 />} legacy={<LegacyCommunityPage />} />;
+  return <V2Gate allow="both" v2={<StudentCommunityV2 />} legacy={<LegacyCommunityPage />} />;
 }

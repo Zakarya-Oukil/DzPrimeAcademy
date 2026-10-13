@@ -55,14 +55,15 @@ export const StudentCardV2: React.FC = () => {
   }
 
   const isPaid = currentUser.role === 'STUDENT_PAID';
+  const isTeacher = currentUser.role === 'TEACHER';
   const card: MembershipCardData = {
     cardId,
     holderName: currentUser.name,
     holderNameAr: currentUser.name,
     role: currentUser.role,
-    roleTitleAr: isPaid ? 'عضوية ذهبية' : 'طالب مسجل',
-    roleTitleFr: isPaid ? 'Membre Gold' : 'Étudiant',
-    roleTitleEn: isPaid ? 'Golden Member' : 'Student',
+    roleTitleAr: isTeacher ? 'أستاذ معتمد' : isPaid ? 'عضوية ذهبية' : 'طالب مسجل',
+    roleTitleFr: isTeacher ? 'Enseignant agréé' : isPaid ? 'Membre Gold' : 'Étudiant',
+    roleTitleEn: isTeacher ? 'Certified Teacher' : isPaid ? 'Golden Member' : 'Student',
     institutionName: currentUser.institutionName || '',
     wilayaCode: currentUser.wilayaCode || 16,
     wilayaName: currentUser.wilayaName || '',
@@ -104,13 +105,13 @@ export const StudentCardV2: React.FC = () => {
   const rows: [string, React.ReactNode][] = [
     [tx('رقم البطاقة', 'Numéro de carte', 'Card number'), <span key="id" dir="ltr" className="font-mono text-[15px] font-semibold">{cardId}</span>],
     [tx('الحالة', 'Statut', 'Status'), card.isVerified ? <Status key="s" kind="ok">{tx('موثّقة', 'Vérifiée', 'Verified')}</Status> : <Status key="s" kind="pending">{tx('قيد التوثيق', 'En vérification', 'Pending')}</Status>],
-    [tx('نوع العضوية', 'Type de membre', 'Membership'), <span key="t" className="text-[15px] font-semibold">{gold ? 'VIP' : tx('مجانية', 'Gratuite', 'Free')}</span>],
+    [isTeacher ? tx('الصفة', 'Fonction', 'Role') : tx('نوع العضوية', 'Type de membre', 'Membership'), <span key="t" className="text-[15px] font-semibold">{isTeacher ? tx('أستاذ معتمد', 'Enseignant agréé', 'Certified teacher') : gold ? 'VIP' : tx('مجانية', 'Gratuite', 'Free')}</span>],
   ];
   if (expiry) rows.push([tx('صالحة حتى', "Valable jusqu'au", 'Valid until'), <span key="e" dir="ltr" className="text-[15px] font-semibold tabular-nums">{expiry}</span>]);
 
   return (
     <div className="flex flex-col gap-8" data-testid="student-card-v2">
-      <PageHead title={tx('بطاقة العضوية', 'Carte de membre', 'Membership card')} sub={tx('بطاقتك الرسمية، ورمز QR لملفك العام.', 'Votre carte officielle et le QR de votre profil public.', 'Your official card and the QR code of your public profile.')} />
+      <PageHead title={isTeacher ? tx('بطاقة الأستاذ', "Carte d'enseignant", 'Teacher card') : tx('بطاقة العضوية', 'Carte de membre', 'Membership card')} sub={tx('بطاقتك الرسمية، ورمز QR لملفك العام.', 'Votre carte officielle et le QR de votre profil public.', 'Your official card and the QR code of your public profile.')} />
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,460px)_1fr] lg:items-start">
         <div className="flex flex-col gap-5">
@@ -145,7 +146,7 @@ export const StudentCardV2: React.FC = () => {
             <Btn full onClick={png} disabled={busy !== null} data-testid="card-download-png-btn"><DownloadSimple size={20} aria-hidden="true" />{busy === 'png' ? t('card.generatingPng') : tx('تصدير PNG', 'Exporter en PNG', 'Export PNG')}</Btn>
             <Btn full variant="secondary" onClick={pdf} disabled={busy !== null} data-testid="card-download-pdf-btn"><FilePdf size={20} aria-hidden="true" />{busy === 'pdf' ? t('card.generatingPdf') : tx('تصدير PDF للطباعة', 'Exporter en PDF (impression)', 'Export print PDF')}</Btn>
             <Btn variant="text" href={`/${locale}/profile/${cardId}`}><ArrowSquareOut size={18} aria-hidden="true" />{tx('عرض ملفي العام', 'Voir mon profil public', 'View my public profile')}</Btn>
-            <Btn variant="text" href={`/${locale}/student/settings`}>{tx('تعديل بياناتي', 'Modifier mes informations', 'Edit my details')}</Btn>
+            <Btn variant="text" href={`/${locale}/${isTeacher ? 'teacher' : 'student'}/settings`}>{tx('تعديل بياناتي', 'Modifier mes informations', 'Edit my details')}</Btn>
           </div>
         </div>
       </div>

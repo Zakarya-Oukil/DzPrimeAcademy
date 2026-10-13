@@ -18,9 +18,12 @@ import { DevDesignToggle, useNewDesign } from '@/lib/newDesign';
 import { PillHeader } from '@/components/landing-v2/PillHeader';
 import { FloatingSupport } from '@/components/landing-v2/FloatingSupport';
 import { StudentShell } from '@/components/student-v2/StudentShell';
+import { TeacherShell } from '@/components/teacher-v2/TeacherShell';
 
 /** Routes a logged-in student sees in the redesigned Student area (only when the new design is on). */
 const STUDENT_V2_SEGMENTS = ['student', 'dawarat', 'exams', 'community', 'leaderboard', 'card', 'bot'];
+/** Same for a logged-in teacher: their own area plus the shared community pages. */
+const TEACHER_V2_SEGMENTS = ['teacher', 'community', 'leaderboard', 'bot'];
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -116,6 +119,16 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
   }
 
   const isStudentUser = currentUser?.role === 'STUDENT_FREE' || currentUser?.role === 'STUDENT_PAID';
+  const isTeacherUser = currentUser?.role === 'TEACHER';
+  if (newDesign && isTeacherUser && TEACHER_V2_SEGMENTS.includes(routeSegment)) {
+    return (
+      <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
+        <TeacherShell>{bodyContent}</TeacherShell>
+        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
+        <DevDesignToggle />
+      </AuthModalProvider>
+    );
+  }
   if (newDesign && isStudentUser && STUDENT_V2_SEGMENTS.includes(routeSegment)) {
     return (
       <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
@@ -160,7 +173,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
 
         <FloatingBotWidget />
         <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
-        {isStudentUser && STUDENT_V2_SEGMENTS.includes(routeSegment) && <DevDesignToggle />}
+        {((isStudentUser && STUDENT_V2_SEGMENTS.includes(routeSegment)) || (isTeacherUser && TEACHER_V2_SEGMENTS.includes(routeSegment))) && <DevDesignToggle />}
       </div>
     </AuthModalProvider>
   );

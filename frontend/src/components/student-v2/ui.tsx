@@ -222,3 +222,10 @@ export const Modal: React.FC<{ open: boolean; onClose: () => void; title: string
     </dialog>
   );
 };
+
+/** Labelled single-line text input. */
+export const TextInput: React.FC<{ id: string; label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; dir?: 'ltr' | 'rtl'; autoComplete?: string; hint?: string; required?: boolean; min?: number; className?: string }> = ({ id, label, value, onChange, type = 'text', placeholder, dir, autoComplete, hint, required, min, className }) => (
+  <Field label={label} htmlFor={id} hint={hint} className={className}>
+    <input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} dir={dir} autoComplete={autoComplete} required={required} min={min} className={fieldClass} />
+  </Field>
+);

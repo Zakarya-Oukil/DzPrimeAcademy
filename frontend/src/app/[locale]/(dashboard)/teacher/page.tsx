@@ -41,6 +41,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
+import { V2Gate } from '@/components/student-v2/Gate';
+import { TeacherStudioV2 } from '@/components/teacher-v2/Studio';
 import { usePlatformStore } from '@/lib/platformStore';
 import { formatDZD } from '@/lib/format';
 import { TeacherRosterPanel } from '@/components/dashboard/TeacherRosterPanel';
@@ -51,7 +53,7 @@ import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
 
 type TeacherTab = 'studio' | 'courses' | 'sessions' | 'roster' | 'profile' | 'community';
 
-export default function TeacherStudioPage() {
+function LegacyTeacherStudioPage() {
   const { locale, isRtl } = useTranslation();
   const { currentUser, updateProfile } = useAuthStore();
   const { courses, sessions } = usePlatformStore();
@@ -710,4 +712,8 @@ export default function TeacherStudioPage() {
 
     </div>
   );
+}
+
+export default function TeacherStudioPage() {
+  return <V2Gate allow="teacher" v2={<TeacherStudioV2 />} legacy={<LegacyTeacherStudioPage />} />;
 }
