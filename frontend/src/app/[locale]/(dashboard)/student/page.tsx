@@ -18,8 +18,10 @@ import { usePlatformStore } from '@/lib/platformStore';
 import { isGoldenMember, getHubTitle } from '@/lib/rbac';
 import { UpgradeModal } from '@/components/shared/UpgradeModal';
 import { AuthModal } from '@/components/auth/AuthModal';
+import { V2Gate } from '@/components/student-v2/Gate';
+import { StudentDashboardV2 } from '@/components/student-v2/Dashboard';
 
-export default function StudentDashboardPage() {
+function LegacyStudentDashboardPage() {
   const { t, locale } = useTranslation();
   const { currentUser } = useAuthStore();
   const { courses, sessions } = usePlatformStore();
@@ -161,4 +163,8 @@ export default function StudentDashboardPage() {
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </div>
   );
+}
+
+export default function StudentDashboardPage() {
+  return <V2Gate v2={<StudentDashboardV2 />} legacy={<LegacyStudentDashboardPage />} />;
 }

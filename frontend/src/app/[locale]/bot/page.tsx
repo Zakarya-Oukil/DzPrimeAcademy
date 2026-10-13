@@ -3,8 +3,10 @@
 import React from 'react';
 import { DecisionTreeBot } from '@/components/bot/DecisionTreeBot';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import { V2Gate } from '@/components/student-v2/Gate';
+import { StudentBotV2 } from '@/components/student-v2/Bot';
 
-export default function BotPage() {
+function LegacyBotPage() {
   const { t } = useTranslation();
 
   return (
@@ -21,4 +23,8 @@ export default function BotPage() {
       <DecisionTreeBot />
     </div>
   );
+}
+
+export default function BotPage() {
+  return <V2Gate v2={<StudentBotV2 />} legacy={<LegacyBotPage />} />;
 }

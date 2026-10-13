@@ -11,6 +11,8 @@ import { useAuthModal } from '@/lib/authModalContext';
 import { formatDZD } from '@/lib/format';
 import { isShowableCourse, validRating } from '@/lib/courseDisplay';
 import { ContactActionModal, ContactModalOperation } from '@/components/shared/ContactActionModal';
+import { V2Gate } from '@/components/student-v2/Gate';
+import { StudentDawaratV2 } from '@/components/student-v2/Dawarat';
 
 const THEME_BG: Record<string, string> = {
   lime: 'bg-lime-500/15 text-lime-600 dark:text-lime-400',
@@ -23,7 +25,7 @@ const THEME_BG: Record<string, string> = {
 type Track = 'ALL' | 'BAC' | 'UNIVERSITY_LMD' | 'MEDICAL';
 const VALID_TRACKS: Track[] = ['BAC', 'UNIVERSITY_LMD', 'MEDICAL'];
 
-export default function DawaratCatalogPage() {
+function LegacyDawaratCatalogPage() {
   const { locale, isRtl } = useTranslation();
   const { currentUser } = useAuthStore();
   const { openAuth } = useAuthModal();
@@ -326,4 +328,8 @@ export default function DawaratCatalogPage() {
       )}
     </div>
   );
+}
+
+export default function DawaratCatalogPage() {
+  return <V2Gate v2={<StudentDawaratV2 />} legacy={<LegacyDawaratCatalogPage />} />;
 }

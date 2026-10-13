@@ -6,8 +6,10 @@ import { Zap } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 import { QuickStudyHub } from '@/components/study/QuickStudyHub';
+import { V2Gate } from '@/components/student-v2/Gate';
+import { StudentExamsV2 } from '@/components/student-v2/Exams';
 
-export default function ExamsBankPage() {
+function LegacyExamsBankPage() {
   const { locale } = useTranslation();
   const { currentUser } = useAuthStore();
 
@@ -29,3 +31,7 @@ export default function ExamsBankPage() {
   );
 }
 
+
+export default function ExamsBankPage() {
+  return <V2Gate v2={<StudentExamsV2 />} legacy={<LegacyExamsBankPage />} />;
+}

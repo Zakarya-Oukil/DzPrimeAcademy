@@ -17,6 +17,10 @@ import { Role } from '@/types';
 import { DevDesignToggle, useNewDesign } from '@/lib/newDesign';
 import { PillHeader } from '@/components/landing-v2/PillHeader';
 import { FloatingSupport } from '@/components/landing-v2/FloatingSupport';
+import { StudentShell } from '@/components/student-v2/StudentShell';
+
+/** Routes a logged-in student sees in the redesigned Student area (only when the new design is on). */
+const STUDENT_V2_SEGMENTS = ['student', 'dawarat', 'exams', 'community', 'leaderboard', 'card', 'bot'];
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -63,7 +67,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
   const routeSegment = segments[1] || '';
   const requiredRoles = PROTECTED_ROLE_MAP[routeSegment];
 
-  const isGuestLanding = !currentUser && (pathname === `/${locale}` || pathname === `/${locale}/`);
+  const isGuestLanding = !currentUser && (pathname === '/' || pathname === `/${locale}` || pathname === `/${locale}/`);
 
   let bodyContent: React.ReactNode = children;
 
@@ -111,6 +115,17 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
     );
   }
 
+  const isStudentUser = currentUser?.role === 'STUDENT_FREE' || currentUser?.role === 'STUDENT_PAID';
+  if (newDesign && isStudentUser && STUDENT_V2_SEGMENTS.includes(routeSegment)) {
+    return (
+      <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
+        <StudentShell>{bodyContent}</StudentShell>
+        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
+        <DevDesignToggle />
+      </AuthModalProvider>
+    );
+  }
+
   const isDashboardRoute = ['admin', 'ambassador', 'teacher', 'student'].includes(routeSegment);
   const isNoSidebarPage = routeSegment === 'admin' || routeSegment === 'ambassador' || routeSegment === 'teacher';
 
@@ -145,6 +160,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
 
         <FloatingBotWidget />
         <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
+        {isStudentUser && STUDENT_V2_SEGMENTS.includes(routeSegment) && <DevDesignToggle />}
       </div>
     </AuthModalProvider>
   );
