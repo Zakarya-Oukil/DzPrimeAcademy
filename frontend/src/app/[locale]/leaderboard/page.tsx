@@ -14,5 +14,5 @@ function LegacyLeaderboardOrCommunityPage() {
 }
 
 export default function LeaderboardOrCommunityPage() {
-  return <V2Gate allow="both" v2={<StudentLeaderboardV2 />} legacy={<LegacyLeaderboardOrCommunityPage />} />;
+  return <V2Gate allow="all" v2={<StudentLeaderboardV2 />} legacy={<LegacyLeaderboardOrCommunityPage />} />;
 }

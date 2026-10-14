@@ -9,7 +9,7 @@ import { Btn, Empty, Modal, PageHead, SkeletonRows, Status, Tabs, dateFmt, useTx
 import { api } from './data';
 
 /** My posts and videos (Figma page 28): publish (same studio as before), change privacy, delete. */
-export const TeacherPostsV2: React.FC = () => {
+export const TeacherPostsV2: React.FC<{ sub?: string }> = ({ sub }) => {
   const { tx, locale } = useTx();
   const { currentUser } = useAuthStore();
   const params = useSearchParams();
@@ -53,7 +53,7 @@ export const TeacherPostsV2: React.FC = () => {
     <div className="flex flex-col gap-7" data-testid="teacher-posts-v2">
       <PageHead
         title={tx('منشوراتي وفيديوهاتي', 'Mes publications et vidéos', 'My posts and videos')}
-        sub={tx('انشر دروساً ونصائح وتحكّم في خصوصيتها.', 'Publiez des cours et conseils et gérez leur visibilité.', 'Publish lessons and tips and control who sees them.')}
+        sub={sub ?? tx('انشر دروساً ونصائح وتحكّم في خصوصيتها.', 'Publiez des cours et conseils et gérez leur visibilité.', 'Publish lessons and tips and control who sees them.')}
         action={<Btn onClick={() => setStudio(true)} data-testid="teacher-new-post">{tx('منشور أو فيديو جديد', 'Nouvelle publication', 'New post or video')}</Btn>}
       />
       <Tabs label={tx('تصفية المنشورات', 'Filtrer', 'Filter posts')} value={filter} onChange={(v) => setFilter(v as typeof filter)} items={[

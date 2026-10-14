@@ -26,5 +26,5 @@ function LegacyBotPage() {
 }
 
 export default function BotPage() {
-  return <V2Gate allow="both" v2={<StudentBotV2 />} legacy={<LegacyBotPage />} />;
+  return <V2Gate allow="all" v2={<StudentBotV2 />} legacy={<LegacyBotPage />} />;
 }
