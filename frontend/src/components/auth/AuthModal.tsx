@@ -22,6 +22,8 @@ import { useTranslation } from '@/lib/i18n/useTranslation';
 import { WILAYAS, getLocalizedWilayaName } from '@/lib/initial-data';
 import { getDashboardPath } from '@/lib/rbac';
 import { ContactActionModal } from '@/components/shared/ContactActionModal';
+import { useNewDesign } from '@/lib/newDesign';
+import { AuthModalV2View } from './AuthModalV2';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -33,6 +35,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
   const { login, register } = useAuthStore();
   const { locale, isRtl } = useTranslation();
   const router = useRouter();
+  const newDesign = useNewDesign();
 
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot'>(defaultTab);
   const [email, setEmail] = useState('');
@@ -182,6 +185,57 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
       setErrorMsg(result.error || (locale === 'ar' ? 'فشل إنشاء الحساب' : "Échec de l'inscription"));
     }
   };
+
+  const activationModal = activationModalOpen && registeredUserData ? (
+    <ContactActionModal
+          isOpen={activationModalOpen}
+          onClose={() => {
+            setActivationModalOpen(false);
+            setActiveTab('login');
+            setLoginNotice(
+              locale === 'ar'
+                ? 'تم تسجيل طلبك بنجاح! يرجى تأكيد بريدك الإلكتروني عبر الرابط المرسل إليك، أو انتظار موافقة الإدارة لتتمكن من تسجيل الدخول.'
+                : 'Votre demande a été enregistrée avec succès ! Veuillez vérifier votre email ou attendre la validation par l\'administration pour vous connecter.'
+            );
+          }}
+          operation={{
+            type: 'ACCOUNT_ACTIVATION',
+            title: locale === 'ar' ? 'تفعيل حساب جديد' : 'Activation de nouveau compte',
+            user: registeredUserData,
+          }}
+        />
+  ) : null;
+
+  if (newDesign) {
+    return (
+      <>
+        <AuthModalV2View
+          f={{
+            onClose,
+            activeTab,
+            setActiveTab,
+            email, setEmail, password, setPassword, name, setName, phone, setPhone, wilayaCode, setWilayaCode,
+            loading,
+            errorMsg, clearError: () => setErrorMsg(''),
+            loginNotice,
+            forgotSuccess, clearForgotSuccess: () => setForgotSuccess(''),
+            unverified: !!unverifiedAccount,
+            resending: resendingActivation, resendOk: resendActivationSuccess, resendError: resendActivationError,
+            onLogin: handleLoginSubmit,
+            onRegister: handleRegisterSubmit,
+            onForgot: handleForgotSubmit,
+            onResend: handleResendActivation,
+            onContactAdmin: () => {
+              if (!unverifiedAccount) return;
+              setRegisteredUserData({ name: unverifiedAccount.name || '', email: unverifiedAccount.email, phone: unverifiedAccount.phone || '', wilayaName: unverifiedAccount.wilayaName });
+              setActivationModalOpen(true);
+            },
+          }}
+        />
+        {activationModal}
+      </>
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -552,25 +606,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         </motion.div>
       </div>
 
-      {activationModalOpen && registeredUserData && (
-        <ContactActionModal
-          isOpen={activationModalOpen}
-          onClose={() => {
-            setActivationModalOpen(false);
-            setActiveTab('login');
-            setLoginNotice(
-              locale === 'ar'
-                ? 'تم تسجيل طلبك بنجاح! يرجى تأكيد بريدك الإلكتروني عبر الرابط المرسل إليك، أو انتظار موافقة الإدارة لتتمكن من تسجيل الدخول.'
-                : 'Votre demande a été enregistrée avec succès ! Veuillez vérifier votre email ou attendre la validation par l\'administration pour vous connecter.'
-            );
-          }}
-          operation={{
-            type: 'ACCOUNT_ACTIVATION',
-            title: locale === 'ar' ? 'تفعيل حساب جديد' : 'Activation de nouveau compte',
-            user: registeredUserData,
-          }}
-        />
-      )}
+      {activationModal}
     </AnimatePresence>
   );
 };

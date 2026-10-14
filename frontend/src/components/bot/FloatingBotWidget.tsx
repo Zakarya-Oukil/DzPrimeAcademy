@@ -16,11 +16,15 @@ import {
 import { DecisionTreeBot } from './DecisionTreeBot';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import Link from 'next/link';
+import { useNewDesign } from '@/lib/newDesign';
+import { FloatingBotWidgetV2 } from './FloatingBotWidgetV2';
 
 export const FloatingBotWidget: React.FC = () => {
   const { t, locale, isRtl } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const newDesign = useNewDesign();
+  if (newDesign) return <FloatingBotWidgetV2 />;
 
   return (
     <div

@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { formatDZD } from '@/lib/format';
+import { useNewDesign } from '@/lib/newDesign';
+import { ContactView } from '@/components/shared-v2/ContactView';
 
 export type ContactModalOperationType =
   | 'ACCOUNT_ACTIVATION'
@@ -58,6 +60,7 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
 }) => {
   const { locale } = useTranslation();
   const isAr = locale === 'ar';
+  const newDesign = useNewDesign();
 
   const [contactSettings, setContactSettings] = useState({
     whatsappNumber: 'https://wa.me/qr/5473INCXN3HJI1',
@@ -221,6 +224,22 @@ export const ContactActionModal: React.FC<ContactActionModalProps> = ({
       setResending(false);
     }
   };
+
+  if (newDesign) {
+    return (
+      <ContactView
+        kind={isAccountActivation ? 'activation' : isAmbassadorApplication ? 'ambassador' : 'payment'}
+        onClose={onClose}
+        title={operation.title}
+        amountDzd={operation.amountDzd}
+        email={operation.user?.email}
+        ambassadorHandle={contactSettings.ambassadorTelegram}
+        contacted={contactedChannel}
+        onContact={handleContact}
+        resend={{ busy: resending, ok: resendSuccess, error: resendError, cooldown: resendCooldown, onResend: handleResendEmail }}
+      />
+    );
+  }
 
   return (
     <AnimatePresence>

@@ -16,16 +16,20 @@ import { useAuthStore } from '@/lib/store';
 import { Role } from '@/types';
 import { DevDesignToggle, useNewDesign } from '@/lib/newDesign';
 import { PillHeader } from '@/components/landing-v2/PillHeader';
+import { SiteFooter } from '@/components/landing-v2/SiteFooter';
 import { FloatingSupport } from '@/components/landing-v2/FloatingSupport';
 import { StudentShell } from '@/components/student-v2/StudentShell';
 import { TeacherShell } from '@/components/teacher-v2/TeacherShell';
 import { AmbassadorShell } from '@/components/ambassador-v2/AmbassadorShell';
 
 /** Routes a logged-in student sees in the redesigned Student area (only when the new design is on). */
-const STUDENT_V2_SEGMENTS = ['student', 'dawarat', 'exams', 'community', 'leaderboard', 'card', 'bot'];
+const STUDENT_V2_SEGMENTS = ['student', 'dawarat', 'exams', 'community', 'leaderboard', 'card', 'bot', 'profile', 'ambassadors'];
 /** Same for a logged-in teacher: their own area plus the shared community pages. */
-const TEACHER_V2_SEGMENTS = ['teacher', 'community', 'leaderboard', 'bot'];
-const AMBASSADOR_V2_SEGMENTS = ['ambassador', 'community', 'leaderboard', 'bot'];
+const TEACHER_V2_SEGMENTS = ['teacher', 'community', 'leaderboard', 'bot', 'profile', 'ambassadors'];
+const AMBASSADOR_V2_SEGMENTS = ['ambassador', 'community', 'leaderboard', 'bot', 'profile', 'ambassadors'];
+/** Public pages with the visitor header and footer when the new design is on: always for these, and for guests on profile and the ambassadors page. */
+const PUBLIC_V2_ALWAYS = ['verify', 'reset-password', 'activate'];
+const PUBLIC_V2_GUEST = ['profile', 'ambassadors'];
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -114,6 +118,25 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
         </AuthModalProvider>
         <Footer />
         <FloatingBotWidget />
+        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
+        <DevDesignToggle />
+      </div>
+    );
+  }
+
+  const isPublicV2 = newDesign && (PUBLIC_V2_ALWAYS.includes(routeSegment) || (PUBLIC_V2_GUEST.includes(routeSegment) && isLoaded && !currentUser));
+  if (newDesign && PUBLIC_V2_GUEST.includes(routeSegment) && !isLoaded) {
+    return <div className="min-h-screen w-full bg-background" data-testid="public-v2-loading" />;
+  }
+  if (isPublicV2) {
+    return (
+      <div className="relative flex min-h-screen w-full flex-col bg-background text-foreground transition-colors" data-testid="public-shell-v2">
+        <PillHeader onOpenAuth={(tab) => setAuthModal({ open: true, tab })} />
+        <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
+          <main id="main" className="flex flex-1 flex-col w-full">{bodyContent}</main>
+        </AuthModalProvider>
+        <SiteFooter />
+        <FloatingSupport />
         <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
         <DevDesignToggle />
       </div>

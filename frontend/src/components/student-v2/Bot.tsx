@@ -11,7 +11,7 @@ import { useExams } from './data';
 type Named = { id: string; nameAr: string; nameFr: string; nameEn?: string };
 type Step = { key: string; question: string; options: { id: string; label: string }[]; chosen?: { id: string; label: string } };
 
-export const StudentBotV2: React.FC = () => {
+export const StudentBotV2: React.FC<{ compact?: boolean }> = ({ compact }) => {
   const { tx, locale } = useTx();
   const exams = useExams();
   const [picked, setPicked] = useState<{ id: string; label: string }[]>([]);
@@ -40,12 +40,15 @@ export const StudentBotV2: React.FC = () => {
 
   useEffect(() => { endRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, [picked.length]);
 
+  const Wrap: React.ElementType = compact ? 'div' : FormPanel;
   const bubble = 'max-w-[85%] rounded-[18px] px-4 py-3 text-[15px] sm:max-w-[70%]';
 
   return (
     <div className="flex flex-col gap-7" data-testid="student-bot-v2">
-      <PageHead title={tx('المساعد', 'Assistant', 'Assistant')} sub={tx('اختر خطوة بخطوة وسأجد لك الامتحانات المناسبة.', 'Choisissez étape par étape et je trouve les bons examens.', 'Choose step by step and I will find the right exams.')} />
-      <FormPanel>
+      {compact ? null : (
+  <PageHead title={tx('المساعد', 'Assistant', 'Assistant')} sub={tx('اختر خطوة بخطوة وسأجد لك الامتحانات المناسبة.', 'Choisissez étape par étape et je trouve les bons examens.', 'Choose step by step and I will find the right exams.')} />
+      )}
+      <Wrap>
         <div className="flex flex-col gap-4" aria-live="polite">
           {steps.slice(0, Math.min(idx + 1, steps.length)).map((s, i) => (
             <React.Fragment key={s.key}>
@@ -89,7 +92,7 @@ export const StudentBotV2: React.FC = () => {
           <div ref={endRef} />
         </div>
         {picked.length > 0 ? <div className="mt-5 border-t border-sheet-line pt-4"><Btn variant="text" onClick={() => setPicked([])}>{tx('ابدأ من جديد', 'Recommencer', 'Start over')}</Btn></div> : null}
-      </FormPanel>
+      </Wrap>
     </div>
   );
 };

@@ -7,6 +7,8 @@ import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 import { useAuthModal } from '@/lib/authModalContext';
 import { ContactActionModal } from './ContactActionModal';
+import { useNewDesign } from '@/lib/newDesign';
+import { UpgradeView } from '@/components/shared-v2/Dialogs';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -19,6 +21,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose }) =
   const { openAuth } = useAuthModal();
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [vipPrice, setVipPrice] = useState(10000);
+  const newDesign = useNewDesign();
 
   useEffect(() => {
     fetch('/api/settings')
@@ -39,6 +42,34 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose }) =
   };
 
   if (!isOpen) return null;
+
+  const contactModal = contactModalOpen ? (
+    <ContactActionModal
+          isOpen={contactModalOpen}
+          onClose={() => setContactModalOpen(false)}
+          operation={{
+            type: 'VIP_MEMBERSHIP_UPGRADE',
+            title: locale === 'ar' ? 'ترقية العضوية الذهبية VIP' : 'Adhésion Gold VIP',
+            amountDzd: vipPrice,
+            details: 'DZ Prime Academy 2026 Annual Pass',
+            user: currentUser ? {
+              name: currentUser.name,
+              email: currentUser.email,
+              phone: currentUser.phone || undefined,
+              wilayaName: currentUser.wilayaName || undefined,
+            } : undefined,
+          }}
+        />
+  ) : null;
+
+  if (newDesign) {
+    return (
+      <>
+        <UpgradeView onClose={onClose} sub={t('bot.upgradePrompt')} onPay={handleOpenContactPayment} />
+        {contactModal}
+      </>
+    );
+  }
 
   const features = locale === 'ar' ? [
     'أرشيف كامل لمواضيع الامتحانات (أكثر من 12,000 موضوع من مختلف الجامعات)',
@@ -122,24 +153,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose }) =
         </motion.div>
       </div>
 
-      {contactModalOpen && (
-        <ContactActionModal
-          isOpen={contactModalOpen}
-          onClose={() => setContactModalOpen(false)}
-          operation={{
-            type: 'VIP_MEMBERSHIP_UPGRADE',
-            title: locale === 'ar' ? 'ترقية العضوية الذهبية VIP' : 'Adhésion Gold VIP',
-            amountDzd: vipPrice,
-            details: 'DZ Prime Academy 2026 Annual Pass',
-            user: currentUser ? {
-              name: currentUser.name,
-              email: currentUser.email,
-              phone: currentUser.phone || undefined,
-              wilayaName: currentUser.wilayaName || undefined,
-            } : undefined,
-          }}
-        />
-      )}
+      {contactModal}
     </AnimatePresence>
   );
 };

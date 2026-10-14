@@ -97,6 +97,9 @@ interface ProfileResponse {
   }>;
 }
 
+import { useNewDesign } from '@/lib/newDesign';
+import { ProfileStateV2, PublicProfileV2 } from '@/components/shared-v2/PublicProfile';
+
 export default function PublicProfilePage({
   params,
 }: {
@@ -112,6 +115,7 @@ export default function PublicProfilePage({
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const newDesign = useNewDesign();
 
   const loadProfile = () => {
     fetch(`/api/profile/${encodeURIComponent(id)}`)
@@ -139,6 +143,9 @@ export default function PublicProfilePage({
       setTimeout(() => setCopied(false), 2500);
     }
   };
+
+  if (newDesign && loading) return <ProfileStateV2 kind="loading" id={id} />;
+  if (newDesign && (error || !data || !data.user)) return <ProfileStateV2 kind="error" id={id} />;
 
   if (loading) {
     return (
@@ -216,6 +223,10 @@ export default function PublicProfilePage({
     : cleanPhone
     ? `https://wa.me/${cleanPhone.replace('+', '').replace(/^0/, '213')}`
     : null;
+
+  if (newDesign) {
+    return <PublicProfileV2 data={data} isOwner={isCardOwner} canExportCard={canExportCard} whatsappUrl={whatsappUrl} roleTitle={roleTitle} copied={copied} onCopy={copyProfileLink} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-arabic py-8 px-3 sm:px-6 lg:px-8">

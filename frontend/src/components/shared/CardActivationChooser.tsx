@@ -5,12 +5,15 @@ import { X, MessageCircle, Send } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 import { telegramUrl, useContactSettings, whatsappUrl } from '@/lib/contactLinks';
+import { useNewDesign } from '@/lib/newDesign';
+import { ChooserView } from '@/components/shared-v2/Dialogs';
 
 // Digital card activation: pick WhatsApp or Telegram, staff then activate Gold by hand (admin approvals).
 export const CardActivationChooser: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const { locale } = useTranslation();
   const { currentUser } = useAuthStore();
   const s = useContactSettings();
+  const newDesign = useNewDesign();
   if (!isOpen) return null;
   const isAr = locale === 'ar';
 
@@ -32,6 +35,10 @@ export const CardActivationChooser: React.FC<{ isOpen: boolean; onClose: () => v
     }
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+
+  if (newDesign) {
+    return <ChooserView onClose={onClose} contacts={contacts} onWhatsapp={(n) => open(whatsappUrl(n, text))} onTelegram={(h) => open(telegramUrl(h, text))} />;
+  }
 
   return (
     <div

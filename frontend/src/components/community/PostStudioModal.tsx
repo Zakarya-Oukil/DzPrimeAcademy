@@ -16,6 +16,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Post, PostType } from '@/types';
+import { useNewDesign } from '@/lib/newDesign';
+import { PostStudioV2 } from './PostStudioV2';
 
 interface PostStudioModalProps {
   isOpen: boolean;
@@ -42,6 +44,9 @@ export const PostStudioModal: React.FC<PostStudioModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  const newDesign = useNewDesign();
+  if (newDesign) return <PostStudioV2 isOpen={isOpen} onClose={onClose} onPostCreated={onPostCreated} defaultType={defaultType} />;
 
   if (!isOpen) return null;
 
