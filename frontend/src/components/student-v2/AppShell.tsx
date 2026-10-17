@@ -12,7 +12,7 @@ import { Avatar, focus, useTx } from './ui';
 
 /** Generic shell of the redesigned areas (Student and Teacher): floating pill header, rounded sidebar panel, content sheet. */
 
-export type ShellNavItem = { id: string; href: string; label: string; icon: React.ElementType; match: (pathname: string) => boolean };
+export type ShellNavItem = { id: string; href: string; label: string; icon: React.ElementType; match: (pathname: string) => boolean; /** Same-page navigation (admin tabs): runs instead of following the href. */ onClick?: () => void; /** Small gold dot, e.g. pending work. */ dot?: boolean };
 export type ShellGroup = { title: string; items: ShellNavItem[] };
 export type ShellTopLink = { href: string; label: string; on: boolean };
 
@@ -32,9 +32,11 @@ export interface AppShellProps {
   publicProfileHref?: string;
   /** Modals owned by the area (upgrade, etc.). */
   extras?: React.ReactNode;
+  /** Changes when the area navigates without changing the path (admin hash tabs), so the mobile drawer closes. */
+  routeKey?: string;
 }
 
-export const AppShell: React.FC<AppShellProps> = ({ children, testId, homeHref, homeLabel, navLabel, groups, top, cta, mobileCta, settingsHref, publicProfileHref, extras }) => {
+export const AppShell: React.FC<AppShellProps> = ({ children, testId, homeHref, homeLabel, navLabel, groups, top, cta, mobileCta, settingsHref, publicProfileHref, extras, routeKey }) => {
   const { tx } = useTx();
   const pathname = usePathname() || '';
   const router = useRouter();
@@ -48,7 +50,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, testId, homeHref, 
     if (currentUser?.mustChangePassword && !pathname.includes(settingsHref)) router.replace(`${settingsHref}?tab=security`);
   }, [currentUser?.mustChangePassword, pathname, settingsHref, router]);
 
-  useEffect(() => { setMenuOpen(false); setUserOpen(false); }, [pathname]);
+  useEffect(() => { setMenuOpen(false); setUserOpen(false); }, [pathname, routeKey]);
   useEffect(() => {
     if (!userOpen && !menuOpen) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setUserOpen(false); setMenuOpen(false); } };
@@ -74,10 +76,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children, testId, homeHref, 
                   <Link
                     href={it.href}
                     aria-current={on ? 'page' : undefined}
+                    onClick={it.onClick ? (e) => { e.preventDefault(); it.onClick!(); } : undefined}
                     className={`flex min-h-[48px] items-center gap-3 rounded-[12px] px-3 text-[15px] transition-colors motion-reduce:transition-none ${on ? 'bg-strip-tint font-semibold text-strip-text' : 'font-medium text-strip-muted hover:bg-strip-tint hover:text-strip-text'} ${focus}`}
                   >
                     <Icon size={22} weight={on ? 'fill' : 'regular'} aria-hidden="true" />
-                    {it.label}
+                    <span className="flex-1">{it.label}</span>
+                    {it.dot ? <span aria-hidden="true" className="h-2 w-2 rounded-full bg-gold-500" /> : null}
                   </Link>
                 </li>
               );

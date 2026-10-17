@@ -18,7 +18,7 @@ export const focus = 'focus-visible:outline focus-visible:outline-2 focus-visibl
 
 export const PageHead: React.FC<{ title: string; sub?: string; action?: React.ReactNode }> = ({ title, sub, action }) => (
   <div className="flex flex-wrap items-end justify-between gap-4">
-    <div className="min-w-0 flex-1">
+    <div className="min-w-0 flex-1 basis-[16rem]">
       <h1 className="font-display-h text-[30px] leading-[1.2] tracking-tight sm:text-[40px]">{title}</h1>
       {sub ? <p className="mt-2 max-w-2xl text-[15px] text-sheet-muted">{sub}</p> : null}
     </div>
@@ -94,7 +94,7 @@ export const Tabs: React.FC<{ items: { id: string; label: string }[]; value: str
 export type StatusKind = 'ok' | 'pending' | 'locked' | 'danger';
 export const Status: React.FC<{ kind: StatusKind; children: React.ReactNode }> = ({ kind, children }) => {
   const Icon = kind === 'ok' ? CheckCircle : kind === 'pending' ? Clock : kind === 'locked' ? Lock : WarningCircle;
-  const color = kind === 'danger' ? 'text-[#c0392b]' : 'text-sheet-muted';
+  const color = kind === 'danger' ? 'text-sheet-danger' : 'text-sheet-muted';
   return (
     <span className={`inline-flex items-center gap-1.5 text-[13px] font-medium ${color}`}>
       <Icon size={16} aria-hidden="true" />
@@ -224,8 +224,8 @@ export const Modal: React.FC<{ open: boolean; onClose: () => void; title: string
 };
 
 /** Labelled single-line text input. */
-export const TextInput: React.FC<{ id: string; label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; dir?: 'ltr' | 'rtl'; autoComplete?: string; hint?: string; required?: boolean; min?: number; className?: string }> = ({ id, label, value, onChange, type = 'text', placeholder, dir, autoComplete, hint, required, min, className }) => (
+export const TextInput: React.FC<{ id: string; label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; dir?: 'ltr' | 'rtl'; autoComplete?: string; hint?: string; required?: boolean; min?: number; max?: number; className?: string }> = ({ id, label, value, onChange, type = 'text', placeholder, dir, autoComplete, hint, required, min, max, className }) => (
   <Field label={label} htmlFor={id} hint={hint} className={className}>
-    <input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} dir={dir} autoComplete={autoComplete} required={required} min={min} className={fieldClass} />
+    <input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} dir={dir} autoComplete={autoComplete} required={required} min={min} max={max} className={fieldClass} />
   </Field>
 );

@@ -32,6 +32,7 @@
   --sheet-text: #f2f2f0;
   --sheet-muted: #b0b0b0;
   --sheet-line: #333338;
+  --sheet-danger: #ff9488;
   --strip: #ffffff;
   --strip-text: #0b0b0d;
   --strip-muted: #555559;
@@ -67,6 +68,7 @@
   --sheet-text: #050505;
   --sheet-muted: #4a4a4f;
   --sheet-line: #c7c9cc;
+  --sheet-danger: #b3261e;
   --strip: #17171b;
   --strip-text: #f2f2f0;
   --strip-muted: #b0b0b0;

@@ -21,6 +21,7 @@ import { FloatingSupport } from '@/components/landing-v2/FloatingSupport';
 import { StudentShell } from '@/components/student-v2/StudentShell';
 import { TeacherShell } from '@/components/teacher-v2/TeacherShell';
 import { AmbassadorShell } from '@/components/ambassador-v2/AmbassadorShell';
+import { AdminShell } from '@/components/admin-v2/AdminShell';
 
 /** Routes a logged-in student sees in the redesigned Student area (only when the new design is on). */
 const STUDENT_V2_SEGMENTS = ['student', 'dawarat', 'exams', 'community', 'leaderboard', 'card', 'bot', 'profile', 'ambassadors'];
@@ -149,6 +150,16 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
     return (
       <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
         <TeacherShell>{bodyContent}</TeacherShell>
+        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
+        <DevDesignToggle />
+      </AuthModalProvider>
+    );
+  }
+  const isAdminUser = currentUser?.role === 'OWNER' || currentUser?.role === 'ADMIN' || currentUser?.role === 'MODERATOR';
+  if (newDesign && isAdminUser && routeSegment === 'admin') {
+    return (
+      <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
+        <AdminShell>{bodyContent}</AdminShell>
         <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
         <DevDesignToggle />
       </AuthModalProvider>

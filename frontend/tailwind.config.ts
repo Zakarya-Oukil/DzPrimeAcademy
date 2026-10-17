@@ -84,6 +84,7 @@ const config: Config = {
         "sheet-text": "var(--sheet-text)",
         "sheet-muted": "var(--sheet-muted)",
         "sheet-line": "var(--sheet-line)",
+        "sheet-danger": "var(--sheet-danger)",
         strip: "var(--strip)",
         "strip-text": "var(--strip-text)",
         "strip-muted": "var(--strip-muted)",

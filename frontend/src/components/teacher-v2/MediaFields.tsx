@@ -52,7 +52,7 @@ function put(url: string, body: Blob, onProgress: (n: number) => void, hold: (x:
   });
 }
 
-export const ImageField: React.FC<{ id: string; kind: 'course' | 'post'; label: string; value: string | null; onChange: (u: string | null) => void }> = ({ id, kind, label, value, onChange }) => {
+export const ImageField: React.FC<{ id: string; kind: 'course' | 'post' | 'bundle' | 'landing' | 'teacher'; label: string; value: string | null; onChange: (u: string | null) => void }> = ({ id, kind, label, value, onChange }) => {
   const { tx } = useTx();
   const input = useRef<HTMLInputElement>(null);
   const xhr = useRef<XMLHttpRequest | null>(null);
