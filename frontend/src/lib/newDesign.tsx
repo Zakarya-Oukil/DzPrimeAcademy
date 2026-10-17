@@ -10,7 +10,8 @@ import React, { useSyncExternalStore } from 'react';
  */
 const KEY = 'dz_new_design';
 const EVENT = 'dz-new-design-change';
-const ENV_ON = process.env.NEXT_PUBLIC_NEW_DESIGN === '1';
+// Always on: the redesign is the only design. Set to false to bring the old one (and the dev toggle) back.
+const ENV_ON = true;
 const IS_DEV = process.env.NODE_ENV === 'development';
 
 function readStored(): boolean {
