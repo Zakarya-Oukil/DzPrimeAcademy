@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/dawarat', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/exams', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/card', priority: 0.8, changeFrequency: 'weekly' as const },
-    { path: '/ambassadors', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/leaderboard', priority: 0.7, changeFrequency: 'daily' as const },
     { path: '/community', priority: 0.7, changeFrequency: 'daily' as const },
   ];

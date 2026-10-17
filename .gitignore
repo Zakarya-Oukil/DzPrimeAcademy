@@ -11,3 +11,20 @@ credentials.json
 *.pem
 *.key
 .credentials
+
+# local AI tooling
+.agents/
+.claude/
+.mcp.json
+.playwright-mcp/
+graphify-out/
+skills-lock.json
+transitions/
+frontend/.clinerules
+frontend/.cursorrules
+frontend/.windsurfrules
+frontend/.rtlify-rules.md
+frontend/.github/
+frontend/AGENTS.md
+frontend/CLAUDE.md
+frontend/GEMINI.md

@@ -325,7 +325,7 @@ export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
       labelFr: 'Réseau National des Ambassadeurs',
       url: '/ambassadors',
       iconName: 'ambassadors',
-      enabled: true,
+      enabled: false,
     },
     {
       id: 'ql-courses',
