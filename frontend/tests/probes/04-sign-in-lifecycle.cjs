@@ -182,7 +182,7 @@ async function run() {
   const nu = good();
   r = await call('POST', '/api/auth/register', { ...nu, phone: '+213 555 12 34 56', locale: 'fr' });
   check('REG valid sign-up -> 201, unverified, no cookie', r.status === 201 && r.json.user.isVerified === false && !r.token, r.status);
-  check('REG the stored card id is 8 random characters', /^DZ-STU-16-[A-Z2-9]{8}$/.test((await prisma.user.findUnique({ where: { email: nu.email } })).studentCardId));
+  check('REG the stored card id is DZ-STU-16 plus a 4-digit running number', /^DZ-STU-16-\d{4,}$/.test((await prisma.user.findUnique({ where: { email: nu.email } })).studentCardId));
   r = await call('POST', '/api/auth/register', { ...nu, email: nu.email.toUpperCase() });
   check('REG same email in other case -> 409', r.status === 409, r.status);
   const regIp = ip();

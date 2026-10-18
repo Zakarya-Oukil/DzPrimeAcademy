@@ -18,6 +18,7 @@ create table "CardCounter" (
   "value" integer not null default 0
 );
 
+create temp table "_card_renumber" on commit drop as
 with typed as (
   select u."id",
     case
@@ -32,10 +33,11 @@ with typed as (
 ), numbered as (
   select id, t, w, row_number() over (partition by t, w order by "createdAt", id) as n from typed
 )
-update "User" u
-set "studentCardId" = 'DZ-' || numbered.t || '-' || numbered.w || '-' || lpad(numbered.n::text, 4, '0')
-from numbered
-where u."id" = numbered.id;
+select id, 'DZ-' || t || '-' || w || '-' || lpad(n::text, 4, '0') as new_id from numbered;
+
+-- Two steps because the column is unique: a new number can equal another user's old one.
+update "User" set "studentCardId" = 'TMP-' || "id" where "id" in (select id from "_card_renumber");
+update "User" u set "studentCardId" = r.new_id from "_card_renumber" r where u."id" = r.id;
 
 insert into "CardCounter" ("key", "value")
 select split_part("studentCardId", '-', 2) || '-' || split_part("studentCardId", '-', 3),
