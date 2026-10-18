@@ -110,7 +110,7 @@ async function POSTHandler(request: NextRequest) {
         wilayaName: wilayaName || null,
         institutionName: university || 'Université Algérienne',
         specialty: specialty || null,
-        studentCardId: generateCardId('TCH', parsedWilayaCode),
+        studentCardId: await generateCardId('TCH', parsedWilayaCode),
         isVerified: true,
       },
     });

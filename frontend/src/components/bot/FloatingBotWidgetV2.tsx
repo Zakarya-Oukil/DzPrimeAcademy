@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import { Btn, focus, useTx } from '@/components/student-v2/ui';
 import { StudentBotV2 } from '@/components/student-v2/Bot';
 

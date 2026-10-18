@@ -1,20 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AppSidebar } from './AppSidebar';
-import { Navbar } from './Navbar';
-import { Footer } from './Footer';
-import { FloatingBotWidget } from '@/components/bot/FloatingBotWidget';
 import { AuthGate, AccessDenied, AuthLoadingSpinner } from './AuthGate';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { AuthModalProvider } from '@/lib/authModalContext';
-import { SessionReminderBanner } from '@/components/dashboard/SessionReminderBanner';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 import { Role } from '@/types';
-import { DevDesignToggle, useNewDesign } from '@/lib/newDesign';
 import { PillHeader } from '@/components/landing-v2/PillHeader';
 import { SiteFooter } from '@/components/landing-v2/SiteFooter';
 import { FloatingSupport } from '@/components/landing-v2/FloatingSupport';
@@ -23,14 +16,10 @@ import { TeacherShell } from '@/components/teacher-v2/TeacherShell';
 import { AmbassadorShell } from '@/components/ambassador-v2/AmbassadorShell';
 import { AdminShell } from '@/components/admin-v2/AdminShell';
 
-/** Routes a logged-in student sees in the redesigned Student area (only when the new design is on). */
-const STUDENT_V2_SEGMENTS = ['student', 'dawarat', 'exams', 'community', 'leaderboard', 'card', 'bot', 'profile', 'ambassadors'];
-/** Same for a logged-in teacher: their own area plus the shared community pages. */
-const TEACHER_V2_SEGMENTS = ['teacher', 'community', 'leaderboard', 'bot', 'profile', 'ambassadors'];
-const AMBASSADOR_V2_SEGMENTS = ['ambassador', 'community', 'leaderboard', 'bot', 'profile', 'ambassadors'];
-/** Public pages with the visitor header and footer when the new design is on: always for these, and for guests on profile and the ambassadors page. */
-const PUBLIC_V2_ALWAYS = ['verify', 'reset-password', 'activate'];
-const PUBLIC_V2_GUEST = ['profile', 'ambassadors'];
+/** Pages with the visitor header and footer for everyone. */
+const PUBLIC_ALWAYS = ['verify', 'reset-password', 'activate'];
+/** Pages that only exist in the member areas: guests are asked to sign in, staff are sent to their own area. */
+const MEMBER_ONLY = ['dawarat', 'exams', 'community', 'leaderboard', 'card', 'bot'];
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -54,173 +43,62 @@ const ROLE_HOME: Record<string, string> = {
 };
 
 export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [authModal, setAuthModal] = useState<{ open: boolean; tab: 'login' | 'register' }>({ open: false, tab: 'login' });
-  const { isRtl, locale } = useTranslation();
+  const { locale } = useTranslation();
   const { currentUser, isLoaded } = useAuthStore();
   const pathname = usePathname();
-  const newDesign = useNewDesign();
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const auth = params.get('auth');
-      if (auth === 'login' || auth === 'register') {
-        setAuthModal({ open: true, tab: auth });
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, '', newUrl);
-      }
+    const auth = new URLSearchParams(window.location.search).get('auth');
+    if (auth === 'login' || auth === 'register') {
+      setAuthModal({ open: true, tab: auth });
+      window.history.replaceState({}, '', window.location.pathname);
     }
   }, [pathname]);
 
-  const segments = (pathname || '').split('/').filter(Boolean);
-  const routeSegment = segments[1] || '';
+  const routeSegment = (pathname || '').split('/').filter(Boolean)[1] || '';
   const requiredRoles = PROTECTED_ROLE_MAP[routeSegment];
-
   const isGuestLanding = !currentUser && (pathname === '/' || pathname === `/${locale}` || pathname === `/${locale}/`);
+  const role = currentUser?.role;
+
+  const openLogin = () => setAuthModal({ open: true, tab: 'login' });
+  const openRegister = () => setAuthModal({ open: true, tab: 'register' });
+  const modal = <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />;
 
   let bodyContent: React.ReactNode = children;
-
-  if (requiredRoles) {
-    if (!isLoaded) {
-      bodyContent = <AuthLoadingSpinner />;
-    } else if (!currentUser) {
-      bodyContent = (
-        <AuthGate
-          onOpenLogin={() => setAuthModal({ open: true, tab: 'login' })}
-          onOpenRegister={() => setAuthModal({ open: true, tab: 'register' })}
-        />
-      );
-    } else if (!requiredRoles.includes(currentUser.role)) {
-      bodyContent = <AccessDenied homeHref={`/${locale}/${ROLE_HOME[currentUser.role] || ''}`} />;
-    }
+  if (MEMBER_ONLY.includes(routeSegment) && isLoaded && !currentUser) {
+    bodyContent = <AuthGate onOpenLogin={openLogin} onOpenRegister={openRegister} />;
+  } else if (MEMBER_ONLY.includes(routeSegment) && (role === 'OWNER' || role === 'ADMIN' || role === 'MODERATOR')) {
+    bodyContent = <AccessDenied homeHref={`/${locale}/admin`} />;
+  } else if (requiredRoles) {
+    if (!isLoaded) bodyContent = <AuthLoadingSpinner />;
+    else if (!currentUser) bodyContent = <AuthGate onOpenLogin={openLogin} onOpenRegister={openRegister} />;
+    else if (!requiredRoles.includes(currentUser.role)) bodyContent = <AccessDenied homeHref={`/${locale}/${ROLE_HOME[currentUser.role] || ''}`} />;
   }
 
-  if (isGuestLanding && newDesign) {
-    return (
-      <div className="relative flex min-h-screen w-full flex-col bg-background text-foreground transition-colors" data-testid="guest-landing-shell-v2">
-        <PillHeader onOpenAuth={(tab) => setAuthModal({ open: true, tab })} />
-        <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-          <main id="main" className="flex-1 w-full">{children}</main>
-        </AuthModalProvider>
-        <FloatingSupport />
-        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
-        <DevDesignToggle />
-      </div>
-    );
+  if (!isGuestLanding && !isLoaded && !PUBLIC_ALWAYS.includes(routeSegment)) {
+    return <div className="min-h-screen w-full bg-background" data-testid="shell-loading" />;
   }
 
-  if (isGuestLanding) {
-    return (
-      <div className="flex min-h-screen w-full flex-col bg-[#f4f5f6] dark:bg-[#0b0b0d] text-slate-900 dark:text-white transition-colors" data-testid="guest-landing-shell">
-        <Navbar onToggleSidebar={() => setIsMobileSidebarOpen(true)} onOpenAuth={(tab) => setAuthModal({ open: true, tab })} />
-        <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-          <main className="flex-1 w-full">{children}</main>
-        </AuthModalProvider>
-        <Footer />
-        <FloatingBotWidget />
-        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
-        <DevDesignToggle />
-      </div>
-    );
-  }
-
-  const isPublicV2 = newDesign && (PUBLIC_V2_ALWAYS.includes(routeSegment) || (PUBLIC_V2_GUEST.includes(routeSegment) && isLoaded && !currentUser));
-  if (newDesign && PUBLIC_V2_GUEST.includes(routeSegment) && !isLoaded) {
-    return <div className="min-h-screen w-full bg-background" data-testid="public-v2-loading" />;
-  }
-  if (isPublicV2) {
+  if (isGuestLanding || !currentUser || PUBLIC_ALWAYS.includes(routeSegment)) {
     return (
       <div className="relative flex min-h-screen w-full flex-col bg-background text-foreground transition-colors" data-testid="public-shell-v2">
         <PillHeader onOpenAuth={(tab) => setAuthModal({ open: true, tab })} />
         <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-          <main id="main" className="flex flex-1 flex-col w-full">{bodyContent}</main>
+          <main id="main" className="flex flex-1 w-full flex-col">{bodyContent}</main>
         </AuthModalProvider>
-        <SiteFooter />
+        {isGuestLanding ? null : <SiteFooter />}
         <FloatingSupport />
-        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
-        <DevDesignToggle />
+        {modal}
       </div>
     );
   }
 
-  const isStudentUser = currentUser?.role === 'STUDENT_FREE' || currentUser?.role === 'STUDENT_PAID';
-  const isTeacherUser = currentUser?.role === 'TEACHER';
-  if (newDesign && isTeacherUser && TEACHER_V2_SEGMENTS.includes(routeSegment)) {
-    return (
-      <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-        <TeacherShell>{bodyContent}</TeacherShell>
-        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
-        <DevDesignToggle />
-      </AuthModalProvider>
-    );
-  }
-  const isAdminUser = currentUser?.role === 'OWNER' || currentUser?.role === 'ADMIN' || currentUser?.role === 'MODERATOR';
-  if (newDesign && isAdminUser && routeSegment === 'admin') {
-    return (
-      <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-        <AdminShell>{bodyContent}</AdminShell>
-        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
-        <DevDesignToggle />
-      </AuthModalProvider>
-    );
-  }
-  const isAmbassadorUser = currentUser?.role === 'AMBASSADOR';
-  if (newDesign && isAmbassadorUser && AMBASSADOR_V2_SEGMENTS.includes(routeSegment)) {
-    return (
-      <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-        <AmbassadorShell>{bodyContent}</AmbassadorShell>
-        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
-        <DevDesignToggle />
-      </AuthModalProvider>
-    );
-  }
-  if (newDesign && isStudentUser && STUDENT_V2_SEGMENTS.includes(routeSegment)) {
-    return (
-      <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-        <StudentShell>{bodyContent}</StudentShell>
-        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
-        <DevDesignToggle />
-      </AuthModalProvider>
-    );
-  }
-
-  const isDashboardRoute = ['admin', 'ambassador', 'teacher', 'student'].includes(routeSegment);
-  const isNoSidebarPage = routeSegment === 'admin' || routeSegment === 'ambassador' || routeSegment === 'teacher';
-
+  const Shell = role === 'TEACHER' ? TeacherShell : role === 'AMBASSADOR' ? AmbassadorShell : role === 'STUDENT_FREE' || role === 'STUDENT_PAID' ? StudentShell : AdminShell;
   return (
     <AuthModalProvider value={{ openAuth: (tab) => setAuthModal({ open: true, tab }) }}>
-      <div className={`flex min-h-screen w-full bg-[#f4f5f6] dark:bg-[#0b0b0d] text-slate-900 dark:text-white transition-colors${routeSegment === 'admin' || routeSegment === 'ambassador' ? ' dark !bg-navy-700' : ''}`} data-testid="app-dashboard-shell">
-
-        {currentUser && !isNoSidebarPage && (
-          <AppSidebar
-            isMobileOpen={isMobileSidebarOpen}
-            onMobileClose={() => setIsMobileSidebarOpen(false)}
-          />
-        )}
-
-        <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-          <Navbar
-            onToggleSidebar={() => setIsMobileSidebarOpen(true)}
-            onOpenAuth={(tab) => setAuthModal({ open: true, tab })}
-            hideSidebarToggle={isNoSidebarPage}
-          />
-          {currentUser && (currentUser.role === 'STUDENT_FREE' || currentUser.role === 'STUDENT_PAID') && <SessionReminderBanner />}
-          <main className="flex-1 w-full">{bodyContent}</main>
-          {isDashboardRoute ? (
-            <footer className="px-4 sm:px-6 lg:px-8 py-4 border-t border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 flex flex-wrap items-center justify-between gap-2">
-              <span>© {new Date().getFullYear()} DZ Prime Academy</span>
-              <Link href={`/${locale}`} className="font-bold hover:underline">{locale === 'ar' ? 'الصفحة الرئيسية' : 'Accueil'}</Link>
-            </footer>
-          ) : (
-            <Footer />
-          )}
-        </div>
-
-        <FloatingBotWidget />
-        <AuthModal isOpen={authModal.open} defaultTab={authModal.tab} onClose={() => setAuthModal({ ...authModal, open: false })} />
-        {((isStudentUser && STUDENT_V2_SEGMENTS.includes(routeSegment)) || (isTeacherUser && TEACHER_V2_SEGMENTS.includes(routeSegment)) || (isAmbassadorUser && AMBASSADOR_V2_SEGMENTS.includes(routeSegment))) && <DevDesignToggle />}
-      </div>
+      <Shell>{bodyContent}</Shell>
+      {modal}
     </AuthModalProvider>
   );
 };

@@ -156,7 +156,7 @@ export async function seedOwner(): Promise<'created' | 'exists'> {
       role: 'OWNER',
       passwordHash: await hashPassword(password),
       mustChangePassword: true,
-      studentCardId: generateCardId('OWN', 16),
+      studentCardId: await generateCardId('FND', 16),
       isVerified: true,
     },
   });

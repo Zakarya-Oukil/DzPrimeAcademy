@@ -15,13 +15,11 @@ import {
   MapPin,
   Compass,
   Building,
-  School,
   TrendingUp,
   Award,
   Lightbulb,
   Globe2,
   Target,
-  ArrowDown,
   ShieldAlert,
   ShieldCheck,
   Cpu
@@ -30,7 +28,7 @@ import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuthStore } from '@/lib/store';
 
 export const HierarchyChart: React.FC = () => {
-  const { t, locale } = useTranslation();
+  const { t, } = useTranslation();
   const { currentUser } = useAuthStore();
 
   // Strict User Restriction: Completely remove from all users except admin, administrative staff, and ambassadors
@@ -133,13 +131,13 @@ export const HierarchyChart: React.FC = () => {
 
           {/* Box 3: Admin Général (Level 95) */}
           <motion.div
-            className="dark p-3.5 rounded-2xl border border-purple-500/60 bg-[#111114] shadow-lg flex flex-col items-center text-center"
+            className="dark p-3.5 rounded-2xl border border-sapphire-500/60 bg-[#111114] shadow-lg flex flex-col items-center text-center"
           >
-            <div className="flex items-center justify-center text-purple-300 mb-1.5">
+            <div className="flex items-center justify-center text-sapphire-300 mb-1.5">
               <ShieldCheck className="w-4 h-4" />
             </div>
-            <span className="text-[10px] font-mono text-purple-300 font-bold">LEVEL 95</span>
-            <h4 className="text-xs sm:text-sm font-black text-purple-200">
+            <span className="text-[10px] font-mono text-sapphire-300 font-bold">LEVEL 95</span>
+            <h4 className="text-xs sm:text-sm font-black text-sapphire-200">
               Admin Général (المدير العام)
             </h4>
             <p className="text-[10px] text-slate-300 mt-1 leading-snug">

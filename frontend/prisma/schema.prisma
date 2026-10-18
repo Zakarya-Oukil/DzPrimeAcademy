@@ -73,6 +73,12 @@ enum SessionPlatform {
   ONSITE
 }
 
+// Running number per card type and wilaya (key like "FND-16"); see src/lib/cardId.ts.
+model CardCounter {
+  key   String @id
+  value Int    @default(0)
+}
+
 model User {
   id                 String     @id @default(cuid())
   email              String     @unique

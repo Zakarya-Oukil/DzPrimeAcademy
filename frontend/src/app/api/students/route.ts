@@ -115,7 +115,7 @@ async function POSTHandler(request: NextRequest) {
         track: track || 'UNIVERSITY_LMD',
         specialty: specialty || null,
         academicYear: academicYear || '2025/2026',
-        studentCardId: generateCardId(cardPrefix, parsedWilaya),
+        studentCardId: await generateCardId(cardPrefix, parsedWilaya),
         isVerified: true,
       },
       select: {

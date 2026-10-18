@@ -109,8 +109,9 @@ export const CardCanvas: React.FC<CardCanvasProps> = ({
   const gBand = `b${uid}`;
   const gTab = `t${uid}`;
   const roleText = card.jobTitle || card.roleTitleAr || '';
-  const tabAr = tier === 'vip' ? 'عضو رسمي' : 'عضو';
-  const tabEn = tier === 'vip' ? 'OFFICIAL MEMBER' : 'MEMBER';
+  const isFounder = card.role === 'OWNER' || /founder|fondateur|مؤسس/i.test(roleText);
+  const tabAr = isFounder ? 'مؤسس رسمي' : tier === 'vip' ? 'عضو رسمي' : 'عضو';
+  const tabEn = isFounder ? 'OFFICIAL FOUNDER' : tier === 'vip' ? 'OFFICIAL MEMBER' : 'MEMBER';
 
   const defs = (
     <defs>

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Send,
   Instagram,
@@ -10,15 +9,6 @@ import {
   Globe,
   MessageCircle,
   Github,
-  Bot,
-  Smartphone,
-  CreditCard,
-  Layers,
-  MapPin,
-  Phone,
-  Mail,
-  Shield,
-  Award,
 } from 'lucide-react';
 
 export type SocialPlatformType =

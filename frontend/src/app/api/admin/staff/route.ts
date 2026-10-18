@@ -116,12 +116,14 @@ async function POSTHandler(request: NextRequest) {
     const finalRole: Role = role === 'OWNER' ? 'OWNER' : adminRole === 'MODERATOR' ? 'MODERATOR' : 'ADMIN';
 
     const cardPrefix =
-      adminRole === 'GENERAL_ADMIN'
+      finalRole === 'OWNER'
+        ? 'FND'
+        : adminRole === 'GENERAL_ADMIN'
         ? 'GEN'
         : adminRole === 'COMMERCIAL'
         ? 'COM'
         : adminRole === 'HR_MANAGER' || adminRole === 'HR_EMPLOYEE'
-        ? 'HR'
+        ? 'HRM'
         : adminRole === 'FINANCE'
         ? 'FIN'
         : 'ADM';
@@ -140,7 +142,7 @@ async function POSTHandler(request: NextRequest) {
         wilayaCode: parsedWilayaCode,
         wilayaName: wilayaName || 'Alger',
         institutionName: 'DZ Prime Academy HQ',
-        studentCardId: generateCardId(cardPrefix, parsedWilayaCode),
+        studentCardId: await generateCardId(cardPrefix, parsedWilayaCode),
         isVerified: true,
       },
       select: {

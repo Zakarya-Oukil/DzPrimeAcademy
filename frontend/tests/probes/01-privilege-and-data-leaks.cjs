@@ -210,7 +210,7 @@ async function run() {
   // new IDs are long and random
   const reg = await call(null, 'POST', '/api/auth/register', { name: 'P1 New', email: 'p1new.reg@test.local', password: 'Abcdef12!x', wilayaCode: 16 });
   const created = await prisma.user.findUnique({ where: { email: 'p1new.reg@test.local' } });
-  check('M-04 new card ID is 8 random chars', !!created && /^DZ-STU-16-[A-Z2-9]{8}$/.test(created.studentCardId || ''), `${reg.status} ${created?.studentCardId}`);
+  check('M-04 new card ID is sequential', !!created && /^DZ-STU-16-\d{4,}$/.test(created.studentCardId || ''), `${reg.status} ${created?.studentCardId}`);
 
   // ---- M-05: voucher bypass
   for (const code of ['DZPRIME2026', 'GOLD2026', 'VIP-PRIME-2026', 'VIP2026', 'vip2026']) {

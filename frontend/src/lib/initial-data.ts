@@ -1,4 +1,4 @@
-import { Wilaya, Institution, Faculty, Specialty, AcademicYear, ModuleItem, ExamItem, User, AmbassadorProfile, Post, Locale } from '@/types';
+import { Wilaya, Institution, Faculty, Specialty, AcademicYear, ModuleItem, ExamItem, User, AmbassadorProfile, Locale } from '@/types';
 
 export const WILAYAS: Wilaya[] = [
   { code: 1, nameAr: 'أدرار', nameFr: 'Adrar', nameEn: 'Adrar', region: 'SOUTH' },

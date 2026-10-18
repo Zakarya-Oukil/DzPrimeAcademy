@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
   }
 
   const passwordHash = await hashPassword(password);
-  const studentCardId = generateCardId('STU', wilaya || 16);
+  const studentCardId = await generateCardId('STU', wilaya || 16);
 
   const user = await prisma.user.create({
     data: {

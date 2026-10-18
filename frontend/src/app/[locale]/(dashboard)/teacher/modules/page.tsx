@@ -3,8 +3,7 @@
 import React from 'react';
 import { V2Gate } from '@/components/student-v2/Gate';
 import { TeacherModulesV2 } from '@/components/teacher-v2/Modules';
-import { LegacyModules } from '@/components/teacher-v2/Legacy';
 
 export default function TeacherModulesPage() {
-  return <V2Gate allow="teacher" v2={<TeacherModulesV2 />} legacy={<LegacyModules />} />;
+  return <V2Gate allow="teacher" v2={<TeacherModulesV2 />} />;
 }

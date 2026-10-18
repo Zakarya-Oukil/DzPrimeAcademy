@@ -121,7 +121,7 @@ async function POSTHandler(request: NextRequest) {
         wilayaName: wilayaNameAr || wilayaNameFr || 'Alger',
         institutionName: institutionNameAr || institutionNameFr || 'Université',
         specialty: specialtyName || null,
-        studentCardId: generateCardId('AMB', parsedWilayaCode),
+        studentCardId: await generateCardId('AMB', parsedWilayaCode),
         isVerified: true,
       },
     });

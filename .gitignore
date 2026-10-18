@@ -28,3 +28,8 @@ frontend/.github/
 frontend/AGENTS.md
 frontend/CLAUDE.md
 frontend/GEMINI.md
+
+# local build and AI-tool artefacts
+tsconfig.tsbuildinfo
+.emergent/
+.screenshots/

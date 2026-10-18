@@ -120,7 +120,7 @@ export async function approveOperation(id: string, adminName: string, adminNotes
         if (!user) throw new OpError(400, 'لا يوجد حساب مرتبط بهذه العملية');
         if (user.role === 'STUDENT_PAID') throw new OpError(409, 'هذا الحساب يملك العضوية الذهبية مسبقاً');
         if (user.role !== 'STUDENT_FREE') throw new OpError(400, 'الترقية متاحة للطلاب المجانيين فقط');
-        const cardId = user.studentCardId || generateCardId('STU', user.wilayaCode || 16);
+        const cardId = user.studentCardId || await generateCardId('STU', user.wilayaCode || 16);
         await tx.user.update({ where: { id: user.id }, data: { role: 'STUDENT_PAID', isVerified: true, studentCardId: cardId } });
         const endDate = new Date(Date.now() + ONE_YEAR_MS);
         await tx.subscription.upsert({
