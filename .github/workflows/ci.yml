@@ -49,6 +49,13 @@ jobs:
       - name: Create schema and seed the catalog
         run: npx prisma db push --skip-generate && npm run db:seed
 
+      - name: Apply the database rules from the manual migrations
+        # db push only builds tables; the money and promo-code rules live in plain SQL (see prisma/manual-migrations).
+        run: |
+          for f in phase2/01_additive phase2/04_constraints phase3/01_additive phase3/02_constraints phase4/01_additive; do
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "prisma/manual-migrations/$f.sql"
+          done
+
       - name: Start the app (dev mode, see tests/probes/README.md)
         run: |
           nohup npm run dev > ../dev.log 2>&1 &

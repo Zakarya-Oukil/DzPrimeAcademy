@@ -33,3 +33,4 @@ frontend/GEMINI.md
 tsconfig.tsbuildinfo
 .emergent/
 .screenshots/
+!.env.example
