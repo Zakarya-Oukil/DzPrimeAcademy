@@ -13,12 +13,3 @@ export async function generateCardId(prefix: string, wilayaCode: number | string
   });
   return `DZ-${prefix}-${wilaya}-${String(value).padStart(4, '0')}`;
 }
-
-const CARD_ID_PATTERN = /^DZ-[A-Z]{3}-\d{1,3}-\d{4,}$/;
-
-// Returns the canonical (upper-case) card ID, or null if the text is not shaped like one.
-// Callers must do an exact match with the result, never a pattern/ILIKE match.
-export function normalizeCardId(raw: string): string | null {
-  const id = raw.trim().toUpperCase();
-  return CARD_ID_PATTERN.test(id) ? id : null;
-}

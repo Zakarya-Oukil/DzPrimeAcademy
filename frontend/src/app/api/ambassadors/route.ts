@@ -34,7 +34,7 @@ async function GETHandler(request: NextRequest) {
       wilayaName: true,
       institutionName: true,
       specialty: true,
-      studentCardId: true,
+      studentCardId: true, publicToken: true,
       isVerified: true,
       createdAt: true,
     },

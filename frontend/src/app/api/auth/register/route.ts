@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     select: {
       id: true, email: true, name: true, avatar: true, role: true, phone: true,
       wilayaCode: true, wilayaName: true, institutionId: true, institutionName: true,
-      track: true, specialty: true, academicYear: true, studentCardId: true,
+      track: true, specialty: true, academicYear: true, studentCardId: true, publicToken: true,
       isVerified: true, createdAt: true, updatedAt: true,
     },
   });

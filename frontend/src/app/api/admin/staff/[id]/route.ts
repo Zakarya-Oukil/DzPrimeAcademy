@@ -127,7 +127,7 @@ async function PUTHandler(
       phone: true,
       wilayaCode: true,
       wilayaName: true,
-      studentCardId: true,
+      studentCardId: true, publicToken: true,
       isVerified: true,
     },
   });

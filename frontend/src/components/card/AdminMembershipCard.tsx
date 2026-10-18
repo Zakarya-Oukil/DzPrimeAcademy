@@ -86,7 +86,8 @@ export const AdminMembershipCard: React.FC<AdminMembershipCardProps> = ({
     issueDate: '',
     expiryDate: '',
     isVerified: user?.isVerified ?? true,
-    qrPayload: `https://dzprimeacademy.live/verify/${user?.studentCardId || ''}`,
+    publicToken: user?.publicToken,
+    qrPayload: `https://dzprimeacademy.live/verify/${user?.publicToken || ''}`,
     phone: user?.phone || '',
     email: user?.email || '',
     bio: user?.bio,
@@ -108,7 +109,7 @@ export const AdminMembershipCard: React.FC<AdminMembershipCardProps> = ({
   // Generate QR Code pointing directly to the public profile
   useEffect(() => {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://dzprimeacademy.live';
-    const profileUrl = `${origin}/${locale}/profile/${card.cardId}`;
+    const profileUrl = `${origin}/${locale}/profile/${card.publicToken}`;
 
     QRCode.toDataURL(profileUrl, {
       margin: 1,
@@ -198,7 +199,7 @@ export const AdminMembershipCard: React.FC<AdminMembershipCardProps> = ({
               <CardCanvas
                 {...canvasProps}
                 side="back"
-                profileHref={`/${locale}/profile/${card.cardId}`}
+                profileHref={`/${locale}/profile/${card.publicToken}`}
                 profileNewTab={false}
                 qrTitle={locale === 'ar' ? 'الانتقال إلى الملف الشخصي' : 'Voir le profil'}
               />
@@ -252,7 +253,7 @@ export const AdminMembershipCard: React.FC<AdminMembershipCardProps> = ({
         )}
 
         <a
-          href={`/${locale}/profile/${card.cardId}`}
+          href={`/${locale}/profile/${card.publicToken}`}
           target="_blank"
           rel="noreferrer"
           className="px-3.5 sm:px-4 py-2 rounded-xl bg-dzBlue-dark hover:bg-dzBlue border border-dzBlue-neon/40 text-dzBlue-neon text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"

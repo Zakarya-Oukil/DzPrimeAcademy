@@ -84,7 +84,7 @@ const SAFE_USER_SELECT = {
   track: true,
   specialty: true,
   academicYear: true,
-  studentCardId: true,
+  studentCardId: true, publicToken: true,
   isVerified: true,
   mustChangePassword: true,
   createdAt: true,

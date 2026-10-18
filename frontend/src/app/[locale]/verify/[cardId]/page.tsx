@@ -90,7 +90,7 @@ export default function VerifyCardPage({
             ))}
           </dl>
           <p className="text-[13px] text-sheet-muted">{t('verify.seal')}</p>
-          <Btn full href={`/${locale}/profile/${card.cardId}`}>{ar ? 'عرض الملف الشخصي العام' : 'Voir le profil public'}</Btn>
+          <Btn full href={`/${locale}/profile/${cardId}`}>{ar ? 'عرض الملف الشخصي العام' : 'Voir le profil public'}</Btn>
           <Btn variant="secondary" full href={`/${locale}`}>{t('verify.backHome')}</Btn>
         </div>
       )}

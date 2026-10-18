@@ -33,16 +33,17 @@ export const StudentCardV2: React.FC = () => {
   const backRef = useRef<HTMLDivElement>(null);
   const gold = isGoldenMember(currentUser);
   const cardId = currentUser?.studentCardId || '';
+  const token = currentUser?.publicToken || '';
 
   useEffect(() => {
-    if (!cardId) return;
-    fetch('/api/card/verify/' + encodeURIComponent(cardId))
+    if (!token) return;
+    fetch('/api/card/verify/' + encodeURIComponent(token))
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => setExpiry(d?.card?.expiryDate || ''))
       .catch(() => {});
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    QRCode.toDataURL(`${origin}/${locale}/profile/${cardId}`, { margin: 1, width: 240, color: { dark: '#101010', light: '#FAFCF9' } }).then(setQr).catch(() => {});
-  }, [cardId, locale]);
+    QRCode.toDataURL(`${origin}/${locale}/profile/${token}`, { margin: 1, width: 240, color: { dark: '#101010', light: '#FAFCF9' } }).then(setQr).catch(() => {});
+  }, [token, locale]);
 
   if (!currentUser) return null;
   if (!cardId) {
@@ -70,7 +71,8 @@ export const StudentCardV2: React.FC = () => {
     issueDate: '',
     expiryDate: expiry,
     isVerified: currentUser.isVerified ?? true,
-    qrPayload: `https://dzprimeacademy.live/verify/${cardId}`,
+    publicToken: token,
+    qrPayload: `https://dzprimeacademy.live/verify/${token}`,
     phone: currentUser.phone || '',
     email: currentUser.email,
   };
@@ -145,7 +147,7 @@ export const StudentCardV2: React.FC = () => {
             </div>
             <Btn full onClick={png} disabled={busy !== null} data-testid="card-download-png-btn"><DownloadSimple size={20} aria-hidden="true" />{busy === 'png' ? t('card.generatingPng') : tx('تصدير PNG', 'Exporter en PNG', 'Export PNG')}</Btn>
             <Btn full variant="secondary" onClick={pdf} disabled={busy !== null} data-testid="card-download-pdf-btn"><FilePdf size={20} aria-hidden="true" />{busy === 'pdf' ? t('card.generatingPdf') : tx('تصدير PDF للطباعة', 'Exporter en PDF (impression)', 'Export print PDF')}</Btn>
-            <Btn variant="text" href={`/${locale}/profile/${cardId}`}><ArrowSquareOut size={18} aria-hidden="true" />{tx('عرض ملفي العام', 'Voir mon profil public', 'View my public profile')}</Btn>
+            <Btn variant="text" href={`/${locale}/profile/${token}`}><ArrowSquareOut size={18} aria-hidden="true" />{tx('عرض ملفي العام', 'Voir mon profil public', 'View my public profile')}</Btn>
             <Btn variant="text" href={`/${locale}/${isTeacher ? 'teacher' : 'student'}/settings`}>{tx('تعديل بياناتي', 'Modifier mes informations', 'Edit my details')}</Btn>
           </div>
         </div>

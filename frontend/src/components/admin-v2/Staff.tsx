@@ -149,7 +149,7 @@ export const StaffSection: React.FC = () => {
       const manage = currentUser ? canManageUser(currentUser, s) : false;
       return (
         <Actions>
-          <RowAction href={`/${locale}/profile/${s.studentCardId || s.id}`} label={tx('معاينة الملف العام', 'Voir le profil public', 'View public profile')}>{tx('معاينة', 'Profil', 'Preview')}</RowAction>
+          <RowAction href={`/${locale}/profile/${s.publicToken || s.id}`} label={tx('معاينة الملف العام', 'Voir le profil public', 'View public profile')}>{tx('معاينة', 'Profil', 'Preview')}</RowAction>
           {manage ? <RowAction onClick={() => openEdit(s)}>{tx('تعديل', 'Modifier', 'Edit')}</RowAction> : null}
           {manage ? <RowAction danger onClick={() => { setDelErr(null); setDel(s); }}>{tx('حذف', 'Supprimer', 'Delete')}</RowAction> : null}
         </Actions>

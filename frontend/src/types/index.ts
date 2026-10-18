@@ -48,6 +48,7 @@ export interface User {
   specialty?: string;
   academicYear?: string;
   studentCardId?: string;
+  publicToken?: string;
   isVerified?: boolean;
   mustChangePassword?: boolean;
   createdAt: string;
@@ -243,6 +244,8 @@ export interface BotSelectionState {
 // Digital Membership Card
 export interface MembershipCardData {
   cardId: string;
+  /** Random key for the QR code and public links (the card number is display-only). */
+  publicToken?: string;
   holderName: string;
   holderNameAr?: string;
   role: Role;

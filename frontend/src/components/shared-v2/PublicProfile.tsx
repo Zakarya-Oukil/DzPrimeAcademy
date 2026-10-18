@@ -61,7 +61,7 @@ export const PublicProfileV2: React.FC<{ data: ProfileData; isOwner: boolean; ca
             {user.bio ? <p className="max-w-2xl text-[15px] text-sheet-muted">{user.bio}</p> : null}
             <div className="mt-1 flex flex-wrap items-center gap-3">
               <Btn onClick={onCopy} data-testid="profile-share">{copied ? tx('تم نسخ الرابط', 'Lien copié', 'Link copied') : tx('مشاركة الملف', 'Partager le profil', 'Share profile')}</Btn>
-              {user.studentCardId ? <Btn variant="secondary" href={`/${locale}/verify/${user.studentCardId}`}>{tx('التحقق من البطاقة', 'Vérifier la carte', 'Verify the card')}</Btn> : null}
+              {user.publicToken ? <Btn variant="secondary" href={`/${locale}/verify/${user.publicToken}`}>{tx('التحقق من البطاقة', 'Vérifier la carte', 'Verify the card')}</Btn> : null}
               {whatsappUrl ? <a href={whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-[44px] items-center px-2 text-[15px] font-semibold underline underline-offset-4">{tx('واتساب', 'WhatsApp', 'WhatsApp')}</a> : null}
               {isOwner ? <Btn variant="text" href={settingsHref}>{tx('تعديل الملف الشخصي', 'Modifier le profil', 'Edit profile')}</Btn> : null}
             </div>

@@ -116,7 +116,7 @@ export const StudentsSection: React.FC = () => {
     ) },
     { id: 'act', header: tx('إجراءات', 'Actions', 'Actions'), w: '1.3fr', m: 'actions', cell: (u) => (
       <Actions>
-        <RowAction href={`/${locale}/profile/${u.studentCardId || u.id}`} label={tx('عرض الملف العام', 'Voir le profil public', 'View public profile')}>{tx('الملف', 'Profil', 'Profile')}</RowAction>
+        <RowAction href={`/${locale}/profile/${u.publicToken || u.id}`} label={tx('عرض الملف العام', 'Voir le profil public', 'View public profile')}>{tx('الملف', 'Profil', 'Profile')}</RowAction>
         <RowAction danger onClick={() => { setDelErr(null); setDel(u); }} label={tx('حذف الطالب', "Supprimer l'étudiant", 'Delete student')}>{tx('حذف', 'Supprimer', 'Delete')}</RowAction>
       </Actions>
     ) },

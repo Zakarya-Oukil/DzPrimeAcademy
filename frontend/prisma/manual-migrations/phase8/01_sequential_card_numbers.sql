@@ -3,10 +3,15 @@
 --  * Every existing card is renumbered DZ-<TYPE>-<wilaya>-0001, 0002, ... in sign-up order.
 --    Founders (role OWNER, or a job title with "founder"/"fondateur"/"مؤسس") get the FND type.
 --    The old HR type (2 letters, never matched the verify pattern) becomes HRM.
+--  * "User"."publicToken": random 32-hex key (default from the database) used in QR codes and public URLs, because sequential
+--    card numbers can be enumerated. Existing users get one; the card number is display-only.
 --  * A trigger refuses any later change of "studentCardId" once it is set.
 -- Printed or shared QR codes of the old random IDs stop working: run this before launch.
 -- Undo: 01_rollback.sql (drops the trigger and the counter; it cannot restore the old random IDs, so keep the backup).
 begin;
+
+alter table "User" add column "publicToken" text unique default replace(gen_random_uuid()::text, '-', '');
+update "User" set "publicToken" = replace(gen_random_uuid()::text, '-', '') where "publicToken" is null;
 
 create table "CardCounter" (
   "key" text primary key,

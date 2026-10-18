@@ -106,6 +106,8 @@ model User {
   specialty          String?
   academicYear       String?
   studentCardId      String?    @unique
+  // Unguessable key for QR codes and public links; the card number above is display-only and sequential.
+  publicToken        String?    @unique @default(dbgenerated("replace(gen_random_uuid()::text, '-', '')"))
   isVerified         Boolean    @default(false)
   passwordHash       String?
   // Bumped on logout and on every password change or reset: login tokens carry the version they were issued

@@ -74,7 +74,7 @@ export const AmbassadorsSection: React.FC = () => {
     { id: 'status', header: tx('الحالة', 'Statut', 'Status'), w: '1fr', m: 'status', cell: (a) => <Status kind={a.isVerified ? 'ok' : 'pending'}>{a.isVerified ? tx('موثّق', 'Vérifié', 'Verified') : tx('قيد المراجعة', 'En revue', 'In review')}</Status> },
     { id: 'act', header: tx('الإجراءات', 'Actions', 'Actions'), w: '1.4fr', m: 'actions', cell: (a) => (
       <Actions>
-        {a.user?.studentCardId ? <RowAction href={`/${locale}/profile/${a.user.studentCardId}`} label={tx('عرض الملف العام', 'Voir le profil public', 'View public profile')}>{tx('الملف', 'Profil', 'Profile')}</RowAction> : null}
+        {a.user?.publicToken ? <RowAction href={`/${locale}/profile/${a.user.publicToken}`} label={tx('عرض الملف العام', 'Voir le profil public', 'View public profile')}>{tx('الملف', 'Profil', 'Profile')}</RowAction> : null}
         <RowAction danger onClick={() => setDel(a)} testId={`delete-ambassador-${a.id}`}>{tx('حذف', 'Supprimer', 'Delete')}</RowAction>
       </Actions>
     ) },

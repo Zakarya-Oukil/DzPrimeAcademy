@@ -91,7 +91,7 @@ async function PUTHandler(request: NextRequest) {
       jobTitle: true, adminRole: true, bio: true, facebook: true, instagram: true,
       linkedin: true, telegram: true, youtube: true, whatsapp: true, website: true, twitter: true, github: true,
       wilayaCode: true, wilayaName: true, institutionId: true, institutionName: true,
-      track: true, specialty: true, academicYear: true, studentCardId: true,
+      track: true, specialty: true, academicYear: true, studentCardId: true, publicToken: true,
       isVerified: true, createdAt: true, updatedAt: true,
     },
   });

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { normalizeCardId } from '@/lib/cardId';
 import { clientIp, rateLimit } from '@/lib/rateLimit';
 
 export async function GET(
@@ -14,11 +13,9 @@ export async function GET(
     return NextResponse.json({ isValid: false, message: 'محاولات كثيرة، حاول لاحقاً', card: null }, { status: 429 });
   }
 
-  // Exact match on a well-formed card ID only. Raw text is never used as a pattern,
-  // so "%" or "_" cannot turn this into a wildcard search of the user base.
-  const cardId = normalizeCardId(id);
-  const matchedUser = cardId
-    ? await prisma.user.findUnique({ where: { studentCardId: cardId } })
+  // Exact match on the random public token only (the sequential card number cannot be used to look anyone up).
+  const matchedUser = /^[a-f0-9]{32}$/.test(id)
+    ? await prisma.user.findUnique({ where: { publicToken: id } })
     : null;
 
   if (!matchedUser) {

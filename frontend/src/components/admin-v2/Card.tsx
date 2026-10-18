@@ -11,6 +11,7 @@ export const CardSection: React.FC = () => {
   const { tx, locale } = useTx();
   const { currentUser } = useAuthStore();
   const cardId = currentUser?.studentCardId;
+  const token = currentUser?.publicToken;
 
   const level = (() => {
     if (currentUser?.role === 'OWNER' || currentUser?.adminRole === 'SUPER_ADMIN') return tx('المسؤول الأعلى', 'Super admin', 'Super admin');
@@ -26,7 +27,7 @@ export const CardSection: React.FC = () => {
       <PageHead
         title={tx('بطاقة الإدارة', "Carte d'administration", 'Admin card')}
         sub={tx('معاينة بطاقتك الرقمية ومواصفاتها.', 'Aperçu de votre carte numérique et de ses informations.', 'Preview of your digital card and its details.')}
-        action={cardId ? <Btn variant="secondary" href={`/${locale}/verify/${cardId}`}>{tx('رابط الفحص QR', 'Tester le QR', 'Test the QR link')}</Btn> : undefined}
+        action={token ? <Btn variant="secondary" href={`/${locale}/verify/${token}`}>{tx('رابط الفحص QR', 'Tester le QR', 'Test the QR link')}</Btn> : undefined}
       />
       <div className="grid items-start gap-5 lg:grid-cols-[1.4fr_1fr]">
         <Panel className="flex flex-col items-center gap-4">
@@ -38,7 +39,7 @@ export const CardSection: React.FC = () => {
           <dl className="flex flex-col gap-2.5 text-[15px]">
             <div className="flex justify-between gap-4"><dt className="text-sheet-muted">{tx('مستوى الصلاحية', "Niveau d'accès", 'Access level')}</dt><dd className="font-semibold">{level}</dd></div>
             <div className="flex justify-between gap-4"><dt className="text-sheet-muted">{tx('حالة التوثيق', 'Statut', 'Status')}</dt><dd><Status kind={currentUser?.isVerified ? 'ok' : 'pending'}>{currentUser?.isVerified ? tx('معتمد رسمياً', 'Certifié', 'Verified') : tx('قيد المراجعة', 'En revue', 'In review')}</Status></dd></div>
-            <div className="flex justify-between gap-4"><dt className="text-sheet-muted">{tx('التحقق المباشر', 'Vérification en direct', 'Live check')}</dt><dd>{cardId ? <a href={`/${locale}/verify/${cardId}`} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-4">{tx('رابط الفحص QR', 'Tester le QR', 'Test QR link')}</a> : '—'}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-sheet-muted">{tx('التحقق المباشر', 'Vérification en direct', 'Live check')}</dt><dd>{token ? <a href={`/${locale}/verify/${token}`} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-4">{tx('رابط الفحص QR', 'Tester le QR', 'Test QR link')}</a> : '—'}</dd></div>
           </dl>
         </Panel>
       </div>

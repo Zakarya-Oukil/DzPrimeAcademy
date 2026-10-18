@@ -50,13 +50,13 @@ const StandardMembershipCard: React.FC<MembershipCardProps> = ({
   // The real membership end date comes from the server (the card itself carries no date of its own).
   const [membershipExpiry, setMembershipExpiry] = useState('');
   useEffect(() => {
-    const id = user?.studentCardId;
+    const id = user?.publicToken;
     if (!id) return;
     fetch('/api/card/verify/' + encodeURIComponent(id))
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => setMembershipExpiry(d?.card?.expiryDate || ''))
       .catch(() => {});
-  }, [user?.studentCardId]);
+  }, [user?.publicToken]);
   const frontCardRef = useRef<HTMLDivElement>(null);
   const backCardRef = useRef<HTMLDivElement>(null);
   const exportFrontRef = useRef<HTMLDivElement>(null);
@@ -118,7 +118,8 @@ const StandardMembershipCard: React.FC<MembershipCardProps> = ({
     issueDate: '',
     expiryDate: membershipExpiry,
     isVerified: user?.isVerified ?? true,
-    qrPayload: user?.studentCardId ? `https://dzprimeacademy.live/verify/${user.studentCardId}` : '',
+    publicToken: user?.publicToken,
+    qrPayload: user?.publicToken ? `https://dzprimeacademy.live/verify/${user.publicToken}` : '',
     phone: user?.phone || '',
     email: user?.email || '',
   };
@@ -126,7 +127,7 @@ const StandardMembershipCard: React.FC<MembershipCardProps> = ({
   // Generate dynamic QR Code for the card back (points to public profile)
   useEffect(() => {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://dzprimeacademy.live';
-    const profileUrl = `${origin}/${locale}/profile/${card.cardId}`;
+    const profileUrl = `${origin}/${locale}/profile/${card.publicToken}`;
     
     QRCode.toDataURL(profileUrl, {
       margin: 1,
@@ -221,7 +222,7 @@ const StandardMembershipCard: React.FC<MembershipCardProps> = ({
               <CardCanvas
                 {...canvasProps}
                 side="back"
-                profileHref={`/${locale}/profile/${card.cardId}`}
+                profileHref={`/${locale}/profile/${card.publicToken}`}
                 qrTitle={locale === 'ar' ? 'عرض الملف الشخصي' : 'Voir le profil'}
               />
             </ScaledCard>
@@ -288,7 +289,7 @@ const StandardMembershipCard: React.FC<MembershipCardProps> = ({
         )}
 
         <a
-          href={`/${locale}/profile/${card.cardId}`}
+          href={`/${locale}/profile/${card.publicToken}`}
           target="_blank"
           rel="noreferrer"
           className="px-3.5 sm:px-4 py-2 rounded-xl bg-dzBlue-dark hover:bg-dzBlue border border-dzBlue-neon/40 text-dzBlue-neon text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm touch-target justify-center"

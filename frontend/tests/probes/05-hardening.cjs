@@ -150,14 +150,14 @@ async function run() {
   check('ERR duplicate email -> 409 with a plain message', r.status === 409 && !/prisma|unique|constraint/i.test(JSON.stringify(r.json)), `${r.status} ${JSON.stringify(r.json)}`);
 
   // ---- card verification
-  r = await call(null, 'GET', `/api/card/verify/${S.free.studentCardId}`);
+  r = await call(null, 'GET', `/api/card/verify/${S.free.publicToken}`);
   check('CARD a free student card has no invented expiry date', r.status === 200 && r.json.card.expiryDate === null && r.json.card.membership === 'NONE' && r.json.isValid === true, JSON.stringify(r.json));
   const end = new Date(Date.now() + 200 * 86400000);
   await prisma.subscription.create({ data: { userId: S.paid.id, cardId: S.paid.studentCardId, endDate: end } });
-  r = await call(null, 'GET', `/api/card/verify/${S.paid.studentCardId}`);
+  r = await call(null, 'GET', `/api/card/verify/${S.paid.publicToken}`);
   check('CARD an active membership shows its real end date', r.json.card.membership === 'ACTIVE' && r.json.card.expiryDate === end.toISOString().slice(0, 10).replace(/-/g, '/') && r.json.isValid === true, JSON.stringify(r.json.card));
   await prisma.subscription.create({ data: { userId: S.expired.id, cardId: S.expired.studentCardId, endDate: new Date(Date.now() - 86400000) } });
-  r = await call(null, 'GET', `/api/card/verify/${S.expired.studentCardId}`);
+  r = await call(null, 'GET', `/api/card/verify/${S.expired.publicToken}`);
   check('CARD an expired membership is reported as expired and not valid', r.json.card.membership === 'EXPIRED' && r.json.isValid === false, JSON.stringify(r.json));
   r = await call(null, 'GET', '/api/card/verify/DZ-STU-16-NOSUCHID');
   check('CARD unknown card -> 404', r.status === 404, r.status);

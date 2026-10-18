@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ensureSeeded } from '@/lib/seed';
 import { getUserFromRequest } from '@/lib/auth';
-import { normalizeCardId } from '@/lib/cardId';
 import { hasAnyPermission } from '@/lib/rbac';
 import { clientIp, rateLimit } from '@/lib/rateLimit';
 
@@ -24,11 +23,10 @@ export async function GET(
 
   const requester = await getUserFromRequest(request);
 
-  // Exact lookup only: by internal id, or by a well-formed card ID. Raw text is never used
-  // as a pattern, so "%" / "_" cannot enumerate users.
-  const cardId = normalizeCardId(id);
+  // Exact lookup only: by internal id or random public token. Raw text is never used
+  // as a pattern, so "%" / "_" cannot enumerate users, and the sequential card number is not a key.
   const user = await prisma.user.findFirst({
-    where: cardId ? { OR: [{ id }, { studentCardId: cardId }] } : { id },
+    where: { OR: [{ id }, { publicToken: id }] },
     select: {
       id: true,
       name: true,
@@ -54,7 +52,7 @@ export async function GET(
       track: true,
       specialty: true,
       academicYear: true,
-      studentCardId: true,
+      studentCardId: true, publicToken: true,
       isVerified: true,
       createdAt: true,
     },
