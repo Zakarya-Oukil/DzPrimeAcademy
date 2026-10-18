@@ -1,12 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { normalizeCardId } from '@/lib/cardId';
+import { clientIp, rateLimit } from '@/lib/rateLimit';
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+
+  // Card numbers are sequential, so lookups are throttled per visitor to stop a scan of the whole register.
+  if (!rateLimit(`card-verify:${clientIp(request)}`, 30, 60 * 1000)) {
+    return NextResponse.json({ isValid: false, message: 'محاولات كثيرة، حاول لاحقاً', card: null }, { status: 429 });
+  }
 
   // Exact match on a well-formed card ID only. Raw text is never used as a pattern,
   // so "%" or "_" cannot turn this into a wildcard search of the user base.

@@ -4,6 +4,7 @@ import { ensureSeeded } from '@/lib/seed';
 import { getUserFromRequest } from '@/lib/auth';
 import { normalizeCardId } from '@/lib/cardId';
 import { hasAnyPermission } from '@/lib/rbac';
+import { clientIp, rateLimit } from '@/lib/rateLimit';
 
 export async function GET(
   request: NextRequest,
@@ -14,6 +15,11 @@ export async function GET(
 
   if (!id) {
     return NextResponse.json({ error: 'المعرف مطلوب' }, { status: 400 });
+  }
+
+  // Card numbers are sequential, so lookups are throttled per visitor to stop a scan of every profile.
+  if (!rateLimit(`profile:${clientIp(request)}`, 60, 60 * 1000)) {
+    return NextResponse.json({ error: 'محاولات كثيرة، حاول لاحقاً' }, { status: 429 });
   }
 
   const requester = await getUserFromRequest(request);
